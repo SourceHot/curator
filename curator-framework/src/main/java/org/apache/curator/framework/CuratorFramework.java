@@ -40,24 +40,29 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Zookeeper framework-style client
+ * <p>
+ * zookeeper 客户端接口. 提供基本CRUD操作
  */
 public interface CuratorFramework extends Closeable {
     /**
      * Start the client. Most mutator methods will not work until the client is started
+     * 启动客户端
      */
-    public void start();
+    void start();
 
     /**
      * Stop the client
+     * 关闭客户端
      */
-    public void close();
+    void close();
 
     /**
      * Returns the state of this instance
      *
+     * 获取状态
      * @return state
      */
-    public CuratorFrameworkState getState();
+    CuratorFrameworkState getState();
 
     /**
      * Return true if the client is started, not closed, etc.
@@ -66,21 +71,21 @@ public interface CuratorFramework extends Closeable {
      * @deprecated use {@link #getState()} instead
      */
     @Deprecated
-    public boolean isStarted();
+    boolean isStarted();
 
     /**
      * Start a create builder
      *
      * @return builder object
      */
-    public CreateBuilder create();
+    CreateBuilder create();
 
     /**
      * Start a delete builder
      *
      * @return builder object
      */
-    public DeleteBuilder delete();
+    DeleteBuilder delete();
 
     /**
      * Start an exists builder
@@ -90,56 +95,56 @@ public interface CuratorFramework extends Closeable {
      *
      * @return builder object
      */
-    public ExistsBuilder checkExists();
+    ExistsBuilder checkExists();
 
     /**
      * Start a get data builder
      *
      * @return builder object
      */
-    public GetDataBuilder getData();
+    GetDataBuilder getData();
 
     /**
      * Start a set data builder
      *
      * @return builder object
      */
-    public SetDataBuilder setData();
+    SetDataBuilder setData();
 
     /**
      * Start a get children builder
      *
      * @return builder object
      */
-    public GetChildrenBuilder getChildren();
+    GetChildrenBuilder getChildren();
 
     /**
      * Start a get ACL builder
      *
      * @return builder object
      */
-    public GetACLBuilder getACL();
+    GetACLBuilder getACL();
 
     /**
      * Start a set ACL builder
      *
      * @return builder object
      */
-    public SetACLBuilder setACL();
+    SetACLBuilder setACL();
 
     /**
      * Start a reconfig builder
      *
      * @return builder object
      */
-    public ReconfigBuilder reconfig();
+    ReconfigBuilder reconfig();
 
     /**
      * Start a getConfig builder
      *
      * @return builder object
      */
-    public GetConfigBuilder getConfig();
+    GetConfigBuilder getConfig();
 
     /**
      * Start a transaction builder
@@ -147,14 +152,14 @@ public interface CuratorFramework extends Closeable {
      * @return builder object
      * @deprecated use {@link #transaction()} instead
      */
-    public CuratorTransaction inTransaction();
+    CuratorTransaction inTransaction();
 
     /**
      * Start a transaction builder
      *
      * @return builder object
      */
-    public CuratorMultiTransaction transaction();
+    CuratorMultiTransaction transaction();
 
     /**
      * Allocate an operation that can be used with {@link #transaction()}.
@@ -163,7 +168,7 @@ public interface CuratorFramework extends Closeable {
      *
      * @return operation builder
      */
-    public TransactionOp transactionOp();
+    TransactionOp transactionOp();
 
     /**
      * Perform a sync on the given path - syncs are always in the background
@@ -173,7 +178,7 @@ public interface CuratorFramework extends Closeable {
      * @deprecated use {@link #sync()} instead
      */
     @Deprecated
-    public void sync(String path, Object backgroundContextObject);
+    void sync(String path, Object backgroundContextObject);
 
     /**
      * Create all nodes in the specified path as containers if they don't
@@ -182,7 +187,7 @@ public interface CuratorFramework extends Closeable {
      * @param path path to create
      * @throws Exception errors
      */
-    public void createContainers(String path) throws Exception;
+    void createContainers(String path) throws Exception;
 
     /**
      * Start a sync builder. Note: sync is ALWAYS in the background even
@@ -190,7 +195,7 @@ public interface CuratorFramework extends Closeable {
      *
      * @return builder object
      */
-    public SyncBuilder sync();
+    SyncBuilder sync();
 
     /**
      * Start a remove watches builder.
@@ -198,7 +203,7 @@ public interface CuratorFramework extends Closeable {
      * @return builder object
      * @deprecated use {@link #watchers()} in ZooKeeper 3.6+
      */
-    public RemoveWatchesBuilder watches();
+    RemoveWatchesBuilder watches();
 
     /**
      * Start a watch builder. Supported only when ZooKeeper JAR of version 3.6 or
@@ -207,28 +212,28 @@ public interface CuratorFramework extends Closeable {
      * @return builder object
      * @throws IllegalStateException ZooKeeper JAR is 3.5 or below
      */
-    public WatchesBuilder watchers();
+    WatchesBuilder watchers();
 
     /**
      * Returns the listenable interface for the Connect State
      *
      * @return listenable
      */
-    public Listenable<ConnectionStateListener> getConnectionStateListenable();
+    Listenable<ConnectionStateListener> getConnectionStateListenable();
 
     /**
      * Returns the listenable interface for events
      *
      * @return listenable
      */
-    public Listenable<CuratorListener> getCuratorListenable();
+    Listenable<CuratorListener> getCuratorListenable();
 
     /**
      * Returns the listenable interface for unhandled errors
      *
      * @return listenable
      */
-    public Listenable<UnhandledErrorListener> getUnhandledErrorListenable();
+    Listenable<UnhandledErrorListener> getUnhandledErrorListenable();
 
     /**
      * Returns a facade of the current instance that does _not_ automatically
@@ -238,7 +243,7 @@ public interface CuratorFramework extends Closeable {
      * @deprecated Since 2.9.0 - use {@link #usingNamespace} passing <code>null</code>
      */
     @Deprecated
-    public CuratorFramework nonNamespaceView();
+    CuratorFramework nonNamespaceView();
 
     /**
      * Returns a facade of the current instance that uses the specified namespace
@@ -247,21 +252,21 @@ public interface CuratorFramework extends Closeable {
      * @param newNamespace the new namespace or null for none
      * @return facade
      */
-    public CuratorFramework usingNamespace(String newNamespace);
+    CuratorFramework usingNamespace(String newNamespace);
 
     /**
      * Return the current namespace or "" if none
      *
      * @return namespace
      */
-    public String getNamespace();
+    String getNamespace();
 
     /**
      * Return the managed zookeeper client
      *
      * @return client
      */
-    public CuratorZookeeperClient getZookeeperClient();
+    CuratorZookeeperClient getZookeeperClient();
 
     /**
      * Allocates an ensure path instance that is namespace aware
@@ -272,38 +277,39 @@ public interface CuratorFramework extends Closeable {
      * or {@link CuratorFramework#createContainers(String)}
      */
     @Deprecated
-    public EnsurePath newNamespaceAwareEnsurePath(String path);
+    EnsurePath newNamespaceAwareEnsurePath(String path);
 
     /**
      * Curator can hold internal references to watchers that may inhibit garbage collection.
      * Call this method on watchers you are no longer interested in.
      *
      * @param watcher the watcher
-     *
      * @deprecated As of ZooKeeper 3.5 Curators recipes will handle removing watcher references
      * when they are no longer used. If you write your own recipe, follow the example of Curator
      * recipes and use {@link #newWatcherRemoveCuratorFramework} calling {@link WatcherRemoveCuratorFramework#removeWatchers()}
      * when closing your instance.
      */
     @Deprecated
-    public void clearWatcherReferences(Watcher watcher);
+    void clearWatcherReferences(Watcher watcher);
 
     /**
      * Block until a connection to ZooKeeper is available or the maxWaitTime has been exceeded
+     *
      * @param maxWaitTime The maximum wait time. Specify a value &lt;= 0 to wait indefinitely
-     * @param units The time units for the maximum wait time.
+     * @param units       The time units for the maximum wait time.
      * @return True if connection has been established, false otherwise.
      * @throws InterruptedException If interrupted while waiting
      */
-    public boolean blockUntilConnected(int maxWaitTime, TimeUnit units) throws InterruptedException;
+    boolean blockUntilConnected(int maxWaitTime, TimeUnit units) throws InterruptedException;
 
     /**
      * Block until a connection to ZooKeeper is available. This method will not return until a
      * connection is available or it is interrupted, in which case an InterruptedException will
      * be thrown
+     *
      * @throws InterruptedException If interrupted while waiting
      */
-    public void blockUntilConnected() throws InterruptedException;
+    void blockUntilConnected() throws InterruptedException;
 
     /**
      * Returns a facade of the current instance that tracks
@@ -312,21 +318,21 @@ public interface CuratorFramework extends Closeable {
      *
      * @return facade
      */
-    public WatcherRemoveCuratorFramework newWatcherRemoveCuratorFramework();
+    WatcherRemoveCuratorFramework newWatcherRemoveCuratorFramework();
 
     /**
      * Return the configured error policy
      *
      * @return error policy
      */
-    public ConnectionStateErrorPolicy getConnectionStateErrorPolicy();
+    ConnectionStateErrorPolicy getConnectionStateErrorPolicy();
 
     /**
      * Current maintains a cached view of the Zookeeper quorum config.
      *
      * @return the current config
      */
-    public QuorumVerifier getCurrentConfig();
+    QuorumVerifier getCurrentConfig();
 
     /**
      * Return this instance's schema set
@@ -354,6 +360,7 @@ public interface CuratorFramework extends Closeable {
     /**
      * Curator (and user) recipes can use this to run notifyAll
      * and other blocking calls that might normally block ZooKeeper's event thread.
+     *
      * @param runnable proc to call from a safe internal thread
      * @return a CompletableFuture that can be used to monitor when the call is complete
      * @since 4.1.0

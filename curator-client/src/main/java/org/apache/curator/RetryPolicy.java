@@ -22,16 +22,21 @@ import org.apache.zookeeper.KeeperException;
 
 /**
  * Abstracts the policy to use when retrying connections
+ * <p>
+ * 重试策略接口
  */
 public interface RetryPolicy {
     /**
      * Called when an operation has failed for some reason. This method should return
      * true to make another attempt.
+     * <p>
+     * 是否可以重试
      *
-     *
-     * @param retryCount the number of times retried so far (0 the first time)
+     * @param retryCount    the number of times retried so far (0 the first time)
+     *                      重试次数
      * @param elapsedTimeMs the elapsed time in ms since the operation was attempted
-     * @param sleeper use this to sleep - DO NOT call Thread.sleep
+     * @param sleeper       use this to sleep - DO NOT call Thread.sleep
+     *                      睡眠接口
      * @return true/false
      */
     boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper);
@@ -39,6 +44,7 @@ public interface RetryPolicy {
     /**
      * Called when an operation has failed with a specific exception. This method
      * should return true to make another attempt.
+     * 默认的是否可以重试.判断方式
      *
      * @param exception the cause that this operation failed
      * @return true/false

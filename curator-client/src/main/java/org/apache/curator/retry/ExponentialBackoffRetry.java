@@ -26,20 +26,37 @@ import java.util.Random;
 
 /**
  * Retry policy that retries a set number of times with increasing sleep time between retries
+ * 重试策略: 在两次重试时间之间进行重试并且不超过最大重试次数
  */
 public class ExponentialBackoffRetry extends SleepingRetry {
     private static final Logger log = LoggerFactory.getLogger(ExponentialBackoffRetry.class);
-
+    /**
+     * 最大重试次数
+     */
     private static final int MAX_RETRIES_LIMIT = 29;
+    /**
+     * 最大睡眠时间
+     */
     private static final int DEFAULT_MAX_SLEEP_MS = Integer.MAX_VALUE;
 
+    /**
+     * 随机
+     */
     private final Random random = new Random();
+    /**
+     * 基础睡眠时间
+     */
     private final int baseSleepTimeMs;
+    /**
+     * 最大睡眠时间
+     */
     private final int maxSleepMs;
 
     /**
      * @param baseSleepTimeMs initial amount of time to wait between retries
-     * @param maxRetries max number of times to retry
+     *                        两次重试之间的时间差
+     * @param maxRetries      max number of times to retry
+     *                        最大重试次数
      */
     public ExponentialBackoffRetry(int baseSleepTimeMs, int maxRetries) {
         this(baseSleepTimeMs, maxRetries, DEFAULT_MAX_SLEEP_MS);
@@ -47,13 +64,28 @@ public class ExponentialBackoffRetry extends SleepingRetry {
 
     /**
      * @param baseSleepTimeMs initial amount of time to wait between retries
-     * @param maxRetries max number of times to retry
-     * @param maxSleepMs max time in ms to sleep on each retry
+     * @param maxRetries      max number of times to retry
+     * @param maxSleepMs      max time in ms to sleep on each retry
      */
     public ExponentialBackoffRetry(int baseSleepTimeMs, int maxRetries, int maxSleepMs) {
         super(validateMaxRetries(maxRetries));
         this.baseSleepTimeMs = baseSleepTimeMs;
         this.maxSleepMs = maxSleepMs;
+    }
+
+    /**
+     * 验证重试
+     *
+     * 超过最大的重试次数就直接等于最大重试次数
+     * @param maxRetries
+     * @return
+     */
+    private static int validateMaxRetries(int maxRetries) {
+        if (maxRetries > MAX_RETRIES_LIMIT) {
+            log.warn(String.format("maxRetries too large (%d). Pinning to %d", maxRetries, MAX_RETRIES_LIMIT));
+            maxRetries = MAX_RETRIES_LIMIT;
+        }
+        return maxRetries;
     }
 
     @VisibleForTesting
@@ -70,13 +102,5 @@ public class ExponentialBackoffRetry extends SleepingRetry {
             sleepMs = maxSleepMs;
         }
         return sleepMs;
-    }
-
-    private static int validateMaxRetries(int maxRetries) {
-        if (maxRetries > MAX_RETRIES_LIMIT) {
-            log.warn(String.format("maxRetries too large (%d). Pinning to %d", maxRetries, MAX_RETRIES_LIMIT));
-            maxRetries = MAX_RETRIES_LIMIT;
-        }
-        return maxRetries;
     }
 }

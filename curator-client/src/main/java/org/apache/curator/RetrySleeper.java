@@ -22,14 +22,18 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Abstraction for retry policies to sleep
+ * <p>
+ * 重试睡眠
  */
 public interface RetrySleeper {
     /**
      * Sleep for the given time
+     * <p>
+     * 睡眠多久
      *
-     * @param time time
-     * @param unit time unit
+     * @param time time 时间
+     * @param unit time unit 单位
      * @throws InterruptedException if the sleep is interrupted
      */
-    public void sleepFor(long time, TimeUnit unit) throws InterruptedException;
+    void sleepFor(long time, TimeUnit unit) throws InterruptedException;
 }

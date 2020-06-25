@@ -21,21 +21,27 @@ package org.apache.curator.framework.imps;
 import org.apache.curator.framework.CuratorFramework;
 
 /**
+ * curatorFramework 的状态
+ *
  * @see CuratorFramework#getState()
  */
 public enum CuratorFrameworkState {
     /**
      * {@link CuratorFramework#start()} has not yet been called
+     * 未连接
      */
     LATENT,
 
     /**
      * {@link CuratorFramework#start()} has been called
+     * 已连接
      */
     STARTED,
 
     /**
      * {@link CuratorFramework#close()} has been called
+     * <p>
+     * 已停止
      */
     STOPPED
 }

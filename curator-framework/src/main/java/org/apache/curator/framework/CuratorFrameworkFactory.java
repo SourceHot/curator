@@ -68,6 +68,9 @@ public class CuratorFrameworkFactory {
     private static final int DEFAULT_CLOSE_WAIT_MS = (int) TimeUnit.SECONDS.toMillis(1);
     private static final boolean DEFAULT_WITH_ENSEMBLE_TRACKER = true;
 
+    private CuratorFrameworkFactory() {
+    }
+
     /**
      * Return a new builder that builds a CuratorFramework
      *
@@ -114,27 +117,41 @@ public class CuratorFrameworkFactory {
     public static byte[] getLocalAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress().getBytes();
-        }
-        catch (UnknownHostException ignore) {
+        } catch (UnknownHostException ignore) {
             // ignore
         }
         return new byte[0];
     }
 
     public static class Builder {
+        /**
+         * zookeeper 提供者
+         */
         private EnsembleProvider ensembleProvider;
         private boolean withEnsembleTracker = DEFAULT_WITH_ENSEMBLE_TRACKER;
+        /**
+         * 超时时间
+         */
         private int sessionTimeoutMs = DEFAULT_SESSION_TIMEOUT_MS;
         private int connectionTimeoutMs = DEFAULT_CONNECTION_TIMEOUT_MS;
         private int maxCloseWaitMs = DEFAULT_CLOSE_WAIT_MS;
+        /**
+         * 重试策略
+         */
         private RetryPolicy retryPolicy;
         private ThreadFactory threadFactory = null;
+        /**
+         * 命名空间
+         */
         private String namespace;
         private List<AuthInfo> authInfos = null;
         private byte[] defaultData = LOCAL_ADDRESS;
         private CompressionProvider compressionProvider = DEFAULT_COMPRESSION_PROVIDER;
         private ZookeeperFactory zookeeperFactory = DEFAULT_ZOOKEEPER_FACTORY;
         private ACLProvider aclProvider = DEFAULT_ACL_PROVIDER;
+        /**
+         * 是否只读
+         */
         private boolean canBeReadOnly = false;
         private boolean useContainerParentsIfAvailable = true;
         private ConnectionStateErrorPolicy connectionStateErrorPolicy = new StandardConnectionStateErrorPolicy();
@@ -143,6 +160,9 @@ public class CuratorFrameworkFactory {
         private Executor runSafeService = null;
         private ConnectionStateListenerManagerFactory connectionStateListenerManagerFactory = ConnectionStateListenerManagerFactory.standard;
         private int simulatedSessionExpirationPercent = 100;
+
+        private Builder() {
+        }
 
         /**
          * Apply the current values and build a new CuratorFramework
@@ -181,7 +201,7 @@ public class CuratorFrameworkFactory {
 
         /**
          * Add connection authorization
-         *
+         * <p>
          * Subsequent calls to this method overwrite the prior calls.
          *
          * @param scheme the scheme
@@ -233,7 +253,7 @@ public class CuratorFrameworkFactory {
         /**
          * Allows to configure if the ensemble configuration changes will be watched.
          * The default value is {@code true}.<br>
-         *
+         * <p>
          * IMPORTANT: Use this method in combination with {@link #ensembleProvider(EnsembleProvider)} to provide
          * an instance that returns {@code false} on {@link EnsembleProvider#updateServerListEnabled()} in order
          * to fully achieve that ensemble server list changes are ignored<br>
@@ -280,7 +300,7 @@ public class CuratorFrameworkFactory {
         }
 
         /**
-         * @param sessionTimeoutMs session timeout
+         * @param sessionTimeoutMs session timeout 超时时间
          * @return this
          */
         public Builder sessionTimeoutMs(int sessionTimeoutMs) {
@@ -377,9 +397,9 @@ public class CuratorFrameworkFactory {
         /**
          * Set the error policy to use. The default is {@link StandardConnectionStateErrorPolicy}
          *
-         * @since 3.0.0
          * @param connectionStateErrorPolicy new error policy
          * @return this
+         * @since 3.0.0
          */
         public Builder connectionStateErrorPolicy(ConnectionStateErrorPolicy connectionStateErrorPolicy) {
             this.connectionStateErrorPolicy = connectionStateErrorPolicy;
@@ -390,9 +410,9 @@ public class CuratorFrameworkFactory {
          * Set a timeout for {@link CuratorZookeeperClient#close(int)}  }.
          * The default is 0, which means that this feature is disabled.
          *
-         * @since 4.0.2
          * @param waitForShutdownTimeoutMs default timeout
          * @return this
+         * @since 4.0.2
          */
         public Builder waitForShutdownTimeoutMs(int waitForShutdownTimeoutMs) {
             this.waitForShutdownTimeoutMs = waitForShutdownTimeoutMs;
@@ -401,30 +421,30 @@ public class CuratorFrameworkFactory {
 
         /**
          * <p>
-         *     Prior to 3.0.0, Curator did not try to manage session expiration
-         *     other than the functionality provided by ZooKeeper itself. Starting with
-         *     3.0.0, Curator has the option of attempting to monitor session expiration
-         *     above what is provided by ZooKeeper. The percentage set by this method
-         *     determines how and if Curator will check for session expiration.
+         * Prior to 3.0.0, Curator did not try to manage session expiration
+         * other than the functionality provided by ZooKeeper itself. Starting with
+         * 3.0.0, Curator has the option of attempting to monitor session expiration
+         * above what is provided by ZooKeeper. The percentage set by this method
+         * determines how and if Curator will check for session expiration.
          * </p>
          *
          * <p>
-         *     The default percentage is 100.
+         * The default percentage is 100.
          * </p>
          *
          * <p>
-         *     If it is set to <tt>0</tt>, Curator does not do any additional checking
-         *     for session expiration.
+         * If it is set to <tt>0</tt>, Curator does not do any additional checking
+         * for session expiration.
          * </p>
          *
          * <p>
-         *     If a positive number is set, Curator will check for session expiration
-         *     as follows: when ZooKeeper sends a Disconnect event, Curator will start a timer.
-         *     If re-connection is not achieved before the elapsed time exceeds the negotiated
-         *     session time multiplied by the session expiration percent, Curator will simulate
-         *     a session expiration. Due to timing/network issues, it is <b>not possible</b> for
-         *     a client to match the server's session timeout with complete accuracy. Thus, the need
-         *     for a session expiration percentage.
+         * If a positive number is set, Curator will check for session expiration
+         * as follows: when ZooKeeper sends a Disconnect event, Curator will start a timer.
+         * If re-connection is not achieved before the elapsed time exceeds the negotiated
+         * session time multiplied by the session expiration percent, Curator will simulate
+         * a session expiration. Due to timing/network issues, it is <b>not possible</b> for
+         * a client to match the server's session timeout with complete accuracy. Thus, the need
+         * for a session expiration percentage.
          * </p>
          *
          * @param simulatedSessionExpirationPercent new simulated session expiration percentage
@@ -596,11 +616,5 @@ public class CuratorFrameworkFactory {
         public ConnectionStateListenerManagerFactory getConnectionStateListenerManagerFactory() {
             return connectionStateListenerManagerFactory;
         }
-
-        private Builder() {
-        }
-    }
-
-    private CuratorFrameworkFactory() {
     }
 }

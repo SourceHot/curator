@@ -27,42 +27,49 @@ import java.io.IOException;
 
 /**
  * Abstraction that provides the ZooKeeper connection string
+ *
+ * zookeeper 的链接地址配置.
  */
 public interface EnsembleProvider extends Closeable {
     /**
      * Curator will call this method when {@link CuratorZookeeperClient#start()} is
      * called
+     * <p>
+     * 启动
      *
      * @throws Exception errors
      */
-    public void start() throws Exception;
+    void start() throws Exception;
 
     /**
      * Return the current connection string to use. Curator will call this each
      * time it needs to create a ZooKeeper instance
      *
+     * 获取具体的链接地址 (zookeeper的地址)
      * @return connection string (per {@link ZooKeeper#ZooKeeper(String, int, Watcher)} etc.)
      */
-    public String getConnectionString();
-
-    /**
-     * Curator will call this method when {@link CuratorZookeeperClient#close()} is called
-     *
-     * @throws IOException errors
-     */
-    public void close() throws IOException;
+    String getConnectionString();
 
     /**
      * A new connection string event was received
      *
+     * 设置连接店址
      * @param connectionString the new connection string
      */
-    public void setConnectionString(String connectionString);
+    void setConnectionString(String connectionString);
+
+    /**
+     * Curator will call this method when {@link CuratorZookeeperClient#close()} is called
+     *
+     * 关闭
+     * @throws IOException errors
+     */
+    void close() throws IOException;
 
     /**
      * Return true if this ensemble provider supports {@link ZooKeeper#updateServerList(String)}
      *
      * @return true/false
      */
-    public boolean updateServerListEnabled();
+    boolean updateServerListEnabled();
 }
