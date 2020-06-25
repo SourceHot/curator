@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,16 +25,14 @@ import org.apache.zookeeper.ZooKeeper;
  *     Utility to simulate a ZK session dying.
  * </p>
  */
-public class KillSession
-{
+public class KillSession {
     /**
      * Kill the given ZK session
      *
      * @param client the client to kill
      * @since 3.0.0
      */
-    public static void     kill(ZooKeeper client)
-    {
+    public static void kill(ZooKeeper client) {
         client.getTestable().injectSessionExpiration();
     }
 
@@ -46,8 +44,7 @@ public class KillSession
      * @throws Exception errors
      * @deprecated use {@link #kill(ZooKeeper)} instead
      */
-    public static void     kill(ZooKeeper client, String connectString) throws Exception
-    {
+    public static void kill(ZooKeeper client, String connectString) throws Exception {
         kill(client);
     }
 
@@ -60,8 +57,7 @@ public class KillSession
      * @throws Exception errors
      * @deprecated use {@link #kill(ZooKeeper)} instead
      */
-    public static void     kill(ZooKeeper client, String connectString, int maxMs) throws Exception
-    {
+    public static void kill(ZooKeeper client, String connectString, int maxMs) throws Exception {
         kill(client);
     }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,28 +20,23 @@ package pubsub.models;
 
 import org.apache.curator.x.async.modeled.NodeName;
 
-public class Group implements NodeName
-{
+public class Group implements NodeName {
     private final String groupName;
 
-    public Group()
-    {
+    public Group() {
         this("");
     }
 
-    public Group(String groupName)
-    {
+    public Group(String groupName) {
         this.groupName = groupName;
     }
 
-    public String getGroupName()
-    {
+    public String getGroupName() {
         return groupName;
     }
 
     @Override
-    public String nodeName()
-    {
+    public String nodeName() {
         return groupName;
     }
 }

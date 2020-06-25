@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,10 +22,10 @@ package org.apache.curator.framework.recipes.cache;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.Compatibility;
 import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ExecutorService;
 
-class CuratorCacheBridgeBuilderImpl implements CuratorCacheBridgeBuilder
-{
+class CuratorCacheBridgeBuilderImpl implements CuratorCacheBridgeBuilder {
     private final CuratorFramework client;
     private final String path;
     private CuratorCache.Options[] options;
@@ -33,40 +33,33 @@ class CuratorCacheBridgeBuilderImpl implements CuratorCacheBridgeBuilder
     private ExecutorService executorService = null;
     private final boolean forceTreeCache = Boolean.getBoolean("curator-cache-bridge-force-tree-cache");
 
-    CuratorCacheBridgeBuilderImpl(CuratorFramework client, String path)
-    {
+    CuratorCacheBridgeBuilderImpl(CuratorFramework client, String path) {
         this.client = client;
         this.path = path;
     }
 
     @Override
-    public CuratorCacheBridgeBuilder withOptions(CuratorCache.Options... options)
-    {
+    public CuratorCacheBridgeBuilder withOptions(CuratorCache.Options... options) {
         this.options = options;
         return this;
     }
 
     @Override
-    public CuratorCacheBridgeBuilder withDataNotCached()
-    {
+    public CuratorCacheBridgeBuilder withDataNotCached() {
         cacheData = false;
         return this;
     }
 
     @Override
-    public CuratorCacheBridgeBuilder withExecutorService(ExecutorService executorService)
-    {
+    public CuratorCacheBridgeBuilder withExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
     }
 
     @Override
-    public CuratorCacheBridge build()
-    {
-        if ( !forceTreeCache && Compatibility.hasPersistentWatchers() )
-        {
-            if ( executorService != null )
-            {
+    public CuratorCacheBridge build() {
+        if (!forceTreeCache && Compatibility.hasPersistentWatchers()) {
+            if (executorService != null) {
                 LoggerFactory.getLogger(getClass()).warn("CuratorCache does not support custom ExecutorService");
             }
             CuratorCacheStorage storage = cacheData ? CuratorCacheStorage.standard() : CuratorCacheStorage.dataNotCached();

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,11 +27,9 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.GZIPOutputStream;
 
-public class TestGzipCompressionProvider
-{
+public class TestGzipCompressionProvider {
     @Test
-    public void testSimple() throws IOException
-    {
+    public void testSimple() throws IOException {
         GzipCompressionProvider provider = new GzipCompressionProvider();
         byte[] data = "Hello, world!".getBytes();
         byte[] compressedData = provider.compress(null, data);
@@ -42,8 +40,7 @@ public class TestGzipCompressionProvider
     }
 
     @Test
-    public void testEmpty() throws IOException
-    {
+    public void testEmpty() throws IOException {
         GzipCompressionProvider provider = new GzipCompressionProvider();
         byte[] compressedData = provider.compress(null, new byte[0]);
         byte[] compressedData2 = GzipCompressionProvider.doCompress(new byte[0]);
@@ -60,31 +57,31 @@ public class TestGzipCompressionProvider
      * of runtime exception. Users of {@link GzipCompressionProvider#decompress(String, byte[])} may depend on this.
      */
     @Test
-    public void testDecompressCorrupt()
-    {
+    public void testDecompressCorrupt() {
         GzipCompressionProvider provider = new GzipCompressionProvider();
         try {
             provider.decompress(null, new byte[100]);
             Assert.fail("Expected IOException");
-        } catch (IOException ignore) {
+        }
+        catch (IOException ignore) {
             // expected
         }
         byte[] compressedData = provider.compress(null, new byte[0]);
-        for (int i = 0; i < compressedData.length; i++)
-        {
+        for (int i = 0; i < compressedData.length; i++) {
             try {
                 provider.decompress(null, Arrays.copyOf(compressedData, i));
-            } catch (IOException ignore) {
+            }
+            catch (IOException ignore) {
                 // expected
             }
-            for (int change = 1; change < 256; change++)
-            {
+            for (int change = 1; change < 256; change++) {
                 byte b = compressedData[i];
                 compressedData[i] = (byte) (b + change);
                 try {
                     provider.decompress(null, compressedData);
                     // No exception is OK
-                } catch (IOException ignore) {
+                }
+                catch (IOException ignore) {
                     // expected
                 }
                 // reset value back
@@ -94,12 +91,10 @@ public class TestGzipCompressionProvider
     }
 
     @Test
-    public void smokeTestRandomDataWithJdk() throws IOException
-    {
+    public void smokeTestRandomDataWithJdk() throws IOException {
         GzipCompressionProvider provider = new GzipCompressionProvider();
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int len = 1; len < 100; len++)
-        {
+        for (int len = 1; len < 100; len++) {
             byte[] data = new byte[len];
             for (int i = 0; i < 100; i++) {
                 byte[] compressedData = provider.compress(null, data);
@@ -113,8 +108,7 @@ public class TestGzipCompressionProvider
         }
     }
 
-    private static byte[] jdkCompress(byte[] data) throws IOException
-    {
+    private static byte[] jdkCompress(byte[] data) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (GZIPOutputStream out = new GZIPOutputStream(bytes)) {
             out.write(data);

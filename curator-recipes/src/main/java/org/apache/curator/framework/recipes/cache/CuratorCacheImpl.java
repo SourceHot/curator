@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -34,6 +34,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -45,8 +46,7 @@ import static org.apache.curator.framework.recipes.cache.CuratorCacheListener.Ty
 import static org.apache.zookeeper.KeeperException.Code.NONODE;
 import static org.apache.zookeeper.KeeperException.Code.OK;
 
-class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge
-{
+class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AtomicReference<State> state = new AtomicReference<>(State.LATENT);
     private final PersistentWatcher persistentWatcher;
@@ -60,15 +60,13 @@ class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge
     private final Consumer<Exception> exceptionHandler;
     private final OutstandingOps outstandingOps = new OutstandingOps(() -> callListeners(CuratorCacheListener::initialized));
 
-    private enum State
-    {
+    private enum State {
         LATENT,
         STARTED,
         CLOSED
     }
 
-    CuratorCacheImpl(CuratorFramework client, CuratorCacheStorage storage, String path, Options[] optionsArg, Consumer<Exception> exceptionHandler)
-    {
+    CuratorCacheImpl(CuratorFramework client, CuratorCacheStorage storage, String path, Options[] optionsArg, Consumer<Exception> exceptionHandler) {
         Set<Options> options = (optionsArg != null) ? Sets.newHashSet(optionsArg) : Collections.emptySet();
         this.client = client;
         this.storage = (storage != null) ? storage : CuratorCacheStorage.standard();
@@ -83,65 +81,53 @@ class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge
     }
 
     @Override
-    public void start()
-    {
+    public void start() {
         Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "Already started");
         persistentWatcher.start();
     }
 
     @Override
-    public void close()
-    {
-        if ( state.compareAndSet(State.STARTED, State.CLOSED) )
-        {
+    public void close() {
+        if (state.compareAndSet(State.STARTED, State.CLOSED)) {
             persistentWatcher.close();
-            if ( clearOnClose )
-            {
+            if (clearOnClose) {
                 storage.clear();
             }
         }
     }
 
     @Override
-    public boolean isCuratorCache()
-    {
+    public boolean isCuratorCache() {
         return true;
     }
 
     @Override
-    public Listenable<CuratorCacheListener> listenable()
-    {
+    public Listenable<CuratorCacheListener> listenable() {
         return listenerManager;
     }
 
     @Override
-    public Optional<ChildData> get(String path)
-    {
+    public Optional<ChildData> get(String path) {
         return storage.get(path);
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return storage.size();
     }
 
     @Override
-    public Stream<ChildData> stream()
-    {
+    public Stream<ChildData> stream() {
         return storage.stream();
     }
 
     @VisibleForTesting
-    CuratorCacheStorage storage()
-    {
+    CuratorCacheStorage storage() {
         return storage;
     }
 
-    private void rebuild()
-    {
-        if ( state.get() != State.STARTED )
-        {
+    private void rebuild() {
+        if (state.get() != State.STARTED) {
             return;
         }
 
@@ -152,62 +138,50 @@ class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge
         // (though versions checks will minimize that). If someone can think of a better
         // way let us know
         storage.stream()
-            .map(ChildData::getPath)
-            .filter(p -> !p.equals(path))
-            .forEach(this::nodeChanged);
+                .map(ChildData::getPath)
+                .filter(p -> !p.equals(path))
+                .forEach(this::nodeChanged);
     }
 
-    private void processEvent(WatchedEvent event)
-    {
-        if ( state.get() != State.STARTED )
-        {
+    private void processEvent(WatchedEvent event) {
+        if (state.get() != State.STARTED) {
             return;
         }
 
         // NOTE: Persistent/Recursive watchers never trigger NodeChildrenChanged
 
-        switch ( event.getType() )
-        {
-        case NodeDataChanged:
-        case NodeCreated:
-        {
-            nodeChanged(event.getPath());
-            break;
-        }
+        switch (event.getType()) {
+            case NodeDataChanged:
+            case NodeCreated: {
+                nodeChanged(event.getPath());
+                break;
+            }
 
-        case NodeDeleted:
-        {
-            removeStorage(event.getPath());
-            break;
-        }
+            case NodeDeleted: {
+                removeStorage(event.getPath());
+                break;
+            }
         }
     }
 
-    private void checkChildrenChanged(String fromPath, Stat oldStat, Stat newStat)
-    {
-        if ( (state.get() != State.STARTED) || !recursive )
-        {
+    private void checkChildrenChanged(String fromPath, Stat oldStat, Stat newStat) {
+        if ((state.get() != State.STARTED) || !recursive) {
             return;
         }
 
-        if ( (oldStat != null) && (oldStat.getCversion() == newStat.getCversion()) )
-        {
+        if ((oldStat != null) && (oldStat.getCversion() == newStat.getCversion())) {
             return; // children haven't changed
         }
 
-        try
-        {
+        try {
             BackgroundCallback callback = (__, event) -> {
-                if ( event.getResultCode() == OK.intValue() )
-                {
+                if (event.getResultCode() == OK.intValue()) {
                     event.getChildren().forEach(child -> nodeChanged(ZKPaths.makePath(fromPath, child)));
                 }
-                else if ( event.getResultCode() == NONODE.intValue() )
-                {
+                else if (event.getResultCode() == NONODE.intValue()) {
                     removeStorage(event.getPath());
                 }
-                else
-                {
+                else {
                     handleException(event);
                 }
                 outstandingOps.decrement();
@@ -216,91 +190,72 @@ class CuratorCacheImpl implements CuratorCache, CuratorCacheBridge
             outstandingOps.increment();
             client.getChildren().inBackground(callback).forPath(fromPath);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             handleException(e);
         }
     }
 
-    private void nodeChanged(String fromPath)
-    {
-        if ( state.get() != State.STARTED )
-        {
+    private void nodeChanged(String fromPath) {
+        if (state.get() != State.STARTED) {
             return;
         }
 
-        try
-        {
+        try {
             BackgroundCallback callback = (__, event) -> {
-                if ( event.getResultCode() == OK.intValue() )
-                {
+                if (event.getResultCode() == OK.intValue()) {
                     Optional<ChildData> childData = putStorage(new ChildData(event.getPath(), event.getStat(), event.getData()));
                     checkChildrenChanged(event.getPath(), childData.map(ChildData::getStat).orElse(null), event.getStat());
                 }
-                else if ( event.getResultCode() == NONODE.intValue() )
-                {
+                else if (event.getResultCode() == NONODE.intValue()) {
                     removeStorage(event.getPath());
                 }
-                else
-                {
+                else {
                     handleException(event);
                 }
                 outstandingOps.decrement();
             };
 
             outstandingOps.increment();
-            if ( compressedData )
-            {
+            if (compressedData) {
                 client.getData().decompressed().inBackground(callback).forPath(fromPath);
             }
-            else
-            {
+            else {
                 client.getData().inBackground(callback).forPath(fromPath);
             }
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             handleException(e);
         }
     }
 
-    private Optional<ChildData> putStorage(ChildData data)
-    {
+    private Optional<ChildData> putStorage(ChildData data) {
         Optional<ChildData> previousData = storage.put(data);
-        if ( previousData.isPresent() )
-        {
-            if ( previousData.get().getStat().getVersion() != data.getStat().getVersion() )
-            {
+        if (previousData.isPresent()) {
+            if (previousData.get().getStat().getVersion() != data.getStat().getVersion()) {
                 callListeners(l -> l.event(NODE_CHANGED, previousData.get(), data));
             }
         }
-        else
-        {
+        else {
             callListeners(l -> l.event(NODE_CREATED, null, data));
         }
         return previousData;
     }
 
-    private void removeStorage(String path)
-    {
+    private void removeStorage(String path) {
         storage.remove(path).ifPresent(previousData -> callListeners(l -> l.event(NODE_DELETED, previousData, null)));
     }
 
-    private void callListeners(Consumer<CuratorCacheListener> proc)
-    {
-        if ( state.get() == State.STARTED )
-        {
+    private void callListeners(Consumer<CuratorCacheListener> proc) {
+        if (state.get() == State.STARTED) {
             client.runSafe(() -> listenerManager.forEach(proc));
         }
     }
 
-    private void handleException(CuratorEvent event)
-    {
+    private void handleException(CuratorEvent event) {
         handleException(KeeperException.create(KeeperException.Code.get(event.getResultCode())));
     }
 
-    private void handleException(Exception e)
-    {
+    private void handleException(Exception e) {
         ThreadUtils.checkInterrupted(e);
         exceptionHandler.accept(e);
     }

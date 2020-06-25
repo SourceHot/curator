@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,67 +18,54 @@
  */
 package org.apache.curator.framework.recipes.cache;
 
-import org.apache.curator.framework.imps.TestCleanState;
-import org.apache.curator.test.BaseClassForTests;
-import org.apache.curator.test.compatibility.CuratorTestBase;
-import org.apache.curator.test.compatibility.Timing2;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.UnhandledErrorListener;
+import org.apache.curator.framework.imps.TestCleanState;
 import org.apache.curator.retry.RetryOneTime;
+import org.apache.curator.test.BaseClassForTests;
 import org.apache.curator.test.Timing;
+import org.apache.curator.test.compatibility.CuratorTestBase;
+import org.apache.curator.test.compatibility.Timing2;
+import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Exchanger;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestNodeCache extends BaseClassForTests
-{
+public class TestNodeCache extends BaseClassForTests {
     @Test
-    public void     testDeleteThenCreate() throws Exception
-    {
-        NodeCache           cache = null;
-        CuratorFramework    client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    public void testDeleteThenCreate() throws Exception {
+        NodeCache cache = null;
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             client.create().creatingParentsIfNeeded().forPath("/test/foo", "one".getBytes());
 
-            final AtomicReference<Throwable>        error = new AtomicReference<Throwable>();
+            final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
             client.getUnhandledErrorListenable().addListener
-            (
-                new UnhandledErrorListener()
-                {
-                    @Override
-                    public void unhandledError(String message, Throwable e)
-                    {
-                        error.set(e);
-                    }
-                }
-            );
+                    (
+                            new UnhandledErrorListener() {
+                                @Override
+                                public void unhandledError(String message, Throwable e) {
+                                    error.set(e);
+                                }
+                            }
+                    );
 
-            final Semaphore         semaphore = new Semaphore(0);
+            final Semaphore semaphore = new Semaphore(0);
             cache = new NodeCache(client, "/test/foo");
             cache.getListenable().addListener
-            (
-                new NodeCacheListener()
-                {
-                    @Override
-                    public void nodeChanged() throws Exception
-                    {
-                        semaphore.release();
-                    }
-                }
-            );
+                    (
+                            new NodeCacheListener() {
+                                @Override
+                                public void nodeChanged() throws Exception {
+                                    semaphore.release();
+                                }
+                            }
+                    );
             cache.start(true);
 
             Assert.assertEquals(cache.getCurrentData().getData(), "one".getBytes());
@@ -89,8 +76,7 @@ public class TestNodeCache extends BaseClassForTests
             Assert.assertTrue(semaphore.tryAcquire(1, 10, TimeUnit.SECONDS));
 
             Throwable t = error.get();
-            if ( t != null )
-            {
+            if (t != null) {
                 Assert.fail("Assert", t);
             }
 
@@ -98,63 +84,56 @@ public class TestNodeCache extends BaseClassForTests
 
             cache.close();
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(cache);
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void     testRebuildAgainstOtherProcesses() throws Exception
-    {
-        Timing2                 timing2 = new Timing2();
-        NodeCache               cache = null;
-        final CuratorFramework  client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    public void testRebuildAgainstOtherProcesses() throws Exception {
+        Timing2 timing2 = new Timing2();
+        NodeCache cache = null;
+        final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             client.create().forPath("/test");
             client.create().forPath("/test/snafu", "original".getBytes());
 
-            final CountDownLatch    latch = new CountDownLatch(1);
+            final CountDownLatch latch = new CountDownLatch(1);
             cache = new NodeCache(client, "/test/snafu");
             cache.getListenable().addListener
-            (
-                new NodeCacheListener()
-                {
-                    @Override
-                    public void nodeChanged() throws Exception
-                    {
-                        latch.countDown();
-                    }
-                }
-            );
+                    (
+                            new NodeCacheListener() {
+                                @Override
+                                public void nodeChanged() throws Exception {
+                                    latch.countDown();
+                                }
+                            }
+                    );
             cache.rebuildTestExchanger = new Exchanger<Object>();
 
-            ExecutorService                 service = Executors.newSingleThreadExecutor();
-            final NodeCache                 finalCache = cache;
-            Future<Object>                  future = service.submit
-            (
-                new Callable<Object>()
-                {
-                    @Override
-                    public Object call() throws Exception
-                    {
-                        finalCache.rebuildTestExchanger.exchange(new Object(), timing2.forWaiting().seconds(), TimeUnit.SECONDS);
+            ExecutorService service = Executors.newSingleThreadExecutor();
+            final NodeCache finalCache = cache;
+            Future<Object> future = service.submit
+                    (
+                            new Callable<Object>() {
+                                @Override
+                                public Object call() throws Exception {
+                                    finalCache.rebuildTestExchanger.exchange(new Object(), timing2.forWaiting().seconds(), TimeUnit.SECONDS);
 
-                        // simulate another process updating the node while we're rebuilding
-                        client.setData().forPath("/test/snafu", "other".getBytes());
+                                    // simulate another process updating the node while we're rebuilding
+                                    client.setData().forPath("/test/snafu", "other".getBytes());
 
-                        ChildData       currentData = finalCache.getCurrentData();
-                        Assert.assertNotNull(currentData);
+                                    ChildData currentData = finalCache.getCurrentData();
+                                    Assert.assertNotNull(currentData);
 
-                        finalCache.rebuildTestExchanger.exchange(new Object(), timing2.forWaiting().seconds(), TimeUnit.SECONDS);
+                                    finalCache.rebuildTestExchanger.exchange(new Object(), timing2.forWaiting().seconds(), TimeUnit.SECONDS);
 
-                        return null;
-                    }
-                }
-            );
+                                    return null;
+                                }
+                            }
+                    );
             cache.start(false);
             future.get();
 
@@ -162,21 +141,18 @@ public class TestNodeCache extends BaseClassForTests
             Assert.assertNotNull(cache.getCurrentData());
             Assert.assertEquals(cache.getCurrentData().getData(), "other".getBytes());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(cache);
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void     testKilledSession() throws Exception
-    {
-        NodeCache           cache = null;
-        Timing              timing = new Timing();
-        CuratorFramework    client = null;
-        try
-        {
+    public void testKilledSession() throws Exception {
+        NodeCache cache = null;
+        Timing timing = new Timing();
+        CuratorFramework client = null;
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
             client.start();
             client.create().creatingParentsIfNeeded().forPath("/test/node", "start".getBytes());
@@ -184,18 +160,16 @@ public class TestNodeCache extends BaseClassForTests
             cache = new NodeCache(client, "/test/node");
             cache.start(true);
 
-            final CountDownLatch         latch = new CountDownLatch(1);
+            final CountDownLatch latch = new CountDownLatch(1);
             cache.getListenable().addListener
-            (
-                new NodeCacheListener()
-                {
-                    @Override
-                    public void nodeChanged() throws Exception
-                    {
-                        latch.countDown();
-                    }
-                }
-            );
+                    (
+                            new NodeCacheListener() {
+                                @Override
+                                public void nodeChanged() throws Exception {
+                                    latch.countDown();
+                                }
+                            }
+                    );
 
             client.getZookeeperClient().getZooKeeper().getTestable().injectSessionExpiration();
             Thread.sleep(timing.multiple(1.5).session());
@@ -205,39 +179,34 @@ public class TestNodeCache extends BaseClassForTests
             client.setData().forPath("/test/node", "new data".getBytes());
             Assert.assertTrue(timing.awaitLatch(latch));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(cache);
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void     testBasics() throws Exception
-    {
-        NodeCache           cache = null;
-        Timing              timing = new Timing();
-        CuratorFramework    client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+    public void testBasics() throws Exception {
+        NodeCache cache = null;
+        Timing timing = new Timing();
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             client.create().forPath("/test");
 
             cache = new NodeCache(client, "/test/node");
             cache.start(true);
 
-            final Semaphore     semaphore = new Semaphore(0);
+            final Semaphore semaphore = new Semaphore(0);
             cache.getListenable().addListener
-            (
-                new NodeCacheListener()
-                {
-                    @Override
-                    public void nodeChanged() throws Exception
-                    {
-                        semaphore.release();
-                    }
-                }
-            );
+                    (
+                            new NodeCacheListener() {
+                                @Override
+                                public void nodeChanged() throws Exception {
+                                    semaphore.release();
+                                }
+                            }
+                    );
 
             Assert.assertNull(cache.getCurrentData());
 
@@ -253,8 +222,7 @@ public class TestNodeCache extends BaseClassForTests
             Assert.assertTrue(timing.acquireSemaphore(semaphore));
             Assert.assertNull(cache.getCurrentData());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(cache);
             TestCleanState.closeAndTestClean(client);
         }

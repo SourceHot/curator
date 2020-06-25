@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,6 +25,7 @@ import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
@@ -36,89 +37,73 @@ import java.util.concurrent.TimeUnit;
  * of this class, call {@link #start()} and then call {@link #close()} when your application
  * is shutting down.
  */
-public class InstanceCleanup implements Closeable
-{
-    private static final Logger         log = LoggerFactory.getLogger(InstanceCleanup.class);
+public class InstanceCleanup implements Closeable {
+    private static final Logger log = LoggerFactory.getLogger(InstanceCleanup.class);
 
-    private final ServiceDiscovery<Object>  discovery;
-    private final int                       instanceRefreshMs;
-    private final ScheduledExecutorService  service = ThreadUtils.newSingleThreadScheduledExecutor("InstanceCleanup");
+    private final ServiceDiscovery<Object> discovery;
+    private final int instanceRefreshMs;
+    private final ScheduledExecutorService service = ThreadUtils.newSingleThreadScheduledExecutor("InstanceCleanup");
 
     /**
      * @param discovery the service being monitored
      * @param instanceRefreshMs time in milliseconds to consider a registration stale
      */
-    public InstanceCleanup(ServiceDiscovery<?> discovery, int instanceRefreshMs)
-    {
+    public InstanceCleanup(ServiceDiscovery<?> discovery, int instanceRefreshMs) {
         //noinspection unchecked
-        this.discovery = (ServiceDiscovery<Object>)discovery;   // this cast is safe - this class never accesses the payload
+        this.discovery = (ServiceDiscovery<Object>) discovery;   // this cast is safe - this class never accesses the payload
         this.instanceRefreshMs = instanceRefreshMs;
     }
 
     /**
      * Start the task
      */
-    public void     start()
-    {
+    public void start() {
         Preconditions.checkArgument(!service.isShutdown(), "already started");
 
         service.scheduleWithFixedDelay
-        (
-            new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    doWork();
-                }
-            },
-            instanceRefreshMs,
-            instanceRefreshMs,
-            TimeUnit.MILLISECONDS
-        );
+                (
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                doWork();
+                            }
+                        },
+                        instanceRefreshMs,
+                        instanceRefreshMs,
+                        TimeUnit.MILLISECONDS
+                );
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         Preconditions.checkArgument(!service.isShutdown(), "not started");
         service.shutdownNow();
     }
 
-    private void doWork()
-    {
-        try
-        {
-            for ( String name : discovery.queryForNames() )
-            {
+    private void doWork() {
+        try {
+            for (String name : discovery.queryForNames()) {
                 checkService(name);
             }
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             log.error("GC for service names", e);
         }
     }
 
-    private void checkService(String name)
-    {
-        try
-        {
-            Collection<ServiceInstance<Object>>     instances = discovery.queryForInstances(name);
-            for ( ServiceInstance<Object> instance : instances )
-            {
-                if ( instance.getServiceType() == ServiceType.STATIC )
-                {
-                    if ( (System.currentTimeMillis() - instance.getRegistrationTimeUTC()) > instanceRefreshMs )
-                    {
+    private void checkService(String name) {
+        try {
+            Collection<ServiceInstance<Object>> instances = discovery.queryForInstances(name);
+            for (ServiceInstance<Object> instance : instances) {
+                if (instance.getServiceType() == ServiceType.STATIC) {
+                    if ((System.currentTimeMillis() - instance.getRegistrationTimeUTC()) > instanceRefreshMs) {
                         discovery.unregisterService(instance);
                     }
                 }
             }
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             log.error(String.format("GC for service: %s", name), e);
         }

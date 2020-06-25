@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,8 +29,7 @@ import org.apache.curator.x.discovery.ServiceInstance;
  * A serializer that uses Jackson to serialize/deserialize as JSON. IMPORTANT: The instance
  * payload must support Jackson
  */
-public class JsonInstanceSerializer<T> implements InstanceSerializer<T>
-{
+public class JsonInstanceSerializer<T> implements InstanceSerializer<T> {
     private final ObjectMapper mapper;
     private final Class<T> payloadClass;
     private final boolean compatibleSerializationMode;
@@ -47,8 +46,7 @@ public class JsonInstanceSerializer<T> implements InstanceSerializer<T>
      *
      * @param payloadClass used to validate payloads when deserializing
      */
-    public JsonInstanceSerializer(Class<T> payloadClass)
-    {
+    public JsonInstanceSerializer(Class<T> payloadClass) {
         this(payloadClass, true, false);
     }
 
@@ -64,14 +62,12 @@ public class JsonInstanceSerializer<T> implements InstanceSerializer<T>
      * @param payloadClass used to validate payloads when deserializing
      * @param compatibleSerializationMode pass true to serialize in a manner that supports clients pre-CURATOR-275
      */
-    public JsonInstanceSerializer(Class<T> payloadClass, boolean compatibleSerializationMode)
-    {
+    public JsonInstanceSerializer(Class<T> payloadClass, boolean compatibleSerializationMode) {
         this(payloadClass, compatibleSerializationMode, false);
     }
 
     @VisibleForTesting
-    JsonInstanceSerializer(Class<T> payloadClass, boolean compatibleSerializationMode, boolean failOnUnknownProperties)
-    {
+    JsonInstanceSerializer(Class<T> payloadClass, boolean compatibleSerializationMode, boolean failOnUnknownProperties) {
         this.payloadClass = payloadClass;
         this.compatibleSerializationMode = compatibleSerializationMode;
         mapper = new ObjectMapper();
@@ -81,18 +77,15 @@ public class JsonInstanceSerializer<T> implements InstanceSerializer<T>
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public ServiceInstance<T> deserialize(byte[] bytes) throws Exception
-    {
+    public ServiceInstance<T> deserialize(byte[] bytes) throws Exception {
         ServiceInstance rawServiceInstance = mapper.readValue(bytes, type);
         payloadClass.cast(rawServiceInstance.getPayload()); // just to verify that it's the correct type
-        return (ServiceInstance<T>)rawServiceInstance;
+        return (ServiceInstance<T>) rawServiceInstance;
     }
 
     @Override
-    public byte[] serialize(ServiceInstance<T> instance) throws Exception
-    {
-        if ( compatibleSerializationMode )
-        {
+    public byte[] serialize(ServiceInstance<T> instance) throws Exception {
+        if (compatibleSerializationMode) {
             OldServiceInstance<T> compatible = new OldServiceInstance<T>(instance.getName(), instance.getId(), instance.getAddress(), instance.getPort(), instance.getSslPort(), instance.getPayload(), instance.getRegistrationTimeUTC(), instance.getServiceType(), instance.getUriSpec());
             return mapper.writeValueAsBytes(compatible);
         }

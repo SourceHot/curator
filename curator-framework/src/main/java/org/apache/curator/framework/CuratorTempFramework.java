@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,6 +20,7 @@ package org.apache.curator.framework;
 
 import org.apache.curator.framework.api.TempGetDataBuilder;
 import org.apache.curator.framework.api.transaction.CuratorTransaction;
+
 import java.io.Closeable;
 
 /**
@@ -34,12 +35,11 @@ import java.io.Closeable;
  *     <a href="http://whilefalse.blogspot.com/2012/12/building-global-highly-available.html">http://whilefalse.blogspot.com/2012/12/building-global-highly-available.html</a>
  * </p>
  */
-public interface CuratorTempFramework extends Closeable
-{
+public interface CuratorTempFramework extends Closeable {
     /**
      * Stop the client
      */
-    public void     close();
+    public void close();
 
     /**
      * Start a transaction builder

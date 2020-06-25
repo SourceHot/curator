@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,54 +30,47 @@ import org.apache.curator.test.Timing;
 import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class TestQueueSharder extends BaseClassForTests
-{
+public class TestQueueSharder extends BaseClassForTests {
     @Test
-    public void     testDistribution() throws Exception
-    {
-        final int               threshold = 100;
-        final int               factor = 10;
+    public void testDistribution() throws Exception {
+        final int threshold = 100;
+        final int factor = 10;
 
-        Timing                  timing = new Timing();
-        CuratorFramework        client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        QueueSharder<String, DistributedQueue<String>>  sharder = null;
-        try
-        {
+        Timing timing = new Timing();
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+        QueueSharder<String, DistributedQueue<String>> sharder = null;
+        try {
             client.start();
 
-            final CountDownLatch        latch = new CountDownLatch(1);
-            QueueConsumer<String>       consumer = new QueueConsumer<String>()
-            {
+            final CountDownLatch latch = new CountDownLatch(1);
+            QueueConsumer<String> consumer = new QueueConsumer<String>() {
                 @Override
-                public void consumeMessage(String message) throws Exception
-                {
+                public void consumeMessage(String message) throws Exception {
                     latch.await();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
-            QueueAllocator<String, DistributedQueue<String>>    distributedQueueAllocator = makeAllocator(consumer);
-            QueueSharderPolicies                                policies = QueueSharderPolicies.builder().newQueueThreshold(threshold).thresholdCheckMs(1).build();
+            QueueAllocator<String, DistributedQueue<String>> distributedQueueAllocator = makeAllocator(consumer);
+            QueueSharderPolicies policies = QueueSharderPolicies.builder().newQueueThreshold(threshold).thresholdCheckMs(1).build();
             sharder = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
             sharder.start();
 
-            for ( int i = 0; i < (factor * threshold); ++i )
-            {
+            for (int i = 0; i < (factor * threshold); ++i) {
                 sharder.getQueue().put(Integer.toString(i));
                 Thread.sleep(5);
             }
             timing.forWaiting().sleepABit();
 
-            SummaryStatistics       statistics = new SummaryStatistics();
-            for ( String path : sharder.getQueuePaths() )
-            {
+            SummaryStatistics statistics = new SummaryStatistics();
+            for (String path : sharder.getQueuePaths()) {
                 int numChildren = client.checkExists().forPath(path).getNumChildren();
                 Assert.assertTrue(numChildren > 0);
                 Assert.assertTrue(numChildren >= (threshold * .1));
@@ -87,8 +80,7 @@ public class TestQueueSharder extends BaseClassForTests
 
             Assert.assertTrue(statistics.getMean() >= (threshold * .9));
         }
-        finally
-        {
+        finally {
             timing.sleepABit(); // let queue clear
             CloseableUtils.closeQuietly(sharder);
             CloseableUtils.closeQuietly(client);
@@ -96,25 +88,22 @@ public class TestQueueSharder extends BaseClassForTests
     }
 
     @Test
-    public void     testSharderWatchSync() throws Exception
-    {
-        Timing                  timing = new Timing();
-        CuratorFramework        client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+    public void testSharderWatchSync() throws Exception {
+        Timing timing = new Timing();
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
 
-        final BlockingQueueConsumer<String>     consumer = makeConsumer(null);
-        QueueAllocator<String, DistributedQueue<String>>    distributedQueueAllocator = makeAllocator(consumer);
-        QueueSharderPolicies        policies = QueueSharderPolicies.builder().newQueueThreshold(2).thresholdCheckMs(1).build();
+        final BlockingQueueConsumer<String> consumer = makeConsumer(null);
+        QueueAllocator<String, DistributedQueue<String>> distributedQueueAllocator = makeAllocator(consumer);
+        QueueSharderPolicies policies = QueueSharderPolicies.builder().newQueueThreshold(2).thresholdCheckMs(1).build();
 
-        QueueSharder<String, DistributedQueue<String>>  sharder1 = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
-        QueueSharder<String, DistributedQueue<String>>  sharder2 = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
-        try
-        {
+        QueueSharder<String, DistributedQueue<String>> sharder1 = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
+        QueueSharder<String, DistributedQueue<String>> sharder2 = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
+        try {
             client.start();
             sharder1.start();
             sharder2.start();
 
-            for ( int i = 0; i < 20; ++i )
-            {
+            for (int i = 0; i < 20; ++i) {
                 sharder1.getQueue().put(Integer.toString(i));
             }
             timing.sleepABit();
@@ -123,8 +112,7 @@ public class TestQueueSharder extends BaseClassForTests
             timing.forWaiting().sleepABit();
             Assert.assertEquals(sharder1.getShardQty(), sharder2.getShardQty());
         }
-        finally
-        {
+        finally {
             timing.sleepABit(); // let queues clear
             CloseableUtils.closeQuietly(sharder1);
             CloseableUtils.closeQuietly(sharder2);
@@ -133,18 +121,16 @@ public class TestQueueSharder extends BaseClassForTests
     }
 
     @Test
-    public void     testSimpleDistributedQueue() throws Exception
-    {
-        Timing                  timing = new Timing();
-        CuratorFramework        client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+    public void testSimpleDistributedQueue() throws Exception {
+        Timing timing = new Timing();
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
 
-        final CountDownLatch                    latch = new CountDownLatch(1);
-        final BlockingQueueConsumer<String>     consumer = makeConsumer(latch);
-        QueueAllocator<String, DistributedQueue<String>>    distributedQueueAllocator = makeAllocator(consumer);
-        QueueSharderPolicies        policies = QueueSharderPolicies.builder().newQueueThreshold(2).thresholdCheckMs(1).build();
-        QueueSharder<String, DistributedQueue<String>>  sharder = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
-        try
-        {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final BlockingQueueConsumer<String> consumer = makeConsumer(latch);
+        QueueAllocator<String, DistributedQueue<String>> distributedQueueAllocator = makeAllocator(consumer);
+        QueueSharderPolicies policies = QueueSharderPolicies.builder().newQueueThreshold(2).thresholdCheckMs(1).build();
+        QueueSharder<String, DistributedQueue<String>> sharder = new QueueSharder<String, DistributedQueue<String>>(client, distributedQueueAllocator, "/queues", "/leader", policies);
+        try {
             client.start();
             sharder.start();
 
@@ -162,9 +148,8 @@ public class TestQueueSharder extends BaseClassForTests
 
             Assert.assertTrue(sharder.getShardQty() > 1);
 
-            Set<String>             consumed = Sets.newHashSet();
-            for ( int i = 0; i < 8; ++i )
-            {
+            Set<String> consumed = Sets.newHashSet();
+            for (int i = 0; i < 8; ++i) {
                 String s = consumer.take(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS);
                 Assert.assertNotNull(s);
                 consumed.add(s);
@@ -172,7 +157,7 @@ public class TestQueueSharder extends BaseClassForTests
 
             Assert.assertEquals(consumed, Sets.newHashSet("one", "two", "three", "four", "five", "six", "seven", "eight"));
 
-            int         shardQty = sharder.getShardQty();
+            int shardQty = sharder.getShardQty();
             sharder.close();
 
             // check re-open
@@ -181,56 +166,43 @@ public class TestQueueSharder extends BaseClassForTests
             sharder.start();
             Assert.assertEquals(sharder.getShardQty(), shardQty);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(sharder);
             CloseableUtils.closeQuietly(client);
         }
     }
 
-    private QueueAllocator<String, DistributedQueue<String>> makeAllocator(final QueueConsumer<String> consumer)
-    {
-        final QueueSerializer<String> serializer = new QueueSerializer<String>()
-        {
+    private QueueAllocator<String, DistributedQueue<String>> makeAllocator(final QueueConsumer<String> consumer) {
+        final QueueSerializer<String> serializer = new QueueSerializer<String>() {
             @Override
-            public byte[] serialize(String item)
-            {
+            public byte[] serialize(String item) {
                 return item.getBytes();
             }
 
             @Override
-            public String deserialize(byte[] bytes)
-            {
+            public String deserialize(byte[] bytes) {
                 return new String(bytes);
             }
         };
-        return new QueueAllocator<String, DistributedQueue<String>>()
-        {
+        return new QueueAllocator<String, DistributedQueue<String>>() {
             @Override
-            public DistributedQueue<String> allocateQueue(CuratorFramework client, String queuePath)
-            {
+            public DistributedQueue<String> allocateQueue(CuratorFramework client, String queuePath) {
                 return QueueBuilder.<String>builder(client, consumer, serializer, queuePath).buildQueue();
             }
         };
     }
 
-    private BlockingQueueConsumer<String> makeConsumer(final CountDownLatch latch)
-    {
-        ConnectionStateListener connectionStateListener = new ConnectionStateListener()
-        {
+    private BlockingQueueConsumer<String> makeConsumer(final CountDownLatch latch) {
+        ConnectionStateListener connectionStateListener = new ConnectionStateListener() {
             @Override
-            public void stateChanged(CuratorFramework client, ConnectionState newState)
-            {
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
             }
         };
 
-        return new BlockingQueueConsumer<String>(connectionStateListener)
-        {
+        return new BlockingQueueConsumer<String>(connectionStateListener) {
             @Override
-            public void consumeMessage(String message) throws Exception
-            {
-                if ( latch != null )
-                {
+            public void consumeMessage(String message) throws Exception {
+                if (latch != null) {
                     latch.await();
                 }
                 super.consumeMessage(message);

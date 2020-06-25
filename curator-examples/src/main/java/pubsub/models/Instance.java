@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,58 +19,50 @@
 package pubsub.models;
 
 import org.apache.curator.x.async.modeled.NodeName;
+
 import java.util.Objects;
 import java.util.UUID;
 
-public class Instance implements NodeName
-{
+public class Instance implements NodeName {
     private final String id;
     private final InstanceType type;
     private final String hostname;
     private final int port;
 
-    public Instance()
-    {
+    public Instance() {
         this(UUID.randomUUID().toString(), InstanceType.proxy, "", 0);
     }
 
-    public Instance(String id, InstanceType type, String hostname, int port)
-    {
+    public Instance(String id, InstanceType type, String hostname, int port) {
         this.id = Objects.requireNonNull(id, "id cannot be null");
         this.type = Objects.requireNonNull(type, "type cannot be null");
         this.hostname = Objects.requireNonNull(hostname, "hostname cannot be null");
         this.port = port;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public InstanceType getType()
-    {
+    public InstanceType getType() {
         return type;
     }
 
-    public String getHostname()
-    {
+    public String getHostname() {
         return hostname;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return port;
     }
 
     @Override
-    public String nodeName()
-    {
+    public String nodeName() {
         return id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Instance{" + "id='" + id + '\'' + ", type=" + type + ", hostname='" + hostname + '\'' + ", port=" + port + '}';
     }
 }

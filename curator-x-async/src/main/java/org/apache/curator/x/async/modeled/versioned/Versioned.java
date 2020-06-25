@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,8 +23,7 @@ package org.apache.curator.x.async.modeled.versioned;
  * {@link org.apache.curator.x.async.modeled.ModeledFramework#versioned()} APIs
  */
 @FunctionalInterface
-public interface Versioned<T>
-{
+public interface Versioned<T> {
     /**
      * Returns the contained model
      *
@@ -37,8 +36,7 @@ public interface Versioned<T>
      *
      * @return version
      */
-    default int version()
-    {
+    default int version() {
         return -1;
     }
 
@@ -49,19 +47,15 @@ public interface Versioned<T>
      * @param version version
      * @return new Versioned wrapper
      */
-    static <T> Versioned<T> from(T model, int version)
-    {
-        return new Versioned<T>()
-        {
+    static <T> Versioned<T> from(T model, int version) {
+        return new Versioned<T>() {
             @Override
-            public int version()
-            {
+            public int version() {
                 return version;
             }
 
             @Override
-            public T model()
-            {
+            public T model() {
                 return model;
             }
         };

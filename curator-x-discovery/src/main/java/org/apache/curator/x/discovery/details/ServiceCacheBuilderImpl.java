@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,21 +20,20 @@ package org.apache.curator.x.discovery.details;
 
 import org.apache.curator.x.discovery.ServiceCache;
 import org.apache.curator.x.discovery.ServiceCacheBuilder;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
 /**
  * Builder for a service cache
  */
-class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T>
-{
+class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T> {
     private ServiceDiscoveryImpl<T> discovery;
     private String name;
     private ThreadFactory threadFactory;
     private ExecutorService executorService;
 
-    ServiceCacheBuilderImpl(ServiceDiscoveryImpl<T> discovery)
-    {
+    ServiceCacheBuilderImpl(ServiceDiscoveryImpl<T> discovery) {
         this.discovery = discovery;
     }
 
@@ -44,14 +43,11 @@ class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T>
      * @return service cache
      */
     @Override
-    public ServiceCache<T> build()
-    {
-        if (threadFactory != null)
-        {
+    public ServiceCache<T> build() {
+        if (threadFactory != null) {
             return new ServiceCacheImpl<T>(discovery, name, threadFactory);
         }
-        else
-        {
+        else {
             return new ServiceCacheImpl<T>(discovery, name, executorService);
         }
     }
@@ -63,8 +59,7 @@ class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T>
      * @return this
      */
     @Override
-    public ServiceCacheBuilder<T> name(String name)
-    {
+    public ServiceCacheBuilder<T> name(String name) {
         this.name = name;
         return this;
     }
@@ -77,8 +72,7 @@ class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T>
      */
     @Override
     @Deprecated
-    public ServiceCacheBuilder<T> threadFactory(ThreadFactory threadFactory)
-    {
+    public ServiceCacheBuilder<T> threadFactory(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
         this.executorService = null;
         return this;
@@ -91,8 +85,7 @@ class ServiceCacheBuilderImpl<T> implements ServiceCacheBuilder<T>
      * @return this
      */
     @Override
-    public ServiceCacheBuilder<T> executorService(ExecutorService executorService)
-    {
+    public ServiceCacheBuilder<T> executorService(ExecutorService executorService) {
         this.executorService = executorService;
         return this;
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,16 +21,16 @@ package org.apache.curator.framework.api;
 import org.apache.curator.utils.InternalACLProvider;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
+
 import java.util.List;
 
-public interface ACLProvider extends InternalACLProvider
-{
+public interface ACLProvider extends InternalACLProvider {
     /**
      * Return the ACL list to use by default (usually {@link ZooDefs.Ids#OPEN_ACL_UNSAFE}).
      *
      * @return default ACL list
      */
-    public List<ACL>        getDefaultAcl();
+    public List<ACL> getDefaultAcl();
 
     /**
      * Return the ACL list to use for the given path
@@ -38,5 +38,5 @@ public interface ACLProvider extends InternalACLProvider
      * @param path path (NOTE: might be null)
      * @return ACL list
      */
-    public List<ACL>        getAclForPath(String path);
+    public List<ACL> getAclForPath(String path);
 }

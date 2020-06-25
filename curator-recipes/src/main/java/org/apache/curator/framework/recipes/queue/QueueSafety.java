@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,15 +18,15 @@
  */
 package org.apache.curator.framework.recipes.queue;
 
-import java.util.concurrent.BlockingQueue;
 import org.apache.curator.utils.PathUtils;
+
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Parameter block for specifying queue safety with either {@link DistributedQueue} or
  * {@link DistributedPriorityQueue}
  */
-public class QueueSafety<T>
-{
+public class QueueSafety<T> {
     private final String lockPath;
     private final QueueConsumer<T> consumer;
     private final BlockingQueue<T> queue;
@@ -35,32 +35,27 @@ public class QueueSafety<T>
      * @param lockPath ZKPath to use for locking purposes
      * @param consumer the message consumer
      */
-    public QueueSafety(String lockPath, QueueConsumer<T> consumer)
-    {
+    public QueueSafety(String lockPath, QueueConsumer<T> consumer) {
         this.lockPath = PathUtils.validatePath(lockPath);
         this.consumer = consumer;
         this.queue = null;
     }
 
-    QueueSafety(String lockPath, BlockingQueue<T> queue)
-    {
+    QueueSafety(String lockPath, BlockingQueue<T> queue) {
         this.lockPath = PathUtils.validatePath(lockPath);
         this.consumer = null;
         this.queue = queue;
     }
 
-    String getLockPath()
-    {
+    String getLockPath() {
         return lockPath;
     }
 
-    QueueConsumer<T> getConsumer()
-    {
+    QueueConsumer<T> getConsumer() {
         return consumer;
     }
 
-    BlockingQueue<T> getQueue()
-    {
+    BlockingQueue<T> getQueue() {
         return queue;
     }
 }

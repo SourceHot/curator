@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,56 +30,45 @@ import org.apache.curator.test.Timing;
 import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
-public class TestEnsembleProvider extends BaseClassForTests
-{
+public class TestEnsembleProvider extends BaseClassForTests {
     private final Timing timing = new Timing();
 
     @Test
-    public void testBasic()
-    {
+    public void testBasic() {
         Semaphore counter = new Semaphore(0);
         final CuratorFramework client = newClient(counter);
-        try
-        {
+        try {
             client.start();
             Assert.assertTrue(timing.acquireSemaphore(counter));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testAfterSessionExpiration() throws Exception
-    {
+    public void testAfterSessionExpiration() throws Exception {
         TestingServer oldServer = server;
         Semaphore counter = new Semaphore(0);
         final CuratorFramework client = newClient(counter);
-        try
-        {
+        try {
             final CountDownLatch connectedLatch = new CountDownLatch(1);
             final CountDownLatch lostLatch = new CountDownLatch(1);
             final CountDownLatch reconnectedLatch = new CountDownLatch(1);
-            ConnectionStateListener listener = new ConnectionStateListener()
-            {
+            ConnectionStateListener listener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
-                    if ( newState == ConnectionState.CONNECTED )
-                    {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                    if (newState == ConnectionState.CONNECTED) {
                         connectedLatch.countDown();
                     }
-                    if ( newState == ConnectionState.LOST )
-                    {
+                    if (newState == ConnectionState.LOST) {
                         lostLatch.countDown();
                     }
-                    if ( newState == ConnectionState.RECONNECTED )
-                    {
+                    if (newState == ConnectionState.RECONNECTED) {
                         reconnectedLatch.countDown();
                     }
                 }
@@ -93,8 +82,7 @@ public class TestEnsembleProvider extends BaseClassForTests
 
             Assert.assertTrue(timing.awaitLatch(lostLatch));
             counter.drainPermits();
-            for ( int i = 0; i < 5; ++i )
-            {
+            for (int i = 0; i < 5; ++i) {
                 // the ensemble provider should still be called periodically when the connection is lost
                 Assert.assertTrue(timing.acquireSemaphore(counter), "Failed when i is: " + i);
             }
@@ -102,60 +90,51 @@ public class TestEnsembleProvider extends BaseClassForTests
             server = new TestingServer();   // this changes the CountingEnsembleProvider's value for getConnectionString() - connection should notice this and recover
             Assert.assertTrue(timing.awaitLatch(reconnectedLatch));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
             CloseableUtils.closeQuietly(oldServer);
         }
     }
 
-    private CuratorFramework newClient(Semaphore counter)
-    {
+    private CuratorFramework newClient(Semaphore counter) {
         return CuratorFrameworkFactory.builder()
-            .ensembleProvider(new CountingEnsembleProvider(counter))
-            .sessionTimeoutMs(timing.session())
-            .connectionTimeoutMs(timing.connection())
-            .retryPolicy(new RetryOneTime(1))
-            .build();
+                .ensembleProvider(new CountingEnsembleProvider(counter))
+                .sessionTimeoutMs(timing.session())
+                .connectionTimeoutMs(timing.connection())
+                .retryPolicy(new RetryOneTime(1))
+                .build();
     }
 
-    private class CountingEnsembleProvider implements EnsembleProvider
-    {
+    private class CountingEnsembleProvider implements EnsembleProvider {
         private final Semaphore getConnectionStringCounter;
 
-        public CountingEnsembleProvider(Semaphore getConnectionStringCounter)
-        {
+        public CountingEnsembleProvider(Semaphore getConnectionStringCounter) {
             this.getConnectionStringCounter = getConnectionStringCounter;
         }
 
         @Override
-        public void start()
-        {
+        public void start() {
             // NOP
         }
 
         @Override
-        public String getConnectionString()
-        {
+        public String getConnectionString() {
             getConnectionStringCounter.release();
             return server.getConnectString();
         }
 
         @Override
-        public void close()
-        {
+        public void close() {
             // NOP
         }
 
         @Override
-        public void setConnectionString(String connectionString)
-        {
+        public void setConnectionString(String connectionString) {
             // NOP
         }
 
         @Override
-        public boolean updateServerListEnabled()
-        {
+        public boolean updateServerListEnabled() {
             return false;
         }
     }

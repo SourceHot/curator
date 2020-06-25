@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -58,8 +58,7 @@ import org.apache.curator.x.async.modeled.ZPath;
  * </p>
  */
 @FunctionalInterface
-public interface TypedZPath<T>
-{
+public interface TypedZPath<T> {
     /**
      * Resolve into a ZPath using the given parameter
      *
@@ -74,8 +73,7 @@ public interface TypedZPath<T>
      * @param pathWithIds path to pass to {@link org.apache.curator.x.async.modeled.ZPath#parseWithIds}
      * @return TypedZPath
      */
-    static <T> TypedZPath<T> from(String pathWithIds)
-    {
+    static <T> TypedZPath<T> from(String pathWithIds) {
         return from(ZPath.parseWithIds(pathWithIds));
     }
 
@@ -85,8 +83,7 @@ public interface TypedZPath<T>
      * @param path path to use
      * @return TypedZPath
      */
-    static <T> TypedZPath<T> from(ZPath path)
-    {
+    static <T> TypedZPath<T> from(ZPath path) {
         return path::resolved;
     }
 }

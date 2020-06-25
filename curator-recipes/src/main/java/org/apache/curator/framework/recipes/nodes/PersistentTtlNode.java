@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,6 +25,7 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Objects;
@@ -54,8 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *     the keep-alive is done in a way that does not generate watch triggers on the parent node.
  * </p>
  */
-public class PersistentTtlNode implements Closeable
-{
+public class PersistentTtlNode implements Closeable {
     public static final String DEFAULT_CHILD_NODE_NAME = "touch";
     public static final int DEFAULT_TOUCH_SCHEDULE_FACTOR = 2;
 
@@ -74,8 +74,7 @@ public class PersistentTtlNode implements Closeable
      * @param ttlMs max ttl for the node in milliseconds
      * @param initData data for the node
      */
-    public PersistentTtlNode(CuratorFramework client, String path, long ttlMs, byte[] initData)
-    {
+    public PersistentTtlNode(CuratorFramework client, String path, long ttlMs, byte[] initData) {
         this(client, Executors.newSingleThreadScheduledExecutor(ThreadUtils.newThreadFactory("PersistentTtlNode")), path, ttlMs, initData, DEFAULT_CHILD_NODE_NAME, DEFAULT_TOUCH_SCHEDULE_FACTOR);
     }
 
@@ -89,16 +88,13 @@ public class PersistentTtlNode implements Closeable
      * @param touchScheduleFactor how ofter to set/create the child node as a factor of the ttlMs. i.e.
      *                            the child is touched every <code>(ttlMs / touchScheduleFactor)</code>
      */
-    public PersistentTtlNode(CuratorFramework client, ScheduledExecutorService executorService, String path, long ttlMs, byte[] initData, String childNodeName, int touchScheduleFactor)
-    {
+    public PersistentTtlNode(CuratorFramework client, ScheduledExecutorService executorService, String path, long ttlMs, byte[] initData, String childNodeName, int touchScheduleFactor) {
         this.client = Objects.requireNonNull(client, "client cannot be null");
         this.ttlMs = ttlMs;
         this.touchScheduleFactor = touchScheduleFactor;
-        node = new PersistentNode(client, CreateMode.CONTAINER, false, path, initData)
-        {
+        node = new PersistentNode(client, CreateMode.CONTAINER, false, path, initData) {
             @Override
-            protected void deleteNode()
-            {
+            protected void deleteNode() {
                 // NOP
             }
         };
@@ -109,34 +105,25 @@ public class PersistentTtlNode implements Closeable
     /**
      * You must call start() to initiate the persistent ttl node
      */
-    public void start()
-    {
+    public void start() {
         node.start();
 
-        Runnable touchTask = new Runnable()
-        {
+        Runnable touchTask = new Runnable() {
             @Override
-            public void run()
-            {
-                try
-                {
-                    try
-                    {
+            public void run() {
+                try {
+                    try {
                         client.setData().forPath(childPath);
                     }
-                    catch ( KeeperException.NoNodeException e )
-                    {
+                    catch (KeeperException.NoNodeException e) {
                         client.create().orSetData().withTtl(ttlMs).withMode(CreateMode.PERSISTENT_WITH_TTL).forPath(childPath);
                     }
                 }
-                catch ( KeeperException.NoNodeException ignore )
-                {
+                catch (KeeperException.NoNodeException ignore) {
                     // ignore
                 }
-                catch ( Exception e )
-                {
-                    if ( !ThreadUtils.checkInterrupted(e) )
-                    {
+                catch (Exception e) {
+                    if (!ThreadUtils.checkInterrupted(e)) {
                         log.debug("Could not touch child node", e);
                     }
                 }
@@ -155,8 +142,7 @@ public class PersistentTtlNode implements Closeable
      * @return if the node was created before timeout
      * @throws InterruptedException if the thread is interrupted
      */
-    public boolean waitForInitialCreate(long timeout, TimeUnit unit) throws InterruptedException
-    {
+    public boolean waitForInitialCreate(long timeout, TimeUnit unit) throws InterruptedException {
         return node.waitForInitialCreate(timeout, unit);
     }
 
@@ -169,8 +155,7 @@ public class PersistentTtlNode implements Closeable
      * @param data new data value
      * @throws Exception errors
      */
-    public void setData(byte[] data) throws Exception
-    {
+    public void setData(byte[] data) throws Exception {
         node.setData(data);
     }
 
@@ -179,8 +164,7 @@ public class PersistentTtlNode implements Closeable
      *
      * @return our data
      */
-    public byte[] getData()
-    {
+    public byte[] getData() {
         return node.getData();
     }
 
@@ -190,19 +174,15 @@ public class PersistentTtlNode implements Closeable
      * based on the ttl.
      */
     @Override
-    public void close()
-    {
+    public void close() {
         Future<?> future = futureRef.getAndSet(null);
-        if ( future != null )
-        {
+        if (future != null) {
             future.cancel(true);
         }
-        try
-        {
+        try {
             node.close();
         }
-        catch ( IOException e )
-        {
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

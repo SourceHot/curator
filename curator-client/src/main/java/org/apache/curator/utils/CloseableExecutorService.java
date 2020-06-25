@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.Set;
@@ -35,69 +36,58 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Decoration on an ExecutorService that tracks created futures and provides
  * a method to close futures created via this class
  */
-public class CloseableExecutorService implements Closeable
-{
+public class CloseableExecutorService implements Closeable {
     private final Logger log = LoggerFactory.getLogger(CloseableExecutorService.class);
     private final Set<Future<?>> futures = Sets.newSetFromMap(Maps.<Future<?>, Boolean>newConcurrentMap());
     private final ExecutorService executorService;
     private final boolean shutdownOnClose;
     protected final AtomicBoolean isOpen = new AtomicBoolean(true);
 
-    protected class InternalScheduledFutureTask implements Future<Void>
-    {
+    protected class InternalScheduledFutureTask implements Future<Void> {
         private final ScheduledFuture<?> scheduledFuture;
 
-        public InternalScheduledFutureTask(ScheduledFuture<?> scheduledFuture)
-        {
+        public InternalScheduledFutureTask(ScheduledFuture<?> scheduledFuture) {
             this.scheduledFuture = scheduledFuture;
             futures.add(scheduledFuture);
         }
 
         @Override
-        public boolean cancel(boolean mayInterruptIfRunning)
-        {
+        public boolean cancel(boolean mayInterruptIfRunning) {
             futures.remove(scheduledFuture);
             return scheduledFuture.cancel(mayInterruptIfRunning);
         }
 
         @Override
-        public boolean isCancelled()
-        {
+        public boolean isCancelled() {
             return scheduledFuture.isCancelled();
         }
 
         @Override
-        public boolean isDone()
-        {
+        public boolean isDone() {
             return scheduledFuture.isDone();
         }
 
         @Override
-        public Void get() throws InterruptedException, ExecutionException
-        {
+        public Void get() throws InterruptedException, ExecutionException {
             return null;
         }
 
         @Override
-        public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
-        {
+        public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return null;
         }
     }
 
-    protected class InternalFutureTask<T> extends FutureTask<T>
-    {
+    protected class InternalFutureTask<T> extends FutureTask<T> {
         private final RunnableFuture<T> task;
 
-        InternalFutureTask(RunnableFuture<T> task)
-        {
+        InternalFutureTask(RunnableFuture<T> task) {
             super(task, null);
             this.task = task;
             futures.add(task);
         }
 
-        protected void done()
-        {
+        protected void done() {
             futures.remove(task);
         }
     }
@@ -105,17 +95,15 @@ public class CloseableExecutorService implements Closeable
     /**
      * @param executorService the service to decorate
      */
-    public CloseableExecutorService(ExecutorService executorService)
-    {
-       this(executorService, false);
+    public CloseableExecutorService(ExecutorService executorService) {
+        this(executorService, false);
     }
 
     /**
      * @param executorService the service to decorate
      * @param shutdownOnClose if true, shutdown the executor service when this is closed
      */
-    public CloseableExecutorService(ExecutorService executorService, boolean shutdownOnClose)
-    {
+    public CloseableExecutorService(ExecutorService executorService, boolean shutdownOnClose) {
         this.executorService = Preconditions.checkNotNull(executorService, "executorService cannot be null");
         this.shutdownOnClose = shutdownOnClose;
     }
@@ -125,14 +113,12 @@ public class CloseableExecutorService implements Closeable
      *
      * @return <tt>true</tt> if this executor has been shut down
      */
-    public boolean isShutdown()
-    {
+    public boolean isShutdown() {
         return !isOpen.get();
     }
 
     @VisibleForTesting
-    int size()
-    {
+    int size() {
         return futures.size();
     }
 
@@ -140,16 +126,13 @@ public class CloseableExecutorService implements Closeable
      * Closes any tasks currently in progress
      */
     @Override
-    public void close()
-    {
+    public void close() {
         isOpen.set(false);
         Iterator<Future<?>> iterator = futures.iterator();
-        while ( iterator.hasNext() )
-        {
+        while (iterator.hasNext()) {
             Future<?> future = iterator.next();
             iterator.remove();
-            if ( !future.isDone() && !future.isCancelled() && !future.cancel(true) )
-            {
+            if (!future.isDone() && !future.isCancelled() && !future.cancel(true)) {
                 log.warn("Could not cancel " + future);
             }
         }
@@ -166,8 +149,7 @@ public class CloseableExecutorService implements Closeable
      * @param task the task to submit
      * @return a future to watch the task
      */
-    public<V> Future<V> submit(Callable<V> task)
-    {
+    public <V> Future<V> submit(Callable<V> task) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");
 
         InternalFutureTask<V> futureTask = new InternalFutureTask<V>(new FutureTask<V>(task));
@@ -183,8 +165,7 @@ public class CloseableExecutorService implements Closeable
      * @param task the task to submit
      * @return a future to watch the task
      */
-    public Future<?> submit(Runnable task)
-    {
+    public Future<?> submit(Runnable task) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");
 
         InternalFutureTask<Void> futureTask = new InternalFutureTask<Void>(new FutureTask<Void>(task, null));

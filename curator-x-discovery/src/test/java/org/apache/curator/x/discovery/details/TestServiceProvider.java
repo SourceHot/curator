@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,10 +18,7 @@
  */
 package org.apache.curator.x.discovery.details;
 
-import java.io.Closeable;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
@@ -35,18 +32,17 @@ import org.apache.curator.x.discovery.ServiceProvider;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.Lists;
+import java.io.Closeable;
+import java.util.Collections;
+import java.util.List;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestServiceProvider extends BaseClassForTests
-{
+public class TestServiceProvider extends BaseClassForTests {
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -66,22 +62,18 @@ public class TestServiceProvider extends BaseClassForTests
             list.add(instance);
             Assert.assertEquals(provider.getAllInstances(), list);
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }
     }
 
     @Test
-    public void testDisabledInstance() throws Exception
-    {
+    public void testDisabledInstance() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -99,11 +91,9 @@ public class TestServiceProvider extends BaseClassForTests
             Assert.assertEquals(provider.getInstance(), null);
             Assert.assertTrue(provider.getAllInstances().isEmpty(), "Disabled instance still appears available via service provider");
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,30 +29,26 @@ import org.apache.zookeeper.data.Stat;
 import static org.apache.curator.x.async.details.BackgroundProcs.dataProc;
 import static org.apache.curator.x.async.details.BackgroundProcs.safeCall;
 
-class AsyncGetConfigBuilderImpl implements AsyncGetConfigBuilder
-{
+class AsyncGetConfigBuilderImpl implements AsyncGetConfigBuilder {
     private final CuratorFrameworkImpl client;
     private final Filters filters;
     private final WatchMode watchMode;
     private Stat stat = null;
 
-    AsyncGetConfigBuilderImpl(CuratorFrameworkImpl client, Filters filters, WatchMode watchMode)
-    {
+    AsyncGetConfigBuilderImpl(CuratorFrameworkImpl client, Filters filters, WatchMode watchMode) {
         this.client = client;
         this.filters = filters;
         this.watchMode = watchMode;
     }
 
     @Override
-    public AsyncEnsemblable<AsyncStage<byte[]>> storingStatIn(Stat stat)
-    {
+    public AsyncEnsemblable<AsyncStage<byte[]>> storingStatIn(Stat stat) {
         this.stat = stat;
         return this;
     }
 
     @Override
-    public AsyncStage<byte[]> forEnsemble()
-    {
+    public AsyncStage<byte[]> forEnsemble() {
         BuilderCommon<byte[]> common = new BuilderCommon<>(filters, watchMode, dataProc);
         GetConfigBuilderImpl builder = new GetConfigBuilderImpl(client, common.backgrounding, common.watcher, stat);
         return safeCall(common.internalCallback, builder::forEnsemble);

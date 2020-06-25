@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,8 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * NOTE: depending on its implementation, {@link #release()} may throw an exception if the current thread does not own the lock
  */
-public interface InterProcessLock
-{
+public interface InterProcessLock {
     /**
      * Acquire the mutex - blocking until it's available. Each call to acquire must be balanced by a call
      * to {@link #release()}

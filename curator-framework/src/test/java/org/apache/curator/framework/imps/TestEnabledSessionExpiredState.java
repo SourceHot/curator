@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -34,12 +34,12 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class TestEnabledSessionExpiredState extends BaseClassForTests
-{
+public class TestEnabledSessionExpiredState extends BaseClassForTests {
     private final Timing2 timing = new Timing2();
 
     private CuratorFramework client;
@@ -47,24 +47,21 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         super.setup();
 
         client = CuratorFrameworkFactory.builder()
-            .connectString(server.getConnectString())
-            .connectionTimeoutMs(timing.connection())
-            .sessionTimeoutMs(timing.session())
-            .retryPolicy(new RetryOneTime(1))
-            .build();
+                .connectString(server.getConnectString())
+                .connectionTimeoutMs(timing.connection())
+                .sessionTimeoutMs(timing.session())
+                .retryPolicy(new RetryOneTime(1))
+                .build();
         client.start();
 
         states = Queues.newLinkedBlockingQueue();
-        ConnectionStateListener listener = new ConnectionStateListener()
-        {
+        ConnectionStateListener listener = new ConnectionStateListener() {
             @Override
-            public void stateChanged(CuratorFramework client, ConnectionState newState)
-            {
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 states.add(newState);
             }
         };
@@ -73,21 +70,17 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
-        try
-        {
+    public void teardown() throws Exception {
+        try {
             CloseableUtils.closeQuietly(client);
         }
-        finally
-        {
+        finally {
             super.teardown();
         }
     }
 
     @Test
-    public void testResetCausesLost() throws Exception
-    {
+    public void testResetCausesLost() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
         client.checkExists().forPath("/");  // establish initial connection
 
@@ -97,20 +90,15 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
     }
 
     @Test
-    public void testInjectedWatchedEvent() throws Exception
-    {
+    public void testInjectedWatchedEvent() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Watcher watcher = new Watcher()
-        {
+        Watcher watcher = new Watcher() {
             @Override
-            public void process(WatchedEvent event)
-            {
-                if ( event.getType() == Event.EventType.None )
-                {
-                    if ( event.getState() == Event.KeeperState.Expired )
-                    {
+            public void process(WatchedEvent event) {
+                if (event.getType() == Event.EventType.None) {
+                    if (event.getState() == Event.KeeperState.Expired) {
                         latch.countDown();
                     }
                 }
@@ -122,8 +110,7 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
     }
 
     @Test
-    public void testKillSession() throws Exception
-    {
+    public void testKillSession() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
 
         client.getZookeeperClient().getZooKeeper().getTestable().injectSessionExpiration();
@@ -133,16 +120,13 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
     }
 
     @Test
-    public void testReconnectWithoutExpiration() throws Exception
-    {
+    public void testReconnectWithoutExpiration() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
         server.stop();
-        try
-        {
+        try {
             client.checkExists().forPath("/");  // any API call that will invoke the retry policy, etc.
         }
-        catch ( KeeperException.ConnectionLossException ignore )
-        {
+        catch (KeeperException.ConnectionLossException ignore) {
         }
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.SUSPENDED);
         server.restart();
@@ -151,8 +135,7 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
     }
 
     @Test
-    public void testSessionExpirationFromTimeout() throws Exception
-    {
+    public void testSessionExpirationFromTimeout() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
         server.stop();
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.SUSPENDED);
@@ -160,8 +143,7 @@ public class TestEnabledSessionExpiredState extends BaseClassForTests
     }
 
     @Test
-    public void testSessionExpirationFromTimeoutWithRestart() throws Exception
-    {
+    public void testSessionExpirationFromTimeoutWithRestart() throws Exception {
         Assert.assertEquals(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED);
         server.stop();
         timing.forSessionSleep().sleep();

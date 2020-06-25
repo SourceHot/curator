@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,36 +23,31 @@ import com.google.common.collect.Lists;
 import org.apache.curator.framework.api.transaction.OperationType;
 import org.apache.curator.framework.api.transaction.TypeAndPath;
 import org.apache.zookeeper.Op;
+
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class CuratorMultiTransactionRecord implements Iterable<Op>
-{
+class CuratorMultiTransactionRecord implements Iterable<Op> {
     private final List<TypeAndPath> metadata = Lists.newArrayList();
     private final List<Op> ops = new ArrayList<>();
 
-    void add(Op op, OperationType type, String forPath)
-    {
+    void add(Op op, OperationType type, String forPath) {
         ops.add(op);
         metadata.add(new TypeAndPath(type, forPath));
     }
 
-    TypeAndPath getMetadata(int index)
-    {
+    TypeAndPath getMetadata(int index) {
         return metadata.get(index);
     }
 
-    int metadataSize()
-    {
+    int metadataSize() {
         return metadata.size();
     }
 
-    void addToDigest(MessageDigest digest)
-    {
-        for ( Op op : ops )
-        {
+    void addToDigest(MessageDigest digest) {
+        for (Op op : ops) {
             digest.update(op.getPath().getBytes());
             digest.update(Integer.toString(op.getType()).getBytes());
             digest.update(op.toRequestRecord().toString().getBytes());
@@ -60,13 +55,11 @@ class CuratorMultiTransactionRecord implements Iterable<Op>
     }
 
     @Override
-    public Iterator<Op> iterator()
-    {
+    public Iterator<Op> iterator() {
         return ops.iterator();
     }
 
-    int size()
-    {
+    int size() {
         return ops.size();
     }
 }

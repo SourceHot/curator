@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,23 +23,18 @@ import org.apache.curator.test.compatibility.CuratorTestBase;
 import org.apache.curator.x.async.AsyncCuratorFramework;
 import org.testng.annotations.Test;
 
-public class TestCompatibility extends CuratorTestBase
-{
+public class TestCompatibility extends CuratorTestBase {
     @Test(expectedExceptions = IllegalStateException.class)
-    public void testPersistentWatchesNotAvailable() throws Exception
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testPersistentWatchesNotAvailable() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
             client.watchers().add().forPath("/foo");
         }
     }
 
     @Test(expectedExceptions = IllegalStateException.class)
-    public void testPersistentWatchesNotAvailableAsync()
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testPersistentWatchesNotAvailableAsync() {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
             AsyncCuratorFramework async = AsyncCuratorFramework.wrap(client);

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,6 +30,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.utils.ThreadUtils;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
+
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,8 +41,7 @@ import static org.apache.curator.framework.recipes.cache.CuratorCacheAccessor.pa
  * Group membership management. Adds this instance into a group and
  * keeps a cache of members in the group
  */
-public class GroupMember implements Closeable
-{
+public class GroupMember implements Closeable {
     private final PersistentNode pen;
     private final CuratorCacheBridge cache;
     private final String membershipPath;
@@ -52,8 +52,7 @@ public class GroupMember implements Closeable
      * @param membershipPath the path to use for membership
      * @param thisId ID of this group member. MUST be unique for the group
      */
-    public GroupMember(CuratorFramework client, String membershipPath, String thisId)
-    {
+    public GroupMember(CuratorFramework client, String membershipPath, String thisId) {
         this(client, membershipPath, thisId, CuratorFrameworkFactory.getLocalAddress());
     }
 
@@ -63,8 +62,7 @@ public class GroupMember implements Closeable
      * @param thisId ID of this group member. MUST be unique for the group
      * @param payload the payload to write in our member node
      */
-    public GroupMember(CuratorFramework client, String membershipPath, String thisId, byte[] payload)
-    {
+    public GroupMember(CuratorFramework client, String membershipPath, String thisId, byte[] payload) {
         this.membershipPath = membershipPath;
         this.thisId = Preconditions.checkNotNull(thisId, "thisId cannot be null");
 
@@ -76,15 +74,12 @@ public class GroupMember implements Closeable
      * Start the group membership. Register thisId as a member and begin
      * caching all members
      */
-    public void start()
-    {
+    public void start() {
         pen.start();
-        try
-        {
+        try {
             cache.start();
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             Throwables.propagate(e);
         }
@@ -95,14 +90,11 @@ public class GroupMember implements Closeable
      *
      * @param data new data (cannot be null)
      */
-    public void setThisData(byte[] data)
-    {
-        try
-        {
+    public void setThisData(byte[] data) {
+        try {
             pen.setData(data);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             Throwables.propagate(e);
         }
@@ -112,8 +104,7 @@ public class GroupMember implements Closeable
      * Have thisId leave the group and stop caching membership
      */
     @Override
-    public void close()
-    {
+    public void close() {
         CloseableUtils.closeQuietly(cache);
         CloseableUtils.closeQuietly(pen);
     }
@@ -124,21 +115,18 @@ public class GroupMember implements Closeable
      *
      * @return membership
      */
-    public Map<String, byte[]> getCurrentMembers()
-    {
+    public Map<String, byte[]> getCurrentMembers() {
         ImmutableMap.Builder<String, byte[]> builder = ImmutableMap.builder();
         boolean thisIdAdded = false;
 
         Iterator<ChildData> iterator = cache.stream().filter(parentPathFilter(membershipPath)).iterator();
-        while ( iterator.hasNext() )
-        {
+        while (iterator.hasNext()) {
             ChildData data = iterator.next();
             String id = idFromPath(data.getPath());
             thisIdAdded = thisIdAdded || id.equals(thisId);
             builder.put(id, data.getData());
         }
-        if ( !thisIdAdded )
-        {
+        if (!thisIdAdded) {
             builder.put(thisId, pen.getData());   // this instance is always a member
         }
         return builder.build();
@@ -150,8 +138,7 @@ public class GroupMember implements Closeable
      * @param path full ZNode path
      * @return id
      */
-    public String idFromPath(String path)
-    {
+    public String idFromPath(String path) {
         return ZKPaths.getNodeFromPath(path);
     }
 }

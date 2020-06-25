@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,18 +18,17 @@
  */
 package org.apache.curator.framework.api;
 
-import java.util.UUID;
-
 import org.apache.curator.framework.imps.ProtectedUtils;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.UUID;
+
 public interface CreateBuilderMain extends
-    BackgroundPathAndBytesable<String>,
-    CreateModable<ACLBackgroundPathAndBytesable<String>>,
-    ACLCreateModeBackgroundPathAndBytesable<String>,
-    Compressible<CreateBackgroundModeStatACLable>,
-    Statable<CreateProtectACLCreateModePathAndBytesable<String>>
-{
+        BackgroundPathAndBytesable<String>,
+        CreateModable<ACLBackgroundPathAndBytesable<String>>,
+        ACLCreateModeBackgroundPathAndBytesable<String>,
+        Compressible<CreateBackgroundModeStatACLable>,
+        Statable<CreateProtectACLCreateModePathAndBytesable<String>> {
 
     /**
      * Causes any parent nodes to get created if they haven't already been
@@ -56,7 +55,7 @@ public interface CreateBuilderMain extends
      * @return this
      */
     @Deprecated
-    public ACLPathAndBytesable<String>              withProtectedEphemeralSequential();
+    public ACLPathAndBytesable<String> withProtectedEphemeralSequential();
 
     /**
      * <p>
@@ -91,5 +90,5 @@ public interface CreateBuilderMain extends
      *
      * @return this
      */
-    public ACLCreateModeStatBackgroundPathAndBytesable<String>    withProtection();
+    public ACLCreateModeStatBackgroundPathAndBytesable<String> withProtection();
 }

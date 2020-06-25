@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,51 +18,42 @@
  */
 package modeled;
 
-public class ContainerType
-{
+public class ContainerType {
     private final int typeId;
 
-    public ContainerType()
-    {
+    public ContainerType() {
         this(0);
     }
 
-    public ContainerType(int typeId)
-    {
+    public ContainerType(int typeId) {
         this.typeId = typeId;
     }
 
-    public int getTypeId()
-    {
+    public int getTypeId() {
         return typeId;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
-        ContainerType that = (ContainerType)o;
+        ContainerType that = (ContainerType) o;
 
         return typeId == that.typeId;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return typeId;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ContainerType{" + "typeId=" + typeId + '}';
     }
 }

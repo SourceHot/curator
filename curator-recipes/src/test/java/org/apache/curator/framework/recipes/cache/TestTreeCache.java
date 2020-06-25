@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,15 +28,14 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestTreeCache extends BaseTestTreeCache
-{
+public class TestTreeCache extends BaseTestTreeCache {
     @Test
-    public void testSelector() throws Exception
-    {
+    public void testSelector() throws Exception {
         client.create().forPath("/root");
         client.create().forPath("/root/n1-a");
         client.create().forPath("/root/n1-b");
@@ -46,17 +45,14 @@ public class TestTreeCache extends BaseTestTreeCache
         client.create().forPath("/root/n1-c");
         client.create().forPath("/root/n1-d");
 
-        TreeCacheSelector selector = new TreeCacheSelector()
-        {
+        TreeCacheSelector selector = new TreeCacheSelector() {
             @Override
-            public boolean traverseChildren(String fullPath)
-            {
+            public boolean traverseChildren(String fullPath) {
                 return !fullPath.equals("/root/n1-b/n2-b");
             }
 
             @Override
-            public boolean acceptChild(String fullPath)
-            {
+            public boolean acceptChild(String fullPath) {
                 return !fullPath.equals("/root/n1-c");
             }
         };
@@ -74,8 +70,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testStartup() throws Exception
-    {
+    public void testStartup() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/1", "one".getBytes());
         client.create().forPath("/test/2", "two".getBytes());
@@ -99,8 +94,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testCreateParents() throws Exception
-    {
+    public void testCreateParents() throws Exception {
         cache = newTreeCacheWithListeners(client, "/one/two/three");
         cache.start();
         assertEvent(TreeCacheEvent.Type.INITIALIZED);
@@ -117,8 +111,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testStartEmpty() throws Exception
-    {
+    public void testStartEmpty() throws Exception {
         cache = newTreeCacheWithListeners(client, "/test");
         cache.start();
         assertEvent(TreeCacheEvent.Type.INITIALIZED);
@@ -129,8 +122,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testStartEmptyDeeper() throws Exception
-    {
+    public void testStartEmptyDeeper() throws Exception {
         cache = newTreeCacheWithListeners(client, "/test/foo/bar");
         cache.start();
         assertEvent(TreeCacheEvent.Type.INITIALIZED);
@@ -143,8 +135,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testDepth0() throws Exception
-    {
+    public void testDepth0() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/1", "one".getBytes());
         client.create().forPath("/test/2", "two".getBytes());
@@ -164,8 +155,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testDepth1() throws Exception
-    {
+    public void testDepth1() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/1", "one".getBytes());
         client.create().forPath("/test/2", "two".getBytes());
@@ -190,8 +180,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testDepth1Deeper() throws Exception
-    {
+    public void testDepth1Deeper() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/foo");
         client.create().forPath("/test/foo/bar");
@@ -211,8 +200,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testAsyncInitialPopulation() throws Exception
-    {
+    public void testAsyncInitialPopulation() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/one", "hey there".getBytes());
 
@@ -225,8 +213,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testFromRoot() throws Exception
-    {
+    public void testFromRoot() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/one", "hey there".getBytes());
 
@@ -245,8 +232,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testFromRootWithDepth() throws Exception
-    {
+    public void testFromRootWithDepth() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/one", "hey there".getBytes());
 
@@ -264,8 +250,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testWithNamespace() throws Exception
-    {
+    public void testWithNamespace() throws Exception {
         client.create().forPath("/outer");
         client.create().forPath("/outer/foo");
         client.create().forPath("/outer/test");
@@ -284,8 +269,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testWithNamespaceAtRoot() throws Exception
-    {
+    public void testWithNamespaceAtRoot() throws Exception {
         client.create().forPath("/outer");
         client.create().forPath("/outer/foo");
         client.create().forPath("/outer/test");
@@ -307,8 +291,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testSyncInitialPopulation() throws Exception
-    {
+    public void testSyncInitialPopulation() throws Exception {
         cache = newTreeCacheWithListeners(client, "/test");
         cache.start();
         assertEvent(TreeCacheEvent.Type.INITIALIZED);
@@ -321,8 +304,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testChildrenInitialized() throws Exception
-    {
+    public void testChildrenInitialized() throws Exception {
         client.create().forPath("/test", "".getBytes());
         client.create().forPath("/test/1", "1".getBytes());
         client.create().forPath("/test/2", "2".getBytes());
@@ -339,8 +321,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testUpdateWhenNotCachingData() throws Exception
-    {
+    public void testUpdateWhenNotCachingData() throws Exception {
         client.create().forPath("/test");
 
         cache = buildWithListeners(TreeCache.newBuilder(client, "/test").setCacheData(false));
@@ -361,8 +342,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testDeleteThenCreate() throws Exception
-    {
+    public void testDeleteThenCreate() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/foo", "one".getBytes());
 
@@ -386,8 +366,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testDeleteThenCreateRoot() throws Exception
-    {
+    public void testDeleteThenCreateRoot() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/foo", "one".getBytes());
 
@@ -410,8 +389,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testKilledSession() throws Exception
-    {
+    public void testKilledSession() throws Exception {
         client.create().forPath("/test");
 
         cache = newTreeCacheWithListeners(client, "/test");
@@ -432,8 +410,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testBasics() throws Exception
-    {
+    public void testBasics() throws Exception {
         client.create().forPath("/test");
 
         cache = newTreeCacheWithListeners(client, "/test");
@@ -465,8 +442,7 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testBasicsWithNoZkWatches() throws Exception
-    {
+    public void testBasicsWithNoZkWatches() throws Exception {
         client.create().forPath("/test");
         client.create().forPath("/test/one", "hey there".getBytes());
 
@@ -489,24 +465,20 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testBasicsOnTwoCaches() throws Exception
-    {
+    public void testBasicsOnTwoCaches() throws Exception {
         TreeCache cache2 = newTreeCacheWithListeners(client, "/test");
         cache2.getListenable().removeListener(eventListener);  // Don't listen on the second cache.
 
         // Just ensures the same event count; enables test flow control on cache2.
         final Semaphore semaphore = new Semaphore(0);
-        cache2.getListenable().addListener(new TreeCacheListener()
-        {
+        cache2.getListenable().addListener(new TreeCacheListener() {
             @Override
-            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception
-            {
+            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
                 semaphore.release();
             }
         });
 
-        try
-        {
+        try {
             client.create().forPath("/test");
 
             cache = newTreeCacheWithListeners(client, "/test");
@@ -538,15 +510,13 @@ public class TestTreeCache extends BaseTestTreeCache
             assertNoMoreEvents();
             Assert.assertEquals(semaphore.availablePermits(), 0);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(cache2);
         }
     }
 
     @Test
-    public void testDeleteNodeAfterCloseDoesntCallExecutor() throws Exception
-    {
+    public void testDeleteNodeAfterCloseDoesntCallExecutor() throws Exception {
         client.create().forPath("/test");
 
         cache = newTreeCacheWithListeners(client, "/test");
@@ -569,8 +539,7 @@ public class TestTreeCache extends BaseTestTreeCache
      * Make sure TreeCache gets to a sane state when we can't initially connect to server.
      */
     @Test
-    public void testServerNotStartedYet() throws Exception
-    {
+    public void testServerNotStartedYet() throws Exception {
         // Stop the existing server.
         server.stop();
 
@@ -594,20 +563,16 @@ public class TestTreeCache extends BaseTestTreeCache
     }
 
     @Test
-    public void testErrorListener() throws Exception
-    {
+    public void testErrorListener() throws Exception {
         client.create().forPath("/test");
 
         cache = buildWithListeners(TreeCache.newBuilder(client, "/test"));
 
         // Register a listener that throws an exception for the event
-        cache.getListenable().addListener(new TreeCacheListener()
-        {
+        cache.getListenable().addListener(new TreeCacheListener() {
             @Override
-            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception
-            {
-                if ( event.getType() == Type.NODE_UPDATED )
-                {
+            public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+                if (event.getType() == Type.NODE_UPDATED) {
                     throw new RuntimeException("Test Exception");
                 }
             }
@@ -615,11 +580,9 @@ public class TestTreeCache extends BaseTestTreeCache
 
         cache.getUnhandledErrorListenable().removeListener(errorListener);
         final AtomicBoolean isProcessed = new AtomicBoolean(false);
-        cache.getUnhandledErrorListenable().addListener(new UnhandledErrorListener()
-        {
+        cache.getUnhandledErrorListenable().addListener(new UnhandledErrorListener() {
             @Override
-            public void unhandledError(String message, Throwable e)
-            {
+            public void unhandledError(String message, Throwable e) {
                 Assert.assertFalse(isProcessed.compareAndSet(false, true));
             }
         });

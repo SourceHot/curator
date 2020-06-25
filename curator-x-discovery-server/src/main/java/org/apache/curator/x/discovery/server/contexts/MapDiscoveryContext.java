@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,6 +22,7 @@ import com.google.common.reflect.TypeToken;
 import org.apache.curator.x.discovery.ProviderStrategy;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.server.rest.DiscoveryContext;
+
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.util.Map;
@@ -31,10 +32,9 @@ import java.util.Map;
  * payload
  */
 @Provider
-public class MapDiscoveryContext extends GenericDiscoveryContext<Map<String, String>> implements ContextResolver<DiscoveryContext<Map<String, String>>>
-{
-    public MapDiscoveryContext(ServiceDiscovery<Map<String, String>> serviceDiscovery, ProviderStrategy<Map<String, String>> providerStrategy, int instanceRefreshMs)
-    {
-    	super(serviceDiscovery, providerStrategy, instanceRefreshMs, new TypeToken<Map<String, String>>(){});
+public class MapDiscoveryContext extends GenericDiscoveryContext<Map<String, String>> implements ContextResolver<DiscoveryContext<Map<String, String>>> {
+    public MapDiscoveryContext(ServiceDiscovery<Map<String, String>> serviceDiscovery, ProviderStrategy<Map<String, String>> providerStrategy, int instanceRefreshMs) {
+        super(serviceDiscovery, providerStrategy, instanceRefreshMs, new TypeToken<Map<String, String>>() {
+        });
     }
 }

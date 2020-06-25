@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -44,8 +44,7 @@ package org.apache.curator.framework.recipes.cache;
  *     false from acceptChild("/root/n1-c").
  * </p>
  */
-public interface TreeCacheSelector
-{
+public interface TreeCacheSelector {
     /**
      * Return true if children of this path should be cached.
      * i.e. if false is returned, this node is not queried to

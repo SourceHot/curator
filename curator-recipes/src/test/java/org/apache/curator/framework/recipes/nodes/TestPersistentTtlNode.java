@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,13 +32,13 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode.BUILD_INITIAL_CACHE;
 
-public class TestPersistentTtlNode extends CuratorTestBase
-{
+public class TestPersistentTtlNode extends CuratorTestBase {
     private final Timing timing = new Timing();
     private final long ttlMs = timing.multiple(.10).milliseconds(); // a small number
 
@@ -49,34 +49,28 @@ public class TestPersistentTtlNode extends CuratorTestBase
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         System.setProperty("znode.container.checkIntervalMs", "1");
         super.setup();
     }
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         System.clearProperty("znode.container.checkIntervalMs");
         super.teardown();
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)))
-        {
+    public void testBasic() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
-            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0]))
-            {
+            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0])) {
                 node.start();
                 Assert.assertTrue(node.waitForInitialCreate(timing.session(), TimeUnit.MILLISECONDS));
 
-                for ( int i = 0; i < 5; ++i )
-                {
+                for (int i = 0; i < 5; ++i) {
                     Thread.sleep(ttlMs + (ttlMs / 2));  // sleep a bit more than the TTL
                     Assert.assertNotNull(client.checkExists().forPath("/test"));
                 }
@@ -89,19 +83,15 @@ public class TestPersistentTtlNode extends CuratorTestBase
     }
 
     @Test
-    public void testForcedDeleteOfTouchNode() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)))
-        {
+    public void testForcedDeleteOfTouchNode() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
-            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0]))
-            {
+            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0])) {
                 node.start();
                 Assert.assertTrue(node.waitForInitialCreate(timing.session(), TimeUnit.MILLISECONDS));
 
-                for ( int i = 0; i < 5; ++i )
-                {
+                for (int i = 0; i < 5; ++i) {
                     Thread.sleep(ttlMs);
                     client.delete().quietly().forPath(ZKPaths.makePath("test", PersistentTtlNode.DEFAULT_CHILD_NODE_NAME));
                 }
@@ -113,24 +103,17 @@ public class TestPersistentTtlNode extends CuratorTestBase
     }
 
     @Test
-    public void testEventsOnParent() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)))
-        {
+    public void testEventsOnParent() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
-            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0]))
-            {
-                try(PathChildrenCache cache = new PathChildrenCache(client, "/", true))
-                {
+            try (PersistentTtlNode node = new PersistentTtlNode(client, "/test", ttlMs, new byte[0])) {
+                try (PathChildrenCache cache = new PathChildrenCache(client, "/", true)) {
                     final Semaphore changes = new Semaphore(0);
-                    PathChildrenCacheListener listener = new PathChildrenCacheListener()
-                    {
+                    PathChildrenCacheListener listener = new PathChildrenCacheListener() {
                         @Override
-                        public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception
-                        {
-                            if ( (event.getType() == PathChildrenCacheEvent.Type.CHILD_UPDATED) && "/test".equals(event.getData().getPath()) )
-                            {
+                        public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                            if ((event.getType() == PathChildrenCacheEvent.Type.CHILD_UPDATED) && "/test".equals(event.getData().getPath())) {
                                 changes.release();
                             }
                         }

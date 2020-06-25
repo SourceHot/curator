@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,16 +24,14 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.RetryOneTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class TestAsyncWrappers extends CompletableBaseClassForTests
-{
+public class TestAsyncWrappers extends CompletableBaseClassForTests {
     @Test
-    public void testBasic()
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testBasic() {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
             InterProcessMutex lock = new InterProcessMutex(client, "/one/two");
@@ -45,10 +43,8 @@ public class TestAsyncWrappers extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testContention() throws Exception
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testContention() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
 
             InterProcessMutex lock1 = new InterProcessMutex(client, "/one/two");
@@ -61,8 +57,7 @@ public class TestAsyncWrappers extends CompletableBaseClassForTests
 
             CountDownLatch latch2 = new CountDownLatch(1);
             AsyncWrappers.lockAsync(lock2, timing.forSleepingABit().milliseconds(), TimeUnit.MILLISECONDS).exceptionally(e -> {
-                if ( e instanceof AsyncWrappers.TimeoutException )
-                {
+                if (e instanceof AsyncWrappers.TimeoutException) {
                     latch2.countDown();  // lock should still be held
                 }
                 return null;

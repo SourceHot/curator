@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -39,21 +39,16 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TestMigrationManager extends CompletableBaseClassForTests
-{
+public class TestMigrationManager extends CompletableBaseClassForTests {
     private static final String LOCK_PATH = "/migrations/locks";
     private static final String META_DATA_PATH = "/migrations/metadata";
     private AsyncCuratorFramework client;
@@ -71,8 +66,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         super.setup();
 
         filterIsSetLatch = new CountDownLatch(1);
@@ -94,21 +88,16 @@ public class TestMigrationManager extends CompletableBaseClassForTests
         v3op = ModeledFramework.wrap(client, v3Spec).updateOp(new ModelV3("One", "Two", 30));
 
         executor = Executors.newCachedThreadPool();
-        manager = new MigrationManager(client, LOCK_PATH, META_DATA_PATH, executor, Duration.ofMinutes(10))
-        {
+        manager = new MigrationManager(client, LOCK_PATH, META_DATA_PATH, executor, Duration.ofMinutes(10)) {
             @Override
-            protected List<Migration> filter(MigrationSet set, List<byte[]> operationHashesInOrder) throws MigrationException
-            {
+            protected List<Migration> filter(MigrationSet set, List<byte[]> operationHashesInOrder) throws MigrationException {
                 CountDownLatch localLatch = filterLatch.getAndSet(null);
-                if ( localLatch != null )
-                {
+                if (localLatch != null) {
                     filterIsSetLatch.countDown();
-                    try
-                    {
+                    try {
                         localLatch.await();
                     }
-                    catch ( InterruptedException e )
-                    {
+                    catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         Throwables.propagate(e);
                     }
@@ -121,16 +110,14 @@ public class TestMigrationManager extends CompletableBaseClassForTests
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         CloseableUtils.closeQuietly(client.unwrap());
         executor.shutdownNow();
         super.teardown();
     }
 
     @Test
-    public void testBasic()
-    {
+    public void testBasic() {
         Migration m1 = () -> Arrays.asList(v1opA, v1opB);
         Migration m2 = () -> Collections.singletonList(v2op);
         Migration m3 = () -> Collections.singletonList(v3op);
@@ -151,8 +138,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testStaged()
-    {
+    public void testStaged() {
         Migration m1 = () -> Arrays.asList(v1opA, v1opB);
         MigrationSet migrationSet = MigrationSet.build("1", Collections.singletonList(m1));
         complete(manager.migrate(migrationSet));
@@ -183,8 +169,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testDocExample() throws Exception
-    {
+    public void testDocExample() throws Exception {
         CuratorOp op1 = client.transactionOp().create().forPath("/parent");
         CuratorOp op2 = client.transactionOp().create().forPath("/parent/one");
         CuratorOp op3 = client.transactionOp().create().forPath("/parent/two");
@@ -209,8 +194,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testChecksumDataError()
-    {
+    public void testChecksumDataError() {
         CuratorOp op1 = client.transactionOp().create().forPath("/test");
         CuratorOp op2 = client.transactionOp().create().forPath("/test/bar", "first".getBytes());
         Migration migration = () -> Arrays.asList(op1, op2);
@@ -220,20 +204,17 @@ public class TestMigrationManager extends CompletableBaseClassForTests
         CuratorOp op2Changed = client.transactionOp().create().forPath("/test/bar", "second".getBytes());
         migration = () -> Arrays.asList(op1, op2Changed);
         migrationSet = MigrationSet.build("1", Collections.singletonList(migration));
-        try
-        {
+        try {
             complete(manager.migrate(migrationSet));
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof MigrationException);
         }
     }
 
     @Test
-    public void testChecksumPathError()
-    {
+    public void testChecksumPathError() {
         CuratorOp op1 = client.transactionOp().create().forPath("/test2");
         CuratorOp op2 = client.transactionOp().create().forPath("/test2/bar");
         Migration migration = () -> Arrays.asList(op1, op2);
@@ -243,32 +224,27 @@ public class TestMigrationManager extends CompletableBaseClassForTests
         CuratorOp op2Changed = client.transactionOp().create().forPath("/test/bar");
         migration = () -> Arrays.asList(op1, op2Changed);
         migrationSet = MigrationSet.build("1", Collections.singletonList(migration));
-        try
-        {
+        try {
             complete(manager.migrate(migrationSet));
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof MigrationException);
         }
     }
 
     @Test
-    public void testPartialApplyForBadOps() throws Exception
-    {
+    public void testPartialApplyForBadOps() throws Exception {
         CuratorOp op1 = client.transactionOp().create().forPath("/test", "something".getBytes());
         CuratorOp op2 = client.transactionOp().create().forPath("/a/b/c");
         Migration m1 = () -> Collections.singletonList(op1);
         Migration m2 = () -> Collections.singletonList(op2);
         MigrationSet migrationSet = MigrationSet.build("1", Arrays.asList(m1, m2));
-        try
-        {
+        try {
             complete(manager.migrate(migrationSet));
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof KeeperException.NoNodeException);
         }
 
@@ -276,19 +252,16 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testTransactionForBadOps() throws Exception
-    {
+    public void testTransactionForBadOps() throws Exception {
         CuratorOp op1 = client.transactionOp().create().forPath("/test2", "something".getBytes());
         CuratorOp op2 = client.transactionOp().create().forPath("/a/b/c/d");
         Migration migration = () -> Arrays.asList(op1, op2);
         MigrationSet migrationSet = MigrationSet.build("1", Collections.singletonList(migration));
-        try
-        {
+        try {
             complete(manager.migrate(migrationSet));
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof KeeperException.NoNodeException);
         }
 
@@ -296,8 +269,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testConcurrency1() throws Exception
-    {
+    public void testConcurrency1() throws Exception {
         CuratorOp op1 = client.transactionOp().create().forPath("/test");
         CuratorOp op2 = client.transactionOp().create().forPath("/test/bar", "first".getBytes());
         Migration migration = () -> Arrays.asList(op1, op2);
@@ -308,13 +280,11 @@ public class TestMigrationManager extends CompletableBaseClassForTests
         Assert.assertTrue(timing.awaitLatch(filterIsSetLatch));
 
         MigrationManager manager2 = new MigrationManager(client, LOCK_PATH, META_DATA_PATH, executor, Duration.ofMillis(timing.forSleepingABit().milliseconds()));
-        try
-        {
+        try {
             complete(manager2.migrate(migrationSet));
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof AsyncWrappers.TimeoutException, "Should throw AsyncWrappers.TimeoutException, was: " + Throwables.getStackTraceAsString(Throwables.getRootCause(e)));
         }
 
@@ -324,8 +294,7 @@ public class TestMigrationManager extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testConcurrency2() throws Exception
-    {
+    public void testConcurrency2() throws Exception {
         CuratorOp op1 = client.transactionOp().create().forPath("/test");
         CuratorOp op2 = client.transactionOp().create().forPath("/test/bar", "first".getBytes());
         Migration migration = () -> Arrays.asList(op1, op2);
@@ -336,13 +305,11 @@ public class TestMigrationManager extends CompletableBaseClassForTests
         Assert.assertTrue(timing.awaitLatch(filterIsSetLatch));
 
         CompletionStage<Void> second = manager.migrate(migrationSet);
-        try
-        {
+        try {
             second.toCompletableFuture().get(timing.forSleepingABit().milliseconds(), TimeUnit.MILLISECONDS);
             Assert.fail("Should throw");
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             Assert.assertTrue(Throwables.getRootCause(e) instanceof TimeoutException, "Should throw TimeoutException, was: " + Throwables.getStackTraceAsString(Throwables.getRootCause(e)));
         }
 

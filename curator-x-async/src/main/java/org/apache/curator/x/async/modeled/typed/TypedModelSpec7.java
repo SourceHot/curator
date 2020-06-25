@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,8 +25,7 @@ import org.apache.curator.x.async.modeled.ModelSpecBuilder;
  * Same as {@link org.apache.curator.x.async.modeled.typed.TypedModelSpec}, but with 7 parameters
  */
 @FunctionalInterface
-public interface TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7>
-{
+public interface TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7> {
     ModelSpec<M> resolved(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7);
 
     /**
@@ -38,8 +37,7 @@ public interface TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7>
      * @param path typed path
      * @return new TypedModelSpec
      */
-    static <M, P1, P2, P3, P4, P5, P6, P7> TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7> from(ModelSpecBuilder<M> builder, TypedZPath7<P1, P2, P3, P4, P5, P6, P7> path)
-    {
+    static <M, P1, P2, P3, P4, P5, P6, P7> TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7> from(ModelSpecBuilder<M> builder, TypedZPath7<P1, P2, P3, P4, P5, P6, P7> path) {
         return (p1, p2, p3, p4, p5, p6, p7) -> builder.withPath(path.resolved(p1, p2, p3, p4, p5, p6, p7)).build();
     }
 
@@ -53,8 +51,7 @@ public interface TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7>
      * @param pathWithIds typed path
      * @return new TypedModelSpec
      */
-    static <M, P1, P2, P3, P4, P5, P6, P7> TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7> from(ModelSpecBuilder<M> builder, String pathWithIds)
-    {
+    static <M, P1, P2, P3, P4, P5, P6, P7> TypedModelSpec7<M, P1, P2, P3, P4, P5, P6, P7> from(ModelSpecBuilder<M> builder, String pathWithIds) {
         TypedZPath7<P1, P2, P3, P4, P5, P6, P7> zPath = TypedZPath7.from(pathWithIds);
         return (p1, p2, p3, p4, p5, p6, p7) -> builder.withPath(zPath.resolved(p1, p2, p3, p4, p5, p6, p7)).build();
     }

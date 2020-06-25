@@ -6,9 +6,26 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ * <p>
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -48,6 +65,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,15 +74,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * A managed persistent watcher. The watch will be managed such that it stays set through
  * connection lapses, etc.
  */
-public class PersistentWatcher implements Closeable
-{
+public class PersistentWatcher implements Closeable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AtomicReference<State> state = new AtomicReference<>(State.LATENT);
     private final StandardListenerManager<Watcher> listeners = StandardListenerManager.standard();
     private final StandardListenerManager<Runnable> resetListeners = StandardListenerManager.standard();
     private final ConnectionStateListener connectionStateListener = (client, newState) -> {
-        if ( newState.isConnected() )
-        {
+        if (newState.isConnected()) {
             reset();
         }
     };
@@ -73,8 +89,7 @@ public class PersistentWatcher implements Closeable
     private final String basePath;
     private final boolean recursive;
 
-    private enum State
-    {
+    private enum State {
         LATENT,
         STARTED,
         CLOSED
@@ -85,8 +100,7 @@ public class PersistentWatcher implements Closeable
      * @param basePath path to set the watch on
      * @param recursive ZooKeeper persistent watches can optionally be recursive
      */
-    public PersistentWatcher(CuratorFramework client, String basePath, boolean recursive)
-    {
+    public PersistentWatcher(CuratorFramework client, String basePath, boolean recursive) {
         this.client = Objects.requireNonNull(client, "client cannot be null");
         this.basePath = Objects.requireNonNull(basePath, "basePath cannot be null");
         this.recursive = recursive;
@@ -95,8 +109,7 @@ public class PersistentWatcher implements Closeable
     /**
      * Start watching
      */
-    public void start()
-    {
+    public void start() {
         Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "Already started");
         client.getConnectionStateListenable().addListener(connectionStateListener);
         reset();
@@ -106,18 +119,14 @@ public class PersistentWatcher implements Closeable
      * Remove the watcher
      */
     @Override
-    public void close()
-    {
-        if ( state.compareAndSet(State.STARTED, State.CLOSED) )
-        {
+    public void close() {
+        if (state.compareAndSet(State.STARTED, State.CLOSED)) {
             listeners.clear();
             client.getConnectionStateListenable().removeListener(connectionStateListener);
-            try
-            {
+            try {
                 client.watchers().remove(watcher).guaranteed().inBackground().forPath(basePath);
             }
-            catch ( Exception e )
-            {
+            catch (Exception e) {
                 ThreadUtils.checkInterrupted(e);
                 log.debug(String.format("Could not remove watcher for path: %s", basePath), e);
             }
@@ -129,8 +138,7 @@ public class PersistentWatcher implements Closeable
      *
      * @return listener container
      */
-    public Listenable<Watcher> getListenable()
-    {
+    public Listenable<Watcher> getListenable() {
         return listeners;
     }
 
@@ -140,34 +148,27 @@ public class PersistentWatcher implements Closeable
      *
      * @return listener container
      */
-    public Listenable<Runnable> getResetListenable()
-    {
+    public Listenable<Runnable> getResetListenable() {
         return resetListeners;
     }
 
-    private void reset()
-    {
-        if ( state.get() != State.STARTED )
-        {
+    private void reset() {
+        if (state.get() != State.STARTED) {
             return;
         }
-        
-        try
-        {
+
+        try {
             BackgroundCallback callback = (__, event) -> {
-                if ( event.getResultCode() == KeeperException.Code.OK.intValue() )
-                {
+                if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
                     resetListeners.forEach(Runnable::run);
                 }
-                else
-                {
+                else {
                     reset();
                 }
             };
             client.watchers().add().withMode(recursive ? AddWatchMode.PERSISTENT_RECURSIVE : AddWatchMode.PERSISTENT).inBackground(callback).usingWatcher(watcher).forPath(basePath);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             log.error("Could not reset persistent watch at path: " + basePath, e);
         }
     }

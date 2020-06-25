@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,33 +21,24 @@ package org.apache.curator.framework.imps;
 
 import org.apache.curator.RetryLoop;
 import org.apache.curator.drivers.OperationTrace;
-import org.apache.curator.framework.api.AddWatchBuilder;
-import org.apache.curator.framework.api.AddWatchBuilder2;
-import org.apache.curator.framework.api.BackgroundCallback;
-import org.apache.curator.framework.api.CuratorEvent;
-import org.apache.curator.framework.api.CuratorEventType;
-import org.apache.curator.framework.api.CuratorWatcher;
-import org.apache.curator.framework.api.Pathable;
-import org.apache.curator.framework.api.WatchableBase;
+import org.apache.curator.framework.api.*;
 import org.apache.zookeeper.AddWatchMode;
 import org.apache.zookeeper.Watcher;
+
 import java.util.concurrent.Executor;
 
-public class AddWatchBuilderImpl implements AddWatchBuilder, Pathable<Void>, BackgroundOperation<String>
-{
+public class AddWatchBuilderImpl implements AddWatchBuilder, Pathable<Void>, BackgroundOperation<String> {
     private final CuratorFrameworkImpl client;
     private Watching watching;
     private Backgrounding backgrounding = new Backgrounding();
     private AddWatchMode mode = AddWatchMode.PERSISTENT_RECURSIVE;
 
-    AddWatchBuilderImpl(CuratorFrameworkImpl client)
-    {
+    AddWatchBuilderImpl(CuratorFrameworkImpl client) {
         this.client = client;
         watching = new Watching(client, true);
     }
 
-    public AddWatchBuilderImpl(CuratorFrameworkImpl client, Watching watching, Backgrounding backgrounding, AddWatchMode mode)
-    {
+    public AddWatchBuilderImpl(CuratorFrameworkImpl client, Watching watching, Backgrounding backgrounding, AddWatchMode mode) {
         this.client = client;
         this.watching = watching;
         this.backgrounding = backgrounding;
@@ -55,143 +46,123 @@ public class AddWatchBuilderImpl implements AddWatchBuilder, Pathable<Void>, Bac
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground()
-    {
+    public WatchableBase<Pathable<Void>> inBackground() {
         backgrounding = new Backgrounding();
         return this;
     }
 
     @Override
-    public AddWatchBuilder2 withMode(AddWatchMode mode)
-    {
+    public AddWatchBuilder2 withMode(AddWatchMode mode) {
         this.mode = mode;
         return this;
     }
 
     @Override
-    public Pathable<Void> usingWatcher(Watcher watcher)
-    {
+    public Pathable<Void> usingWatcher(Watcher watcher) {
         watching = new Watching(client, watcher);
         return this;
     }
 
     @Override
-    public Pathable<Void> usingWatcher(CuratorWatcher watcher)
-    {
+    public Pathable<Void> usingWatcher(CuratorWatcher watcher) {
         watching = new Watching(client, watcher);
         return this;
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground(Object context)
-    {
+    public WatchableBase<Pathable<Void>> inBackground(Object context) {
         backgrounding = new Backgrounding(context);
         return this;
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback)
-    {
+    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback) {
         backgrounding = new Backgrounding(callback);
         return this;
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Object context)
-    {
+    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Object context) {
         backgrounding = new Backgrounding(callback, context);
         return this;
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Executor executor)
-    {
+    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Executor executor) {
         backgrounding = new Backgrounding(callback, executor);
         return this;
     }
 
     @Override
-    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Object context, Executor executor)
-    {
+    public WatchableBase<Pathable<Void>> inBackground(BackgroundCallback callback, Object context, Executor executor) {
         backgrounding = new Backgrounding(client, callback, context, executor);
         return this;
     }
 
     @Override
-    public Void forPath(String path) throws Exception
-    {
-        if ( backgrounding.inBackground() )
-        {
+    public Void forPath(String path) throws Exception {
+        if (backgrounding.inBackground()) {
             client.processBackgroundOperation(new OperationAndData<>(this, path, backgrounding.getCallback(), null, backgrounding.getContext(), watching), null);
         }
-        else
-        {
+        else {
             pathInForeground(path);
         }
         return null;
     }
 
     @Override
-    public void performBackgroundOperation(final OperationAndData<String> data) throws Exception
-    {
+    public void performBackgroundOperation(final OperationAndData<String> data) throws Exception {
         String path = data.getData();
         String fixedPath = client.fixForNamespace(path);
-        try
-        {
-            final OperationTrace   trace = client.getZookeeperClient().startAdvancedTracer("AddWatchBuilderImpl-Background");
-            if ( watching.isWatched() )
-            {
+        try {
+            final OperationTrace trace = client.getZookeeperClient().startAdvancedTracer("AddWatchBuilderImpl-Background");
+            if (watching.isWatched()) {
                 client.getZooKeeper().addWatch
-                    (
-                        fixedPath,
-                        mode,
-                        (rc, path1, ctx) -> {
-                            trace.setReturnCode(rc).setWithWatcher(true).setPath(path1).commit();
-                            CuratorEvent event = new CuratorEventImpl(client, CuratorEventType.ADD_WATCH, rc, path1, null, ctx, null, null, null, null, null, null);
-                            client.processBackgroundOperation(data, event);
-                        },
-                        backgrounding.getContext()
-                    );
+                        (
+                                fixedPath,
+                                mode,
+                                (rc, path1, ctx) -> {
+                                    trace.setReturnCode(rc).setWithWatcher(true).setPath(path1).commit();
+                                    CuratorEvent event = new CuratorEventImpl(client, CuratorEventType.ADD_WATCH, rc, path1, null, ctx, null, null, null, null, null, null);
+                                    client.processBackgroundOperation(data, event);
+                                },
+                                backgrounding.getContext()
+                        );
             }
-            else
-            {
+            else {
                 client.getZooKeeper().addWatch
-                    (
-                        fixedPath,
-                        watching.getWatcher(path),
-                        mode,
-                        (rc, path1, ctx) -> {
-                            trace.setReturnCode(rc).setWithWatcher(true).setPath(path1).commit();
-                            CuratorEvent event = new CuratorEventImpl(client, CuratorEventType.ADD_WATCH, rc, path1, null, ctx, null, null, null, null, null, null);
-                            client.processBackgroundOperation(data, event);
-                        },
-                        backgrounding.getContext()
-                    );
+                        (
+                                fixedPath,
+                                watching.getWatcher(path),
+                                mode,
+                                (rc, path1, ctx) -> {
+                                    trace.setReturnCode(rc).setWithWatcher(true).setPath(path1).commit();
+                                    CuratorEvent event = new CuratorEventImpl(client, CuratorEventType.ADD_WATCH, rc, path1, null, ctx, null, null, null, null, null, null);
+                                    client.processBackgroundOperation(data, event);
+                                },
+                                backgrounding.getContext()
+                        );
             }
         }
-        catch ( Throwable e )
-        {
+        catch (Throwable e) {
             backgrounding.checkError(e, watching);
         }
     }
 
-    private void pathInForeground(final String path) throws Exception
-    {
+    private void pathInForeground(final String path) throws Exception {
         final String fixedPath = client.fixForNamespace(path);
         OperationTrace trace = client.getZookeeperClient().startAdvancedTracer("AddWatchBuilderImpl-Foreground");
         RetryLoop.callWithRetry
-        (
-            client.getZookeeperClient(), () -> {
-                if ( watching.isWatched() )
-                {
-                    client.getZooKeeper().addWatch(fixedPath, mode);
-                }
-                else
-                {
-                    client.getZooKeeper().addWatch(fixedPath, watching.getWatcher(path), mode);
-                }
-                return null;
-            });
+                (
+                        client.getZookeeperClient(), () -> {
+                            if (watching.isWatched()) {
+                                client.getZooKeeper().addWatch(fixedPath, mode);
+                            }
+                            else {
+                                client.getZooKeeper().addWatch(fixedPath, watching.getWatcher(path), mode);
+                            }
+                            return null;
+                        });
         trace.setPath(fixedPath).setWithWatcher(true).commit();
     }
 }

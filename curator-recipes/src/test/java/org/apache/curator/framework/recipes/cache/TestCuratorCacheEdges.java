@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,21 +28,19 @@ import org.apache.curator.test.TestingCluster;
 import org.apache.curator.test.compatibility.CuratorTestBase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 
 import static org.apache.curator.framework.recipes.cache.CuratorCache.Options.DO_NOT_CLEAR_ON_CLOSE;
 
 @Test(groups = CuratorTestBase.zk36Group)
-public class TestCuratorCacheEdges extends CuratorTestBase
-{
+public class TestCuratorCacheEdges extends CuratorTestBase {
     @Test
-    public void testReconnectConsistency() throws Exception
-    {
+    public void testReconnectConsistency() throws Exception {
         final byte[] first = "one".getBytes();
         final byte[] second = "two".getBytes();
 
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-        {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             client.start();
             client.create().forPath("/root", first);
             client.create().forPath("/root/1", first);
@@ -54,8 +52,7 @@ public class TestCuratorCacheEdges extends CuratorTestBase
             client.create().forPath("/root/2/22", first);
 
             CuratorCacheStorage storage = CuratorCacheStorage.standard();
-            try (CuratorCache cache = CuratorCache.builder(client, "/root").withStorage(storage).withOptions(DO_NOT_CLEAR_ON_CLOSE).build())
-            {
+            try (CuratorCache cache = CuratorCache.builder(client, "/root").withStorage(storage).withOptions(DO_NOT_CLEAR_ON_CLOSE).build()) {
                 CountDownLatch latch = new CountDownLatch(1);
                 cache.listenable().addListener(CuratorCacheListener.builder().forInitialized(latch::countDown).build());
                 cache.start();
@@ -78,8 +75,7 @@ public class TestCuratorCacheEdges extends CuratorTestBase
             client.create().forPath("/root/1/13/132", second);
             client.create().forPath("/root/1/13/132/1321", second);
 
-            try (CuratorCache cache = CuratorCache.builder(client, "/root").withStorage(storage).withOptions(DO_NOT_CLEAR_ON_CLOSE).build())
-            {
+            try (CuratorCache cache = CuratorCache.builder(client, "/root").withStorage(storage).withOptions(DO_NOT_CLEAR_ON_CLOSE).build()) {
                 CountDownLatch latch = new CountDownLatch(1);
                 cache.listenable().addListener(CuratorCacheListener.builder().forInitialized(latch::countDown).build());
                 cache.start();
@@ -104,23 +100,19 @@ public class TestCuratorCacheEdges extends CuratorTestBase
     @Test
     public void testServerLoss() throws Exception   // mostly copied from TestPathChildrenCacheInCluster
     {
-        try (TestingCluster cluster = new TestingCluster(3))
-        {
+        try (TestingCluster cluster = new TestingCluster(3)) {
             cluster.start();
 
-            try (CuratorFramework client = CuratorFrameworkFactory.newClient(cluster.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-            {
+            try (CuratorFramework client = CuratorFrameworkFactory.newClient(cluster.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
                 client.start();
                 client.create().creatingParentsIfNeeded().forPath("/test");
 
-                try (CuratorCache cache = CuratorCache.build(client, "/test"))
-                {
+                try (CuratorCache cache = CuratorCache.build(client, "/test")) {
                     cache.start();
 
                     CountDownLatch reconnectLatch = new CountDownLatch(1);
                     client.getConnectionStateListenable().addListener((__, newState) -> {
-                        if ( newState == ConnectionState.RECONNECTED )
-                        {
+                        if (newState == ConnectionState.RECONNECTED) {
                             reconnectLatch.countDown();
                         }
                     });

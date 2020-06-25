@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,15 +29,13 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 
-public class TestAddWatch extends CuratorTestBase
-{
+public class TestAddWatch extends CuratorTestBase {
     @Test
-    public void testPersistentRecursiveWatch() throws Exception
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testPersistentRecursiveWatch() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
             client.blockUntilConnected();
 
@@ -57,8 +55,7 @@ public class TestAddWatch extends CuratorTestBase
     }
 
     @Test
-    public void testPersistentRecursiveDefaultWatch() throws Exception
-    {
+    public void testPersistentRecursiveDefaultWatch() throws Exception {
         CountDownLatch latch = new CountDownLatch(6);   // 5 creates plus the initial sync
         ZookeeperFactory zookeeperFactory = (connectString, sessionTimeout, watcher, canBeReadOnly) -> {
             Watcher actualWatcher = event -> {
@@ -67,8 +64,7 @@ public class TestAddWatch extends CuratorTestBase
             };
             return new ZooKeeper(connectString, sessionTimeout, actualWatcher);
         };
-        try (CuratorFramework client = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).zookeeperFactory(zookeeperFactory).build() )
-        {
+        try (CuratorFramework client = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).zookeeperFactory(zookeeperFactory).build()) {
             client.start();
             client.blockUntilConnected();
 

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,43 +30,37 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestWatcherIdentity extends BaseClassForTests
-{
+public class TestWatcherIdentity extends BaseClassForTests {
     private static final String PATH = "/foo";
 
-    private static class CountCuratorWatcher implements CuratorWatcher
-    {
+    private static class CountCuratorWatcher implements CuratorWatcher {
         private final AtomicInteger count = new AtomicInteger(0);
 
         @Override
-        public void process(WatchedEvent event) throws Exception
-        {
+        public void process(WatchedEvent event) throws Exception {
             count.incrementAndGet();
         }
     }
 
-    private static class CountZKWatcher implements Watcher
-    {
+    private static class CountZKWatcher implements Watcher {
         private final AtomicInteger count = new AtomicInteger(0);
 
         @Override
-        public void process(WatchedEvent event)
-        {
+        public void process(WatchedEvent event) {
             count.incrementAndGet();
         }
     }
 
     @Test
-    public void testSameWatcherPerZKDocs() throws Exception
-    {
+    public void testSameWatcherPerZKDocs() throws Exception {
         CountZKWatcher actualWatcher = new CountZKWatcher();
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().forPath("/test");
 
@@ -85,20 +79,17 @@ public class TestWatcherIdentity extends BaseClassForTests
             timing.sleepABit();
             Assert.assertEquals(actualWatcher.count.get(), 1);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testSameCuratorWatcherPerZKDocs() throws Exception
-    {
+    public void testSameCuratorWatcherPerZKDocs() throws Exception {
         CountCuratorWatcher actualWatcher = new CountCuratorWatcher();
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().forPath("/test");
 
@@ -117,20 +108,16 @@ public class TestWatcherIdentity extends BaseClassForTests
             timing.sleepABit();
             Assert.assertEquals(actualWatcher.count.get(), 1);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testSetAddition()
-    {
-        Watcher watcher = new Watcher()
-        {
+    public void testSetAddition() {
+        Watcher watcher = new Watcher() {
             @Override
-            public void process(WatchedEvent event)
-            {
+            public void process(WatchedEvent event) {
 
             }
         };
@@ -146,13 +133,11 @@ public class TestWatcherIdentity extends BaseClassForTests
     }
 
     @Test
-    public void testCuratorWatcher() throws Exception
-    {
+    public void testCuratorWatcher() throws Exception {
         Timing timing = new Timing();
         CountCuratorWatcher watcher = new CountCuratorWatcher();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().forPath(PATH);
             // Add twice the same watcher on the same path
@@ -163,21 +148,18 @@ public class TestWatcherIdentity extends BaseClassForTests
             timing.sleepABit();
             Assert.assertEquals(1, watcher.count.get());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
 
     @Test
-    public void testZKWatcher() throws Exception
-    {
+    public void testZKWatcher() throws Exception {
         Timing timing = new Timing();
         CountZKWatcher watcher = new CountZKWatcher();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().forPath(PATH);
             // Add twice the same watcher on the same path
@@ -188,8 +170,7 @@ public class TestWatcherIdentity extends BaseClassForTests
             timing.sleepABit();
             Assert.assertEquals(1, watcher.count.get());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }

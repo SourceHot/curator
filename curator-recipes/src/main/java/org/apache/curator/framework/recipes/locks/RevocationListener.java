@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,13 +18,12 @@
  */
 package org.apache.curator.framework.recipes.locks;
 
-public interface RevocationListener<T>
-{
+public interface RevocationListener<T> {
     /**
      * Called when a revocation request has been received. You should release the lock as soon
      * as possible. Revocation is cooperative.
      *
      * @param forLock the lock that should release
      */
-    public void         revocationRequested(T forLock);
+    public void revocationRequested(T forLock);
 }

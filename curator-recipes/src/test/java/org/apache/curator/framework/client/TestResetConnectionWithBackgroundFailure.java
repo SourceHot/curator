@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,48 +22,40 @@ package org.apache.curator.framework.client;
 import com.google.common.collect.Queues;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkImpl;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.BaseClassForTests;
 import org.apache.curator.test.Timing;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class TestResetConnectionWithBackgroundFailure extends BaseClassForTests
-{
+public class TestResetConnectionWithBackgroundFailure extends BaseClassForTests {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
-    public void testConnectionStateListener() throws Exception
-    {
+    public void testConnectionStateListener() throws Exception {
         server.stop();
 
         LeaderSelector selector = null;
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             timing.sleepABit();
 
-            LeaderSelectorListener listenerLeader = new LeaderSelectorListenerAdapter()
-            {
+            LeaderSelectorListener listenerLeader = new LeaderSelectorListenerAdapter() {
                 @Override
-                public void takeLeadership(CuratorFramework client) throws Exception
-                {
+                public void takeLeadership(CuratorFramework client) throws Exception {
                     Thread.currentThread().join();
                 }
             };
@@ -72,11 +64,9 @@ public class TestResetConnectionWithBackgroundFailure extends BaseClassForTests
             selector.start();
 
             final BlockingQueue<ConnectionState> listenerSequence = Queues.newLinkedBlockingQueue();
-            ConnectionStateListener listener1 = new ConnectionStateListener()
-            {
+            ConnectionStateListener listener1 = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                     listenerSequence.add(newState);
                 }
             };
@@ -102,8 +92,7 @@ public class TestResetConnectionWithBackgroundFailure extends BaseClassForTests
             Assert.assertEquals(listenerSequence.poll(forWaiting.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.SUSPENDED);
             Assert.assertEquals(listenerSequence.poll(forWaiting.milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.LOST);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(selector);
             CloseableUtils.closeQuietly(client);
         }

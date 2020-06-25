@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,28 +18,24 @@
  */
 package org.apache.curator.framework.recipes.cache;
 
-class EventOperation implements Operation
-{
+class EventOperation implements Operation {
     private final PathChildrenCache cache;
     private final PathChildrenCacheEvent event;
 
-    EventOperation(PathChildrenCache cache, PathChildrenCacheEvent event)
-    {
+    EventOperation(PathChildrenCache cache, PathChildrenCacheEvent event) {
         this.cache = cache;
         this.event = event;
     }
 
     @Override
-    public void invoke()
-    {
+    public void invoke() {
         cache.callListeners(event);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "EventOperation{" +
-            "event=" + event +
-            '}';
+                "event=" + event +
+                '}';
     }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,6 +24,7 @@ import org.apache.curator.x.async.api.CreateOption;
 import org.apache.curator.x.async.api.DeleteOption;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.ACL;
+
 import java.util.List;
 import java.util.Set;
 
@@ -39,8 +40,7 @@ import java.util.Set;
  *     <li>Optional schema generation</li>
  * </ul>
  */
-public interface ModelSpec<T> extends Resolvable
-{
+public interface ModelSpec<T> extends Resolvable {
     Set<CreateOption> defaultCreateOptions = ImmutableSet.of(CreateOption.createParentsAsContainers, CreateOption.setDataIfExists);
     Set<DeleteOption> defaultDeleteOptions = ImmutableSet.of(DeleteOption.guaranteed);
 
@@ -53,11 +53,10 @@ public interface ModelSpec<T> extends Resolvable
      * @param serializer the model's serializer
      * @return builder
      */
-    static <T> ModelSpecBuilder<T> builder(ZPath path, ModelSerializer<T> serializer)
-    {
+    static <T> ModelSpecBuilder<T> builder(ZPath path, ModelSerializer<T> serializer) {
         return new ModelSpecBuilder<>(path, serializer)
-            .withCreateOptions(defaultCreateOptions)
-            .withDeleteOptions(defaultDeleteOptions);
+                .withCreateOptions(defaultCreateOptions)
+                .withDeleteOptions(defaultDeleteOptions);
     }
 
     /**
@@ -68,11 +67,10 @@ public interface ModelSpec<T> extends Resolvable
      * @param serializer the model's serializer
      * @return builder
      */
-    static <T> ModelSpecBuilder<T> builder(ModelSerializer<T> serializer)
-    {
+    static <T> ModelSpecBuilder<T> builder(ModelSerializer<T> serializer) {
         return new ModelSpecBuilder<>(serializer)
-            .withCreateOptions(defaultCreateOptions)
-            .withDeleteOptions(defaultDeleteOptions);
+                .withCreateOptions(defaultCreateOptions)
+                .withDeleteOptions(defaultDeleteOptions);
     }
 
     /**

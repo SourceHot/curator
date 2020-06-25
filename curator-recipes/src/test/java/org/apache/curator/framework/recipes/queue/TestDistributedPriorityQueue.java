@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,17 +18,18 @@
  */
 package org.apache.curator.framework.recipes.queue;
 
-import org.apache.curator.test.BaseClassForTests;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryOneTime;
+import org.apache.curator.test.BaseClassForTests;
 import org.apache.curator.test.Timing;
+import org.apache.curator.utils.CloseableUtils;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,72 +38,60 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
-public class TestDistributedPriorityQueue extends BaseClassForTests
-{
+public class TestDistributedPriorityQueue extends BaseClassForTests {
     @Test
-    public void     testMinItemsBeforeRefresh() throws Exception
-    {
-        DistributedPriorityQueue<Integer>   queue = null;
+    public void testMinItemsBeforeRefresh() throws Exception {
+        DistributedPriorityQueue<Integer> queue = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             final int minItemsBeforeRefresh = 3;
 
             BlockingQueueConsumer<Integer> consumer = new BlockingQueueConsumer<Integer>(Mockito.mock(ConnectionStateListener.class));
             queue = QueueBuilder.builder(client, consumer, new IntSerializer(), "/test").buildPriorityQueue(minItemsBeforeRefresh);
             queue.start();
 
-            for ( int i = 0; i < 10; ++i )
-            {
+            for (int i = 0; i < 10; ++i) {
                 queue.put(i, 10 + i);
             }
 
             Assert.assertEquals(consumer.take(1, TimeUnit.SECONDS), new Integer(0));
             queue.put(1000, 1); // lower priority
 
-            int         count = 0;
-            while ( consumer.take(1, TimeUnit.SECONDS) < 1000 )
-            {
+            int count = 0;
+            while (consumer.take(1, TimeUnit.SECONDS) < 1000) {
                 ++count;
             }
             Assert.assertTrue(Math.abs(minItemsBeforeRefresh - count) < minItemsBeforeRefresh, String.format("Diff: %d - min: %d", Math.abs(minItemsBeforeRefresh - count), minItemsBeforeRefresh));     // allows for some slack - testing that within a slop value the newly inserted item with lower priority comes out
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(queue);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testSortingWhileTaking() throws Exception
-    {
-        Timing           timing = new Timing();
-        DistributedPriorityQueue<Integer>   queue = null;
+    public void testSortingWhileTaking() throws Exception {
+        Timing timing = new Timing();
+        DistributedPriorityQueue<Integer> queue = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
         client.start();
-        try
-        {
-            final BlockingQueue<Integer>    blockingQueue = new SynchronousQueue<Integer>();
-            QueueConsumer<Integer>          consumer = new QueueConsumer<Integer>()
-            {
+        try {
+            final BlockingQueue<Integer> blockingQueue = new SynchronousQueue<Integer>();
+            QueueConsumer<Integer> consumer = new QueueConsumer<Integer>() {
                 @Override
-                public void consumeMessage(Integer message) throws Exception
-                {
+                public void consumeMessage(Integer message) throws Exception {
                     blockingQueue.put(message);
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             queue = QueueBuilder.builder(client, consumer, new IntSerializer(), "/test").buildPriorityQueue(0);
             queue.start();
 
-            for ( int i = 0; i < 10; ++i )
-            {
+            for (int i = 0; i < 10; ++i) {
                 queue.put(i, 10);
             }
 
@@ -113,34 +102,27 @@ public class TestDistributedPriorityQueue extends BaseClassForTests
             Assert.assertEquals(blockingQueue.poll(timing.seconds(), TimeUnit.SECONDS), new Integer(1)); // is in consumer already
             Assert.assertEquals(blockingQueue.poll(timing.seconds(), TimeUnit.SECONDS), new Integer(1000));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(queue);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testAdditions() throws Exception
-    {
-        DistributedPriorityQueue<Integer>   queue = null;
+    public void testAdditions() throws Exception {
+        DistributedPriorityQueue<Integer> queue = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
-            final CountDownLatch        latch = new CountDownLatch(1);
-            QueueSerializer<Integer>    serializer = new IntSerializer()
-            {
+        try {
+            final CountDownLatch latch = new CountDownLatch(1);
+            QueueSerializer<Integer> serializer = new IntSerializer() {
                 @Override
-                public Integer deserialize(byte[] bytes)
-                {
+                public Integer deserialize(byte[] bytes) {
                     // gets called in the Queue's event processing thread
-                    try
-                    {
+                    try {
                         latch.await();
                     }
-                    catch ( InterruptedException e )
-                    {
+                    catch (InterruptedException e) {
                         // ignore
                     }
                     return super.deserialize(bytes);
@@ -150,11 +132,9 @@ public class TestDistributedPriorityQueue extends BaseClassForTests
             queue = QueueBuilder.builder(client, consumer, serializer, "/test").buildPriorityQueue(1);
             queue.start();
 
-            for ( int i = 0; i < 10; ++i )
-            {
+            for (int i = 0; i < 10; ++i) {
                 queue.put(10, 10);
-                if ( i == 0 )
-                {
+                if (i == 0) {
                     queue.put(1, 1);
                     latch.countDown();
                 }
@@ -162,31 +142,26 @@ public class TestDistributedPriorityQueue extends BaseClassForTests
 
             assertOrdering(consumer, 10);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(queue);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testSimple() throws Exception
-    {
-        List<Integer>                       nums = new ArrayList<Integer>();
+    public void testSimple() throws Exception {
+        List<Integer> nums = new ArrayList<Integer>();
 
-        Timing                              timing = new Timing();
-        DistributedPriorityQueue<Integer>   queue = null;
-        CuratorFramework                    client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+        Timing timing = new Timing();
+        DistributedPriorityQueue<Integer> queue = null;
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
         client.start();
-        try
-        {
-            final CountDownLatch            hasConsumedLatch = new CountDownLatch(1);
-            final CountDownLatch            okToConsumeLatch = new CountDownLatch(1);
-            BlockingQueueConsumer<Integer>  consumer = new BlockingQueueConsumer<Integer>(Mockito.mock(ConnectionStateListener.class))
-            {
+        try {
+            final CountDownLatch hasConsumedLatch = new CountDownLatch(1);
+            final CountDownLatch okToConsumeLatch = new CountDownLatch(1);
+            BlockingQueueConsumer<Integer> consumer = new BlockingQueueConsumer<Integer>(Mockito.mock(ConnectionStateListener.class)) {
                 @Override
-                public void consumeMessage(Integer message) throws Exception
-                {
+                public void consumeMessage(Integer message) throws Exception {
                     hasConsumedLatch.countDown();
                     okToConsumeLatch.await();
                     super.consumeMessage(message);
@@ -199,15 +174,14 @@ public class TestDistributedPriorityQueue extends BaseClassForTests
             queue.put(Integer.MIN_VALUE, Integer.MIN_VALUE);  // the queue background thread will be blocking with the first item - make sure it's the lowest value
             Assert.assertTrue(timing.awaitLatch(hasConsumedLatch));
 
-            Random          random = new Random();
-            for ( int i = 0; i < 100; ++i )
-            {
-                int     priority = random.nextInt();
+            Random random = new Random();
+            for (int i = 0; i < 100; ++i) {
+                int priority = random.nextInt();
                 nums.add(priority);
                 queue.put(priority, priority);
             }
 
-            while ( queue.getCache().getData().children.size() < (nums.size() - 1) )    // -1 because the first message has already been consumed
+            while (queue.getCache().getData().children.size() < (nums.size() - 1))    // -1 because the first message has already been consumed
             {
                 timing.sleepABit(); // wait for the cache to catch up
             }
@@ -215,48 +189,39 @@ public class TestDistributedPriorityQueue extends BaseClassForTests
 
             assertOrdering(consumer, nums.size());
         }
-        catch ( AssertionError e )
-        {
-            StringBuilder   message = new StringBuilder(e.getMessage());
-            for ( int i : nums )
-            {
+        catch (AssertionError e) {
+            StringBuilder message = new StringBuilder(e.getMessage());
+            for (int i : nums) {
                 message.append(i).append("\t").append(DistributedPriorityQueue.priorityToString(i)).append("\n");
             }
             Assert.fail(message.toString());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(queue);
             CloseableUtils.closeQuietly(client);
         }
     }
 
-    private void assertOrdering(BlockingQueueConsumer<Integer> consumer, int qty) throws Exception
-    {
-        int         previous = 0;
-        for ( int i = 0; i < qty; ++i )
-        {
-            Integer     value = consumer.take(10, TimeUnit.SECONDS);
+    private void assertOrdering(BlockingQueueConsumer<Integer> consumer, int qty) throws Exception {
+        int previous = 0;
+        for (int i = 0; i < qty; ++i) {
+            Integer value = consumer.take(10, TimeUnit.SECONDS);
             Assert.assertNotNull(value);
-            if ( i > 0 )
-            {
+            if (i > 0) {
                 Assert.assertTrue(value >= previous, String.format("Value: (%d:%s) Previous: (%d:%s)", value, DistributedPriorityQueue.priorityToString(value), previous, DistributedPriorityQueue.priorityToString(previous)));
             }
             previous = value;
         }
     }
 
-    private static class IntSerializer implements QueueSerializer<Integer>
-    {
+    private static class IntSerializer implements QueueSerializer<Integer> {
         @Override
-        public byte[] serialize(Integer item)
-        {
+        public byte[] serialize(Integer item) {
             return Integer.toString(item).getBytes();
         }
 
         @Override
-        public Integer deserialize(byte[] bytes)
-        {
+        public Integer deserialize(byte[] bytes) {
             return Integer.parseInt(new String(bytes));
         }
     }

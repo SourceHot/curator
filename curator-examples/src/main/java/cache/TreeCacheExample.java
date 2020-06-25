@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,13 +21,12 @@ package cache;
 import framework.CreateClientExamples;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class TreeCacheExample
-{
-    public static void main(String[] args) throws Exception
-    {
+public class TreeCacheExample {
+    public static void main(String[] args) throws Exception {
         CuratorFramework client = CreateClientExamples.createSimple("127.0.0.1:2181");
         client.getUnhandledErrorListenable().addListener((message, e) -> {
             System.err.println("error=" + message);
@@ -40,12 +39,10 @@ public class TreeCacheExample
 
         TreeCache cache = TreeCache.newBuilder(client, "/").setCacheData(false).build();
         cache.getListenable().addListener((c, event) -> {
-            if ( event.getData() != null )
-            {
+            if (event.getData() != null) {
                 System.out.println("type=" + event.getType() + " path=" + event.getData().getPath());
             }
-            else
-            {
+            else {
                 System.out.println("type=" + event.getType());
             }
         });

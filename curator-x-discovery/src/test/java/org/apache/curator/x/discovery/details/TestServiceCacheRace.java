@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -35,6 +35,7 @@ import org.apache.curator.x.discovery.ServiceInstance;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.io.Closeable;
 import java.util.Collections;
 import java.util.List;
@@ -42,17 +43,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestServiceCacheRace extends BaseClassForTests
-{
+public class TestServiceCacheRace extends BaseClassForTests {
     private final Timing timing = new Timing();
 
     // validates CURATOR-452 which exposed a race in ServiceCacheImpl's start() method caused by an optimization whereby it clears the dataBytes of its internal PathChildrenCache
     @Test
-    public void testRaceOnInitialLoad() throws Exception
-    {
+    public void testRaceOnInitialLoad() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -65,8 +63,8 @@ public class TestServiceCacheRace extends BaseClassForTests
             CountDownLatch cacheWaitLatch = new CountDownLatch(1);
             final ServiceCache<String> cache = discovery.serviceCacheBuilder().name("test").build();
             closeables.add(cache);
-            ((ServiceCacheImpl)cache).debugStartLatch = cacheStartLatch;    // causes ServiceCacheImpl.start to notify just after starting its internal PathChildrenCache
-            ((ServiceCacheImpl)cache).debugStartWaitLatch = cacheWaitLatch; // causes ServiceCacheImpl.start to wait before iterating over its internal PathChildrenCache
+            ((ServiceCacheImpl) cache).debugStartLatch = cacheStartLatch;    // causes ServiceCacheImpl.start to notify just after starting its internal PathChildrenCache
+            ((ServiceCacheImpl) cache).debugStartWaitLatch = cacheWaitLatch; // causes ServiceCacheImpl.start to wait before iterating over its internal PathChildrenCache
 
             ServiceInstance<String> instance1 = ServiceInstance.<String>builder().payload("test").name("test").port(10064).build();
             discovery.registerService(instance1);
@@ -74,18 +72,14 @@ public class TestServiceCacheRace extends BaseClassForTests
             CloseableExecutorService closeableExecutorService = new CloseableExecutorService(Executors.newSingleThreadExecutor());
             closeables.add(closeableExecutorService);
             final CountDownLatch startCompletedLatch = new CountDownLatch(1);
-            Runnable proc = new Runnable()
-            {
+            Runnable proc = new Runnable() {
                 @Override
-                public void run()
-                {
-                    try
-                    {
+                public void run() {
+                    try {
                         cache.start();
                         startCompletedLatch.countDown();
                     }
-                    catch ( Exception e )
-                    {
+                    catch (Exception e) {
                         LoggerFactory.getLogger(getClass()).error("Start failed", e);
                         throw new RuntimeException(e);
                     }
@@ -95,17 +89,14 @@ public class TestServiceCacheRace extends BaseClassForTests
             Assert.assertTrue(timing.awaitLatch(cacheStartLatch));  // wait until ServiceCacheImpl's internal PathChildrenCache is started and primed
 
             final CountDownLatch cacheChangedLatch = new CountDownLatch(1);
-            ServiceCacheListener listener = new ServiceCacheListener()
-            {
+            ServiceCacheListener listener = new ServiceCacheListener() {
                 @Override
-                public void cacheChanged()
-                {
+                public void cacheChanged() {
                     cacheChangedLatch.countDown();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                     // NOP
                 }
             };
@@ -118,11 +109,9 @@ public class TestServiceCacheRace extends BaseClassForTests
 
             Assert.assertTrue(timing.awaitLatch(startCompletedLatch));
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }

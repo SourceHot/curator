@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,8 +23,7 @@ import org.apache.curator.framework.state.ConnectionStateListener;
 /**
  * Listener for changes to a shared count
  */
-public interface SharedCountListener extends ConnectionStateListener
-{
+public interface SharedCountListener extends ConnectionStateListener {
     /**
      * Called when the shared value has changed
      *
@@ -32,5 +31,5 @@ public interface SharedCountListener extends ConnectionStateListener
      * @param newCount the new count
      * @throws Exception errors
      */
-    public void         countHasChanged(SharedCountReader sharedCount, int newCount) throws Exception;
+    public void countHasChanged(SharedCountReader sharedCount, int newCount) throws Exception;
 }

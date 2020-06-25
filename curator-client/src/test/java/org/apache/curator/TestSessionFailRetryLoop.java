@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,264 +20,224 @@ package org.apache.curator;
 
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.BaseClassForTests;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.test.Timing;
+import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestSessionFailRetryLoop extends BaseClassForTests
-{
+public class TestSessionFailRetryLoop extends BaseClassForTests {
     @Test
-    public void     testRetry() throws Exception
-    {
-        Timing                          timing = new Timing();
-        final CuratorZookeeperClient    client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
-        SessionFailRetryLoop            retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.RETRY);
+    public void testRetry() throws Exception {
+        Timing timing = new Timing();
+        final CuratorZookeeperClient client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
+        SessionFailRetryLoop retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.RETRY);
         retryLoop.start();
-        try
-        {
+        try {
             client.start();
-            final AtomicBoolean     secondWasDone = new AtomicBoolean(false);
-            final AtomicBoolean     firstTime = new AtomicBoolean(true);
-            while ( retryLoop.shouldContinue() )
-            {
-                try
-                {
+            final AtomicBoolean secondWasDone = new AtomicBoolean(false);
+            final AtomicBoolean firstTime = new AtomicBoolean(true);
+            while (retryLoop.shouldContinue()) {
+                try {
                     RetryLoop.callWithRetry
-                    (
-                        client,
-                        new Callable<Void>()
-                        {
-                            @Override
-                            public Void call() throws Exception
-                            {
-                                if ( firstTime.compareAndSet(true, false) )
-                                {
-                                    Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                    client.getZooKeeper().getTestable().injectSessionExpiration();
-                                    client.getZooKeeper();
-                                    client.blockUntilConnectedOrTimedOut();
-                                }
+                            (
+                                    client,
+                                    new Callable<Void>() {
+                                        @Override
+                                        public Void call() throws Exception {
+                                            if (firstTime.compareAndSet(true, false)) {
+                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                client.getZooKeeper().getTestable().injectSessionExpiration();
+                                                client.getZooKeeper();
+                                                client.blockUntilConnectedOrTimedOut();
+                                            }
 
-                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                return null;
-                            }
-                        }
-                    );
+                                            Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                            return null;
+                                        }
+                                    }
+                            );
 
                     RetryLoop.callWithRetry
-                    (
-                        client,
-                        new Callable<Void>()
-                        {
-                            @Override
-                            public Void call() throws Exception
-                            {
-                                Assert.assertFalse(firstTime.get());
-                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                secondWasDone.set(true);
-                                return null;
-                            }
-                        }
-                    );
+                            (
+                                    client,
+                                    new Callable<Void>() {
+                                        @Override
+                                        public Void call() throws Exception {
+                                            Assert.assertFalse(firstTime.get());
+                                            Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                            secondWasDone.set(true);
+                                            return null;
+                                        }
+                                    }
+                            );
                 }
-                catch ( Exception e )
-                {
+                catch (Exception e) {
                     retryLoop.takeException(e);
                 }
             }
 
             Assert.assertTrue(secondWasDone.get());
         }
-        finally
-        {
+        finally {
             retryLoop.close();
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testRetryStatic() throws Exception
-    {
-        Timing                          timing = new Timing();
-        final CuratorZookeeperClient    client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
-        SessionFailRetryLoop            retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.RETRY);
+    public void testRetryStatic() throws Exception {
+        Timing timing = new Timing();
+        final CuratorZookeeperClient client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
+        SessionFailRetryLoop retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.RETRY);
         retryLoop.start();
-        try
-        {
+        try {
             client.start();
-            final AtomicBoolean     secondWasDone = new AtomicBoolean(false);
-            final AtomicBoolean     firstTime = new AtomicBoolean(true);
+            final AtomicBoolean secondWasDone = new AtomicBoolean(false);
+            final AtomicBoolean firstTime = new AtomicBoolean(true);
             SessionFailRetryLoop.callWithRetry
-            (
-                client,
-                SessionFailRetryLoop.Mode.RETRY,
-                new Callable<Object>()
-                {
-                    @Override
-                    public Object call() throws Exception
-                    {
-                        RetryLoop.callWithRetry
-                        (
+                    (
                             client,
-                            new Callable<Void>()
-                            {
+                            SessionFailRetryLoop.Mode.RETRY,
+                            new Callable<Object>() {
                                 @Override
-                                public Void call() throws Exception
-                                {
-                                    if ( firstTime.compareAndSet(true, false) )
-                                    {
-                                        Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                        client.getZooKeeper().getTestable().injectSessionExpiration();
-                                        client.getZooKeeper();
-                                        client.blockUntilConnectedOrTimedOut();
-                                    }
+                                public Object call() throws Exception {
+                                    RetryLoop.callWithRetry
+                                            (
+                                                    client,
+                                                    new Callable<Void>() {
+                                                        @Override
+                                                        public Void call() throws Exception {
+                                                            if (firstTime.compareAndSet(true, false)) {
+                                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                                client.getZooKeeper().getTestable().injectSessionExpiration();
+                                                                client.getZooKeeper();
+                                                                client.blockUntilConnectedOrTimedOut();
+                                                            }
 
-                                    Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                            Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                            return null;
+                                                        }
+                                                    }
+                                            );
+
+                                    RetryLoop.callWithRetry
+                                            (
+                                                    client,
+                                                    new Callable<Void>() {
+                                                        @Override
+                                                        public Void call() throws Exception {
+                                                            Assert.assertFalse(firstTime.get());
+                                                            Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                            secondWasDone.set(true);
+                                                            return null;
+                                                        }
+                                                    }
+                                            );
                                     return null;
                                 }
                             }
-                        );
-
-                        RetryLoop.callWithRetry
-                        (
-                            client,
-                            new Callable<Void>()
-                            {
-                                @Override
-                                public Void call() throws Exception
-                                {
-                                    Assert.assertFalse(firstTime.get());
-                                    Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                    secondWasDone.set(true);
-                                    return null;
-                                }
-                            }
-                        );
-                        return null;
-                    }
-                }
-            );
+                    );
 
             Assert.assertTrue(secondWasDone.get());
         }
-        finally
-        {
+        finally {
             retryLoop.close();
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testBasic() throws Exception
-    {
-        final Timing                          timing = new Timing();
-        final CuratorZookeeperClient    client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
-        SessionFailRetryLoop            retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.FAIL);
+    public void testBasic() throws Exception {
+        final Timing timing = new Timing();
+        final CuratorZookeeperClient client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
+        SessionFailRetryLoop retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.FAIL);
         retryLoop.start();
-        try
-        {
+        try {
             client.start();
-            try
-            {
-                while ( retryLoop.shouldContinue() )
-                {
-                    try
-                    {
+            try {
+                while (retryLoop.shouldContinue()) {
+                    try {
                         RetryLoop.callWithRetry
-                        (
-                            client,
-                            new Callable<Void>()
-                            {
-                                @Override
-                                public Void call() throws Exception
-                                {
-                                    Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                    client.getZooKeeper().getTestable().injectSessionExpiration();
+                                (
+                                        client,
+                                        new Callable<Void>() {
+                                            @Override
+                                            public Void call() throws Exception {
+                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                client.getZooKeeper().getTestable().injectSessionExpiration();
 
-                                    timing.sleepABit();
+                                                timing.sleepABit();
 
-                                    client.getZooKeeper();
-                                    client.blockUntilConnectedOrTimedOut();
-                                    Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                    return null;
-                                }
-                            }
-                        );
+                                                client.getZooKeeper();
+                                                client.blockUntilConnectedOrTimedOut();
+                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                return null;
+                                            }
+                                        }
+                                );
                     }
-                    catch ( Exception e )
-                    {
+                    catch (Exception e) {
                         retryLoop.takeException(e);
                     }
                 }
 
                 Assert.fail();
             }
-            catch ( SessionFailRetryLoop.SessionFailedException dummy )
-            {
+            catch (SessionFailRetryLoop.SessionFailedException dummy) {
                 // correct
             }
         }
-        finally
-        {
+        finally {
             retryLoop.close();
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testBasicStatic() throws Exception
-    {
-        Timing                          timing = new Timing();
-        final CuratorZookeeperClient    client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
-        SessionFailRetryLoop            retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.FAIL);
+    public void testBasicStatic() throws Exception {
+        Timing timing = new Timing();
+        final CuratorZookeeperClient client = new CuratorZookeeperClient(server.getConnectString(), timing.session(), timing.connection(), null, new ExponentialBackoffRetry(100, 3));
+        SessionFailRetryLoop retryLoop = client.newSessionFailRetryLoop(SessionFailRetryLoop.Mode.FAIL);
         retryLoop.start();
-        try
-        {
+        try {
             client.start();
-            try
-            {
+            try {
                 SessionFailRetryLoop.callWithRetry
-                (
-                    client,
-                    SessionFailRetryLoop.Mode.FAIL,
-                    new Callable<Object>()
-                    {
-                        @Override
-                        public Object call() throws Exception
-                        {
-                            RetryLoop.callWithRetry
-                            (
+                        (
                                 client,
-                                new Callable<Void>()
-                                {
+                                SessionFailRetryLoop.Mode.FAIL,
+                                new Callable<Object>() {
                                     @Override
-                                    public Void call() throws Exception
-                                    {
-                                        Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
-                                        client.getZooKeeper().getTestable().injectSessionExpiration();
+                                    public Object call() throws Exception {
+                                        RetryLoop.callWithRetry
+                                                (
+                                                        client,
+                                                        new Callable<Void>() {
+                                                            @Override
+                                                            public Void call() throws Exception {
+                                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                                client.getZooKeeper().getTestable().injectSessionExpiration();
 
-                                        client.getZooKeeper();
-                                        client.blockUntilConnectedOrTimedOut();
-                                        Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                                client.getZooKeeper();
+                                                                client.blockUntilConnectedOrTimedOut();
+                                                                Assert.assertNull(client.getZooKeeper().exists("/foo/bar", false));
+                                                                return null;
+                                                            }
+                                                        }
+                                                );
                                         return null;
                                     }
                                 }
-                            );
-                            return null;
-                        }
-                    }
-                );
+                        );
             }
-            catch ( SessionFailRetryLoop.SessionFailedException dummy )
-            {
+            catch (SessionFailRetryLoop.SessionFailedException dummy) {
                 // correct
             }
         }
-        finally
-        {
+        finally {
             retryLoop.close();
             CloseableUtils.closeQuietly(client);
         }

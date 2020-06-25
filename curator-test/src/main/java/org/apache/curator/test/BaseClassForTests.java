@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,12 +28,12 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BaseClassForTests
-{
+public class BaseClassForTests {
     protected volatile TestingServer server;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -43,70 +43,57 @@ public class BaseClassForTests
     private static final String INTERNAL_PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND;
     private static final String INTERNAL_PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY;
 
-    static
-    {
+    static {
         String logConnectionIssues = null;
-        try
-        {
+        try {
             // use reflection to avoid adding a circular dependency in the pom
             Class<?> debugUtilsClazz = Class.forName("org.apache.curator.utils.DebugUtils");
-            logConnectionIssues = (String)debugUtilsClazz.getField("PROPERTY_DONT_LOG_CONNECTION_ISSUES").get(null);
+            logConnectionIssues = (String) debugUtilsClazz.getField("PROPERTY_DONT_LOG_CONNECTION_ISSUES").get(null);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
         INTERNAL_PROPERTY_DONT_LOG_CONNECTION_ISSUES = logConnectionIssues;
         String s = null;
-        try
-        {
+        try {
             // use reflection to avoid adding a circular dependency in the pom
-            s = (String)Class.forName("org.apache.curator.utils.DebugUtils").getField("PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND").get(null);
+            s = (String) Class.forName("org.apache.curator.utils.DebugUtils").getField("PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND").get(null);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
         INTERNAL_PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND = s;
         s = null;
-        try
-        {
+        try {
             // use reflection to avoid adding a circular dependency in the pom
-            s = (String)Class.forName("org.apache.curator.utils.DebugUtils").getField("PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY").get(null);
+            s = (String) Class.forName("org.apache.curator.utils.DebugUtils").getField("PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY").get(null);
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
         INTERNAL_PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY = s;
     }
 
     @BeforeSuite(alwaysRun = true)
-    public void beforeSuite(ITestContext context)
-    {
-        IInvokedMethodListener2 methodListener2 = new IInvokedMethodListener2()
-        {
+    public void beforeSuite(ITestContext context) {
+        IInvokedMethodListener2 methodListener2 = new IInvokedMethodListener2() {
             @Override
-            public void beforeInvocation(IInvokedMethod method, ITestResult testResult)
-            {
+            public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
                 method.getTestMethod().setRetryAnalyzer(BaseClassForTests.this::retry);
             }
 
             @Override
-            public void beforeInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context)
-            {
+            public void beforeInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context) {
                 beforeInvocation(method, testResult);
             }
 
             @Override
-            public void afterInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context)
-            {
+            public void afterInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context) {
                 // NOP
             }
 
             @Override
-            public void afterInvocation(IInvokedMethod method, ITestResult testResult)
-            {
+            public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
                 // NOP
             }
         };
@@ -114,21 +101,17 @@ public class BaseClassForTests
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setup() throws Exception
-    {
-        if ( INTERNAL_PROPERTY_DONT_LOG_CONNECTION_ISSUES != null )
-        {
+    public void setup() throws Exception {
+        if (INTERNAL_PROPERTY_DONT_LOG_CONNECTION_ISSUES != null) {
             System.setProperty(INTERNAL_PROPERTY_DONT_LOG_CONNECTION_ISSUES, "true");
         }
         System.setProperty(INTERNAL_PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND, "true");
         System.setProperty(INTERNAL_PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY, "true");
 
-        try
-        {
+        try {
             createServer();
         }
-        catch ( FailedServerStartException ignore )
-        {
+        catch (FailedServerStartException ignore) {
             log.warn("Failed to start server - retrying 1 more time");
             // server creation failed - we've sometime seen this with re-used addresses, etc. - retry one more time
             closeServer();
@@ -136,23 +119,18 @@ public class BaseClassForTests
         }
     }
 
-    public TestingCluster createAndStartCluster(int qty) throws Exception
-    {
+    public TestingCluster createAndStartCluster(int qty) throws Exception {
         TestingCluster cluster = new TestingCluster(qty);
-        try
-        {
+        try {
             cluster.start();
         }
-        catch ( FailedServerStartException e )
-        {
+        catch (FailedServerStartException e) {
             log.warn("Failed to start cluster - retrying 1 more time");
             // cluster creation failed - we've sometime seen this with re-used addresses, etc. - retry one more time
-            try
-            {
+            try {
                 cluster.close();
             }
-            catch ( Exception ex )
-            {
+            catch (Exception ex) {
                 // ignore
             }
             cluster = new TestingCluster(qty);
@@ -161,16 +139,12 @@ public class BaseClassForTests
         return cluster;
     }
 
-    protected void createServer() throws Exception
-    {
-        while ( server == null )
-        {
-            try
-            {
+    protected void createServer() throws Exception {
+        while (server == null) {
+            try {
                 server = new TestingServer();
             }
-            catch ( BindException e )
-            {
+            catch (BindException e) {
                 server = null;
                 throw new FailedServerStartException("Getting bind exception - retrying to allocate server");
             }
@@ -178,47 +152,37 @@ public class BaseClassForTests
     }
 
     @AfterMethod(alwaysRun = true)
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         System.clearProperty(INTERNAL_PROPERTY_VALIDATE_NAMESPACE_WATCHER_MAP_EMPTY);
         System.clearProperty(INTERNAL_PROPERTY_REMOVE_WATCHERS_IN_FOREGROUND);
         closeServer();
     }
 
-    private void closeServer()
-    {
-        if ( server != null )
-        {
-            try
-            {
+    private void closeServer() {
+        if (server != null) {
+            try {
                 server.close();
             }
-            catch ( IOException e )
-            {
+            catch (IOException e) {
                 e.printStackTrace();
             }
-            finally
-            {
+            finally {
                 server = null;
             }
         }
     }
 
-    private boolean retry(ITestResult result)
-    {
-        if ( result.isSuccess() || isRetrying.get() )
-        {
+    private boolean retry(ITestResult result) {
+        if (result.isSuccess() || isRetrying.get()) {
             isRetrying.set(false);
             return false;
         }
 
         result.setStatus(ITestResult.SKIP);
-        if ( result.getThrowable() != null )
-        {
+        if (result.getThrowable() != null) {
             log.error("Retrying 1 time", result.getThrowable());
         }
-        else
-        {
+        else {
             log.error("Retrying 1 time");
         }
         isRetrying.set(true);

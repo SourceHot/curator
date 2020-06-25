@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,14 +27,11 @@ import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TestEnsureContainers extends BaseClassForTests
-{
+public class TestEnsureContainers extends BaseClassForTests {
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             EnsureContainers ensureContainers = new EnsureContainers(client, "/one/two/three");
@@ -42,18 +39,15 @@ public class TestEnsureContainers extends BaseClassForTests
 
             Assert.assertNotNull(client.checkExists().forPath("/one/two/three"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testSingleExecution() throws Exception
-    {
+    public void testSingleExecution() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             EnsureContainers ensureContainers = new EnsureContainers(client, "/one/two/three");
@@ -65,8 +59,7 @@ public class TestEnsureContainers extends BaseClassForTests
             ensureContainers.ensure();
             Assert.assertNull(client.checkExists().forPath("/one/two/three"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }

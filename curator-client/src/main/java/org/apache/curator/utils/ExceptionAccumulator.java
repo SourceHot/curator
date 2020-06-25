@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,17 +24,14 @@ import com.google.common.base.Throwables;
  * Utility to accumulate multiple potential exceptions into one that
  * is thrown at the end
  */
-public class ExceptionAccumulator
-{
+public class ExceptionAccumulator {
     private volatile Throwable mainEx = null;
 
     /**
      * If there is an accumulated exception, throw it
      */
-    public void propagate()
-    {
-        if ( mainEx != null )
-        {
+    public void propagate() {
+        if (mainEx != null) {
             Throwables.propagate(mainEx);
         }
     }
@@ -46,23 +43,18 @@ public class ExceptionAccumulator
      *
      * @param e the exception
      */
-    public void add(Throwable e)
-    {
-        if ( e instanceof InterruptedException )
-        {
-            if ( mainEx != null )
-            {
+    public void add(Throwable e) {
+        if (e instanceof InterruptedException) {
+            if (mainEx != null) {
                 e.addSuppressed(mainEx);
             }
             Thread.currentThread().interrupt();
         }
 
-        if ( mainEx == null )
-        {
+        if (mainEx == null) {
             mainEx = e;
         }
-        else
-        {
+        else {
             mainEx.addSuppressed(e);
         }
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,24 +20,20 @@ package org.apache.curator.framework.recipes.locks;
 
 import java.util.concurrent.Executor;
 
-class RevocationSpec
-{
-    private final Runnable      runnable;
-    private final Executor      executor;
+class RevocationSpec {
+    private final Runnable runnable;
+    private final Executor executor;
 
-    RevocationSpec(Executor executor, Runnable runnable)
-    {
+    RevocationSpec(Executor executor, Runnable runnable) {
         this.runnable = runnable;
         this.executor = executor;
     }
 
-    Runnable getRunnable()
-    {
+    Runnable getRunnable() {
         return runnable;
     }
 
-    Executor getExecutor()
-    {
+    Executor getExecutor() {
         return executor;
     }
 }

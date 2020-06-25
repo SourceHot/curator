@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,60 +29,52 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-public class TestCircuitBreakingConnectionStateListener
-{
+public class TestCircuitBreakingConnectionStateListener {
     private final CuratorFramework dummyClient = CuratorFrameworkFactory.newClient("foo", new RetryOneTime(1));
     private final Timing2 timing = new Timing2();
     private final Timing2 retryTiming = timing.multiple(.25);
     private volatile ScheduledThreadPoolExecutor service;
 
-    private static class RecordingListener implements ConnectionStateListener
-    {
+    private static class RecordingListener implements ConnectionStateListener {
         final BlockingQueue<ConnectionState> stateChanges = new LinkedBlockingQueue<>();
 
         @Override
-        public void stateChanged(CuratorFramework client, ConnectionState newState)
-        {
+        public void stateChanged(CuratorFramework client, ConnectionState newState) {
             stateChanges.offer(newState);
         }
     }
 
-    private class TestRetryPolicy extends RetryForever
-    {
+    private class TestRetryPolicy extends RetryForever {
         volatile boolean isRetrying = true;
 
-        public TestRetryPolicy()
-        {
+        public TestRetryPolicy() {
             super(retryTiming.milliseconds());
         }
 
         @Override
-        public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper)
-        {
+        public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
             return isRetrying && super.allowRetry(retryCount, elapsedTimeMs, sleeper);
         }
     }
 
     @BeforeMethod
-    public void setup()
-    {
+    public void setup() {
         service = new ScheduledThreadPoolExecutor(1);
     }
 
     @AfterMethod
-    public void tearDown()
-    {
+    public void tearDown() {
         service.shutdownNow();
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         RecordingListener recordingListener = new RecordingListener();
         TestRetryPolicy retryPolicy = new TestRetryPolicy();
         CircuitBreakingConnectionStateListener listener = new CircuitBreakingConnectionStateListener(dummyClient, recordingListener, retryPolicy, service);
@@ -97,7 +89,7 @@ public class TestCircuitBreakingConnectionStateListener
         listener.stateChanged(dummyClient, ConnectionState.LOST);
         Assert.assertEquals(timing.takeFromQueue(recordingListener.stateChanges), ConnectionState.LOST);
 
-        synchronized(listener)  // don't let retry policy run while we're pushing state changes
+        synchronized (listener)  // don't let retry policy run while we're pushing state changes
         {
             listener.stateChanged(dummyClient, ConnectionState.READ_ONLY);   // all further events are ignored
             listener.stateChanged(dummyClient, ConnectionState.RECONNECTED);   // all further events are ignored
@@ -113,13 +105,12 @@ public class TestCircuitBreakingConnectionStateListener
     }
 
     @Test
-    public void testResetsAfterReconnect() throws Exception
-    {
+    public void testResetsAfterReconnect() throws Exception {
         RecordingListener recordingListener = new RecordingListener();
         TestRetryPolicy retryPolicy = new TestRetryPolicy();
         CircuitBreakingConnectionStateListener listener = new CircuitBreakingConnectionStateListener(dummyClient, recordingListener, retryPolicy, service);
 
-        synchronized(listener)  // don't let retry policy run while we're pushing state changes
+        synchronized (listener)  // don't let retry policy run while we're pushing state changes
         {
             listener.stateChanged(dummyClient, ConnectionState.LOST);
             listener.stateChanged(dummyClient, ConnectionState.LOST);   // second LOST ignored
@@ -132,8 +123,7 @@ public class TestCircuitBreakingConnectionStateListener
     }
 
     @Test
-    public void testRetryNever() throws Exception
-    {
+    public void testRetryNever() throws Exception {
         RecordingListener recordingListener = new RecordingListener();
         RetryPolicy retryNever = (retryCount, elapsedTimeMs, sleeper) -> false;
         CircuitBreakingConnectionStateListener listener = new CircuitBreakingConnectionStateListener(dummyClient, recordingListener, retryNever, service);
@@ -147,13 +137,12 @@ public class TestCircuitBreakingConnectionStateListener
     }
 
     @Test
-    public void testRetryOnce() throws Exception
-    {
+    public void testRetryOnce() throws Exception {
         RecordingListener recordingListener = new RecordingListener();
         RetryPolicy retryOnce = new RetryOneTime(retryTiming.milliseconds());
         CircuitBreakingConnectionStateListener listener = new CircuitBreakingConnectionStateListener(dummyClient, recordingListener, retryOnce, service);
 
-        synchronized(listener)  // don't let retry policy run while we're pushing state changes
+        synchronized (listener)  // don't let retry policy run while we're pushing state changes
         {
             listener.stateChanged(dummyClient, ConnectionState.LOST);
             listener.stateChanged(dummyClient, ConnectionState.SUSPENDED);
@@ -165,8 +154,7 @@ public class TestCircuitBreakingConnectionStateListener
     }
 
     @Test
-    public void testSuspendedToLostRatcheting() throws Exception
-    {
+    public void testSuspendedToLostRatcheting() throws Exception {
         RecordingListener recordingListener = new RecordingListener();
         RetryPolicy retryInfinite = new RetryForever(Integer.MAX_VALUE);
         CircuitBreakingConnectionStateListener listener = new CircuitBreakingConnectionStateListener(dummyClient, recordingListener, retryInfinite, service);

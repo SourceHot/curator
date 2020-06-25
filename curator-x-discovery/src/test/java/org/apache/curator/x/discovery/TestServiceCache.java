@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -33,6 +33,7 @@ import org.apache.curator.utils.Compatibility;
 import org.apache.curator.x.discovery.details.ServiceCacheListener;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.io.Closeable;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,14 +44,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestServiceCache extends BaseClassForTests
-{
+public class TestServiceCache extends BaseClassForTests {
     @Test
-    public void testInitialLoad() throws Exception
-    {
+    public void testInitialLoad() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -63,17 +61,14 @@ public class TestServiceCache extends BaseClassForTests
             closeables.add(cache);
 
             final CountDownLatch latch = new CountDownLatch(3);
-            ServiceCacheListener listener = new ServiceCacheListener()
-            {
+            ServiceCacheListener listener = new ServiceCacheListener() {
                 @Override
-                public void cacheChanged()
-                {
+                public void cacheChanged() {
                     latch.countDown();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             cache.addListener(listener);
@@ -94,24 +89,20 @@ public class TestServiceCache extends BaseClassForTests
 
             Assert.assertEquals(cache2.getInstances().size(), 3);
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }
     }
 
     @Test
-    public void testViaProvider() throws Exception
-    {
+    public void testViaProvider() throws Exception {
         Timing timing = new Timing();
 
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -129,8 +120,7 @@ public class TestServiceCache extends BaseClassForTests
 
             int count = 0;
             ServiceInstance<String> foundInstance = null;
-            while ( foundInstance == null )
-            {
+            while (foundInstance == null) {
                 Assert.assertTrue(count++ < 5);
                 foundInstance = serviceProvider.getInstance();
                 timing.sleepABit();
@@ -143,22 +133,18 @@ public class TestServiceCache extends BaseClassForTests
             Collection<ServiceInstance<String>> allInstances = serviceProvider.getAllInstances();
             Assert.assertEquals(allInstances.size(), 2);
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }
     }
 
     @Test
-    public void testUpdate() throws Exception
-    {
+    public void testUpdate() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -171,17 +157,14 @@ public class TestServiceCache extends BaseClassForTests
             final CountDownLatch latch = new CountDownLatch(1);
             ServiceCache<String> cache = discovery.serviceCacheBuilder().name("test").build();
             closeables.add(cache);
-            ServiceCacheListener listener = new ServiceCacheListener()
-            {
+            ServiceCacheListener listener = new ServiceCacheListener() {
                 @Override
-                public void cacheChanged()
-                {
+                public void cacheChanged() {
                     latch.countDown();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             cache.addListener(listener);
@@ -195,22 +178,18 @@ public class TestServiceCache extends BaseClassForTests
             Assert.assertEquals(cache.getInstances().size(), 1);
             Assert.assertEquals(cache.getInstances().get(0).getPayload(), instance.getPayload());
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }
     }
 
     @Test
-    public void testCache() throws Exception
-    {
+    public void testCache() throws Exception {
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -224,17 +203,14 @@ public class TestServiceCache extends BaseClassForTests
             cache.start();
 
             final Semaphore semaphore = new Semaphore(0);
-            ServiceCacheListener listener = new ServiceCacheListener()
-            {
+            ServiceCacheListener listener = new ServiceCacheListener() {
                 @Override
-                public void cacheChanged()
-                {
+                public void cacheChanged() {
                     semaphore.release();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             cache.addListener(listener);
@@ -251,27 +227,22 @@ public class TestServiceCache extends BaseClassForTests
             discovery.registerService(instance3);
             Assert.assertFalse(semaphore.tryAcquire(3, TimeUnit.SECONDS));  // should not get called for a different service
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }
     }
 
     @Test
-    public void testExecutorServiceIsInvoked() throws Exception
-    {
-        if ( Compatibility.hasPersistentWatchers() )
-        {
+    public void testExecutorServiceIsInvoked() throws Exception {
+        if (Compatibility.hasPersistentWatchers()) {
             return; // for ZK 3.6 the underlying cache ignores the executor
         }
 
         List<Closeable> closeables = Lists.newArrayList();
-        try
-        {
+        try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             closeables.add(client);
             client.start();
@@ -288,17 +259,14 @@ public class TestServiceCache extends BaseClassForTests
             cache.start();
 
             final Semaphore semaphore = new Semaphore(0);
-            ServiceCacheListener listener = new ServiceCacheListener()
-            {
+            ServiceCacheListener listener = new ServiceCacheListener() {
                 @Override
-                public void cacheChanged()
-                {
+                public void cacheChanged() {
                     semaphore.release();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             cache.addListener(listener);
@@ -309,11 +277,9 @@ public class TestServiceCache extends BaseClassForTests
 
             Assert.assertTrue(exec.isExecuteCalled());
         }
-        finally
-        {
+        finally {
             Collections.reverse(closeables);
-            for ( Closeable c : closeables )
-            {
+            for (Closeable c : closeables) {
                 CloseableUtils.closeQuietly(c);
             }
         }

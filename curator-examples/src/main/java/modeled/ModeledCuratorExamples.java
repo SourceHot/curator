@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,12 +23,11 @@ import org.apache.curator.x.async.modeled.JacksonModelSerializer;
 import org.apache.curator.x.async.modeled.ModelSpec;
 import org.apache.curator.x.async.modeled.ModeledFramework;
 import org.apache.curator.x.async.modeled.ZPath;
+
 import java.util.function.Consumer;
 
-public class ModeledCuratorExamples
-{
-    public static ModeledFramework<PersonModel> wrap(AsyncCuratorFramework client)
-    {
+public class ModeledCuratorExamples {
+    public static ModeledFramework<PersonModel> wrap(AsyncCuratorFramework client) {
         JacksonModelSerializer<PersonModel> serializer = JacksonModelSerializer.build(PersonModel.class);
 
         // build a model specification - you can pre-build all the model specifications for your app at startup
@@ -40,8 +39,7 @@ public class ModeledCuratorExamples
         return ModeledFramework.wrap(client, modelSpec);
     }
 
-    public static void createOrUpdate(ModeledFramework<PersonModel> modeled, PersonModel model)
-    {
+    public static void createOrUpdate(ModeledFramework<PersonModel> modeled, PersonModel model) {
         // change the affected path to be modeled's base path plus id: i.e. "/example/path/{id}"
         ModeledFramework<PersonModel> atId = modeled.child(model.getId().getId());
 
@@ -50,16 +48,13 @@ public class ModeledCuratorExamples
         atId.set(model); // note - this is async
     }
 
-    public static void readPerson(ModeledFramework<PersonModel> modeled, String id, Consumer<PersonModel> receiver)
-    {
+    public static void readPerson(ModeledFramework<PersonModel> modeled, String id, Consumer<PersonModel> receiver) {
         // read the person with the given ID and asynchronously call the receiver after it is read
         modeled.child(id).read().whenComplete((person, exception) -> {
-            if ( exception != null )
-            {
+            if (exception != null) {
                 exception.printStackTrace();    // handle the error
             }
-            else
-            {
+            else {
                 receiver.accept(person);
             }
         });

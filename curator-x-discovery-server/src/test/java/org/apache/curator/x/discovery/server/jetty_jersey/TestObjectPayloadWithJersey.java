@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,11 +30,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceType;
-import org.apache.curator.x.discovery.server.entity.JsonServiceInstanceMarshaller;
-import org.apache.curator.x.discovery.server.entity.JsonServiceInstancesMarshaller;
-import org.apache.curator.x.discovery.server.entity.JsonServiceNamesMarshaller;
-import org.apache.curator.x.discovery.server.entity.ServiceInstances;
-import org.apache.curator.x.discovery.server.entity.ServiceNames;
+import org.apache.curator.x.discovery.server.entity.*;
 import org.apache.curator.x.discovery.server.mocks.MockServiceDiscovery;
 import org.apache.curator.x.discovery.strategies.RandomStrategy;
 import org.mortbay.jetty.Server;
@@ -44,12 +40,12 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
-public class TestObjectPayloadWithJersey
-{
+public class TestObjectPayloadWithJersey {
     private Server server;
     private JsonServiceNamesMarshaller serviceNamesMarshaller;
     private JsonServiceInstanceMarshaller<ServiceDetails> serviceInstanceMarshaller;
@@ -58,27 +54,23 @@ public class TestObjectPayloadWithJersey
     private int port;
 
     @BeforeMethod
-    public void         setup() throws Exception
-    {
+    public void setup() throws Exception {
         context = new ServiceDetailsDiscoveryContext(new MockServiceDiscovery<ServiceDetails>(), new RandomStrategy<ServiceDetails>(), 1000);
         serviceNamesMarshaller = new JsonServiceNamesMarshaller();
         serviceInstanceMarshaller = new JsonServiceInstanceMarshaller<ServiceDetails>(context);
         serviceInstancesMarshaller = new JsonServiceInstancesMarshaller<ServiceDetails>(context);
 
-        Application                                     application = new DefaultResourceConfig()
-        {
+        Application application = new DefaultResourceConfig() {
             @Override
-            public Set<Class<?>> getClasses()
-            {
-                Set<Class<?>>       classes = Sets.newHashSet();
+            public Set<Class<?>> getClasses() {
+                Set<Class<?>> classes = Sets.newHashSet();
                 classes.add(ServiceDetailsDiscoveryResource.class);
                 return classes;
             }
 
             @Override
-            public Set<Object> getSingletons()
-            {
-                Set<Object>     singletons = Sets.newHashSet();
+            public Set<Object> getSingletons() {
+                Set<Object> singletons = Sets.newHashSet();
                 singletons.add(context);
                 singletons.add(serviceNamesMarshaller);
                 singletons.add(serviceInstanceMarshaller);
@@ -86,7 +78,7 @@ public class TestObjectPayloadWithJersey
                 return singletons;
             }
         };
-        ServletContainer        container = new ServletContainer(application);
+        ServletContainer container = new ServletContainer(application);
 
         port = InstanceSpec.getRandomPort();
         server = new Server(port);
@@ -94,34 +86,30 @@ public class TestObjectPayloadWithJersey
         root.addServlet(new ServletHolder(container), "/*");
         server.start();
     }
-    
+
     @AfterMethod
-    public void         teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         server.stop();
         server.join();
     }
 
     @Test
-    public void     testRegisterService() throws Exception
-    {
-        ServiceDetails         payload = new ServiceDetails();
+    public void testRegisterService() throws Exception {
+        ServiceDetails payload = new ServiceDetails();
         payload.setDescription("Example description for test");
         payload.getData().put("one", "1");
         payload.getData().put("two", "2");
         payload.getData().put("three", "3");
         ServiceInstance<ServiceDetails> service = ServiceInstance.<ServiceDetails>builder()
-            .name("test")
-            .payload(payload)
-            .serviceType(ServiceType.STATIC)
-            .build();
+                .name("test")
+                .payload(payload)
+                .serviceType(ServiceType.STATIC)
+                .build();
 
-        ClientConfig    config = new DefaultClientConfig()
-        {
+        ClientConfig config = new DefaultClientConfig() {
             @Override
-            public Set<Object> getSingletons()
-            {
-                Set<Object>     singletons = Sets.newHashSet();
+            public Set<Object> getSingletons() {
+                Set<Object> singletons = Sets.newHashSet();
                 singletons.add(context);
                 singletons.add(serviceNamesMarshaller);
                 singletons.add(serviceInstanceMarshaller);
@@ -129,22 +117,24 @@ public class TestObjectPayloadWithJersey
                 return singletons;
             }
         };
-        Client          client = Client.create(config);
-        WebResource     resource = client.resource("http://localhost:" + port);
-	        resource.path("/v1/service/test/" + service.getId()).type(MediaType.APPLICATION_JSON_TYPE).put(service);
+        Client client = Client.create(config);
+        WebResource resource = client.resource("http://localhost:" + port);
+        resource.path("/v1/service/test/" + service.getId()).type(MediaType.APPLICATION_JSON_TYPE).put(service);
 
         ServiceNames names = resource.path("/v1/service").get(ServiceNames.class);
         Assert.assertEquals(names.getNames(), Lists.newArrayList("test"));
 
-        GenericType<ServiceInstances<ServiceDetails>> type = new GenericType<ServiceInstances<ServiceDetails>>(){};
-        ServiceInstances<ServiceDetails>    instances = resource.path("/v1/service/test").get(type);
+        GenericType<ServiceInstances<ServiceDetails>> type = new GenericType<ServiceInstances<ServiceDetails>>() {
+        };
+        ServiceInstances<ServiceDetails> instances = resource.path("/v1/service/test").get(type);
         Assert.assertEquals(instances.getServices().size(), 1);
         Assert.assertEquals(instances.getServices().get(0), service);
         Assert.assertEquals(instances.getServices().get(0).getPayload(), payload);
 
         // Retrieve a single instance
-        GenericType<ServiceInstance<ServiceDetails>> singleInstanceType = new GenericType<ServiceInstance<ServiceDetails>>(){};
-        ServiceInstance<ServiceDetails>    instance = resource.path("/v1/service/test/" + service.getId()).get(singleInstanceType);
+        GenericType<ServiceInstance<ServiceDetails>> singleInstanceType = new GenericType<ServiceInstance<ServiceDetails>>() {
+        };
+        ServiceInstance<ServiceDetails> instance = resource.path("/v1/service/test/" + service.getId()).get(singleInstanceType);
         Assert.assertEquals(instance, service);
 
     }

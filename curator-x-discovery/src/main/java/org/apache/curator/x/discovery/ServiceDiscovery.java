@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,11 +19,11 @@
 package org.apache.curator.x.discovery;
 
 import org.apache.curator.x.discovery.strategies.RoundRobinStrategy;
+
 import java.io.Closeable;
 import java.util.Collection;
 
-public interface ServiceDiscovery<T> extends Closeable
-{
+public interface ServiceDiscovery<T> extends Closeable {
     /**
      * The discovery must be started before use
      *
@@ -37,7 +37,7 @@ public interface ServiceDiscovery<T> extends Closeable
      * @param service service to add
      * @throws Exception errors
      */
-    public void     registerService(ServiceInstance<T> service) throws Exception;
+    public void registerService(ServiceInstance<T> service) throws Exception;
 
     /**
      * Update a service
@@ -45,7 +45,7 @@ public interface ServiceDiscovery<T> extends Closeable
      * @param service service to update
      * @throws Exception errors
      */
-    public void     updateService(ServiceInstance<T> service) throws Exception;
+    public void updateService(ServiceInstance<T> service) throws Exception;
 
     /**
      * Unregister/remove a service instance
@@ -53,7 +53,7 @@ public interface ServiceDiscovery<T> extends Closeable
      * @param service the service
      * @throws Exception errors
      */
-    public void     unregisterService(ServiceInstance<T> service) throws Exception;
+    public void unregisterService(ServiceInstance<T> service) throws Exception;
 
     /**
      * Allocate a new service cache builder. The refresh padding is defaulted to 1 second.
@@ -77,7 +77,7 @@ public interface ServiceDiscovery<T> extends Closeable
      * @return list of instances (or an empty list)
      * @throws Exception errors
      */
-    public Collection<ServiceInstance<T>>  queryForInstances(String name) throws Exception;
+    public Collection<ServiceInstance<T>> queryForInstances(String name) throws Exception;
 
     /**
      * Return a service instance POJO

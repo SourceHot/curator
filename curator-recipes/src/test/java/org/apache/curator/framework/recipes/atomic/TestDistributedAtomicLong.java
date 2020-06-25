@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,18 +18,19 @@
  */
 package org.apache.curator.framework.recipes.atomic;
 
+import org.apache.commons.math.stat.descriptive.SummaryStatistics;
+import org.apache.commons.math.stat.descriptive.SynchronizedSummaryStatistics;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.retry.RetryOneTime;
-import org.apache.commons.math.stat.descriptive.SummaryStatistics;
-import org.apache.commons.math.stat.descriptive.SynchronizedSummaryStatistics;
 import org.apache.curator.test.BaseClassForTests;
 import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.List;
@@ -41,46 +42,36 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestDistributedAtomicLong extends BaseClassForTests
-{
+public class TestDistributedAtomicLong extends BaseClassForTests {
     @Test
-    public void     testCorruptedValue() throws Exception
-    {
-        final CuratorFramework      client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    public void testCorruptedValue() throws Exception {
+        final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             client.create().forPath("/counter", "foo".getBytes());
-            DistributedAtomicLong   dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1));
-            try
-            {
+            DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1));
+            try {
                 dal.get().postValue();
             }
-            catch ( BufferUnderflowException e )
-            {
+            catch (BufferUnderflowException e) {
                 Assert.fail("", e);
             }
-            catch ( BufferOverflowException e )
-            {
+            catch (BufferOverflowException e) {
                 Assert.fail("", e);
             }
-            catch ( RuntimeException e )
-            {
+            catch (RuntimeException e) {
                 // correct
             }
         }
-        finally
-        {
+        finally {
             client.close();
         }
     }
 
     @Test
-    public void testCompareAndSetWithFreshInstance() throws Exception
-    {
+    public void testCompareAndSetWithFreshInstance() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1));
             AtomicValue<Long> result = dal.compareAndSet(0L, 1L);
@@ -92,35 +83,27 @@ public class TestDistributedAtomicLong extends BaseClassForTests
 
             Assert.assertFalse(dal.initialize(0L));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void     testCompareAndSet() throws Exception
-    {
-        final CuratorFramework      client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    public void testCompareAndSet() throws Exception {
+        final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
-            final AtomicBoolean         doIncrement = new AtomicBoolean(false);
-            DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1))
-            {
+        try {
+            final AtomicBoolean doIncrement = new AtomicBoolean(false);
+            DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1)) {
                 @Override
-                public byte[] valueToBytes(Long newValue)
-                {
-                    if ( doIncrement.get() )
-                    {
+                public byte[] valueToBytes(Long newValue) {
+                    if (doIncrement.get()) {
                         DistributedAtomicLong inc = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1));
-                        try
-                        {
+                        try {
                             // this will force a bad version exception
                             inc.increment();
                         }
-                        catch ( Exception e )
-                        {
+                        catch (Exception e) {
                             throw new Error(e);
                         }
                     }
@@ -136,68 +119,57 @@ public class TestDistributedAtomicLong extends BaseClassForTests
             doIncrement.set(true);
             Assert.assertFalse(dal.compareAndSet(5L, 10L).succeeded());
         }
-        finally
-        {
+        finally {
             client.close();
         }
     }
 
     @Test
-    public void     testForceSet() throws Exception
-    {
+    public void testForceSet() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             final DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", new RetryOneTime(1));
 
-            ExecutorService                 executorService = Executors.newFixedThreadPool(2);
+            ExecutorService executorService = Executors.newFixedThreadPool(2);
             executorService.submit
-            (
-                new Callable<Object>()
-                {
-                    @Override
-                    public Object call() throws Exception
-                    {
-                        for ( int i = 0; i < 1000; ++i )
-                        {
-                            dal.increment();
-                            Thread.sleep(10);
-                        }
-                        return null;
-                    }
-                }
-            );
+                    (
+                            new Callable<Object>() {
+                                @Override
+                                public Object call() throws Exception {
+                                    for (int i = 0; i < 1000; ++i) {
+                                        dal.increment();
+                                        Thread.sleep(10);
+                                    }
+                                    return null;
+                                }
+                            }
+                    );
             executorService.submit
-            (
-                new Callable<Object>()
-                {
-                    @Override
-                    public Object call() throws Exception
-                    {
-                        for ( int i = 0; i < 1000; ++i )
-                        {
-                            dal.forceSet(0L);
-                            Thread.sleep(10);
-                        }
-                        return null;
-                    }
-                }
-            );
+                    (
+                            new Callable<Object>() {
+                                @Override
+                                public Object call() throws Exception {
+                                    for (int i = 0; i < 1000; ++i) {
+                                        dal.forceSet(0L);
+                                        Thread.sleep(10);
+                                    }
+                                    return null;
+                                }
+                            }
+                    );
 
             Assert.assertTrue(dal.get().preValue() < 10);
         }
-        finally
-        {
+        finally {
             client.close();
         }
     }
 
     @Test
-    public void     testSimulation() throws Exception
-    {
-        final int           threadQty = 20;
-        final int           executionQty = 50;
+    public void testSimulation() throws Exception {
+        final int threadQty = 20;
+        final int executionQty = 50;
 
         final AtomicInteger optimisticTries = new AtomicInteger();
         final AtomicInteger promotedLockTries = new AtomicInteger();
@@ -205,15 +177,12 @@ public class TestDistributedAtomicLong extends BaseClassForTests
         final AtomicInteger errors = new AtomicInteger();
 
         final SummaryStatistics timingStats = new SynchronizedSummaryStatistics();
-        List<Future<Void>>      procs = Lists.newArrayList();
-        ExecutorService         executorService = Executors.newFixedThreadPool(threadQty);
-        for ( int i = 0; i < threadQty; ++i )
-        {
-            Callable<Void>          proc = new Callable<Void>()
-            {
+        List<Future<Void>> procs = Lists.newArrayList();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadQty);
+        for (int i = 0; i < threadQty; ++i) {
+            Callable<Void> proc = new Callable<Void>() {
                 @Override
-                public Void call() throws Exception
-                {
+                public Void call() throws Exception {
                     doSimulation(executionQty, timingStats, optimisticTries, promotedLockTries, failures, errors);
                     return null;
                 }
@@ -221,8 +190,7 @@ public class TestDistributedAtomicLong extends BaseClassForTests
             procs.add(executorService.submit(proc));
         }
 
-        for ( Future<Void> f : procs )
-        {
+        for (Future<Void> f : procs) {
             f.get();
         }
 
@@ -243,15 +211,13 @@ public class TestDistributedAtomicLong extends BaseClassForTests
     }
 
     @Test
-    public void     testBasic() throws Exception
-    {
-        CuratorFramework        client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    public void testBasic() throws Exception {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
+        try {
             DistributedAtomicLong dal = new DistributedAtomicLong(client, "/foo/bar/counter", new RetryOneTime(1));
 
-            AtomicValue<Long>           value = dal.increment();
+            AtomicValue<Long> value = dal.increment();
             Assert.assertTrue(value.succeeded());
             Assert.assertEquals(value.getStats().getOptimisticTries(), 1);
             Assert.assertEquals(value.getStats().getPromotedLockTries(), 0);
@@ -279,44 +245,37 @@ public class TestDistributedAtomicLong extends BaseClassForTests
             Assert.assertEquals(value.preValue().longValue(), 10L);
             Assert.assertEquals(value.postValue().longValue(), 5L);
         }
-        finally
-        {
+        finally {
             client.close();
         }
     }
 
-    private void doSimulation(int executionQty, SummaryStatistics timingStats, AtomicInteger optimisticTries, AtomicInteger promotedLockTries, AtomicInteger failures, AtomicInteger errors) throws Exception
-    {
-        Random              random = new Random();
-        long                previousValue = -1;
-        CuratorFramework    client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+    private void doSimulation(int executionQty, SummaryStatistics timingStats, AtomicInteger optimisticTries, AtomicInteger promotedLockTries, AtomicInteger failures, AtomicInteger errors) throws Exception {
+        Random random = new Random();
+        long previousValue = -1;
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         client.start();
-        try
-        {
-            RetryPolicy             retryPolicy = new ExponentialBackoffRetry(3, 3);
-            PromotedToLock.Builder  builder = PromotedToLock.builder().lockPath("/lock").retryPolicy(retryPolicy);
+        try {
+            RetryPolicy retryPolicy = new ExponentialBackoffRetry(3, 3);
+            PromotedToLock.Builder builder = PromotedToLock.builder().lockPath("/lock").retryPolicy(retryPolicy);
 
             DistributedAtomicLong dal = new DistributedAtomicLong(client, "/counter", retryPolicy, builder.build());
-            for ( int i = 0; i < executionQty; ++i )
-            {
+            for (int i = 0; i < executionQty; ++i) {
                 Thread.sleep(random.nextInt(10));
 
-                long                start = System.currentTimeMillis();
-                AtomicValue<Long>   value = dal.increment();
-                long                elapsed = System.currentTimeMillis() - start;
+                long start = System.currentTimeMillis();
+                AtomicValue<Long> value = dal.increment();
+                long elapsed = System.currentTimeMillis() - start;
                 timingStats.addValue(elapsed);
 
-                if ( value.succeeded() )
-                {
-                    if ( value.postValue() <= previousValue )
-                    {
+                if (value.succeeded()) {
+                    if (value.postValue() <= previousValue) {
                         errors.incrementAndGet();
                     }
 
                     previousValue = value.postValue();
                 }
-                else
-                {
+                else {
                     failures.incrementAndGet();
                 }
 
@@ -324,8 +283,7 @@ public class TestDistributedAtomicLong extends BaseClassForTests
                 promotedLockTries.addAndGet(value.getStats().getPromotedLockTries());
             }
         }
-        finally
-        {
+        finally {
             client.close();
         }
     }

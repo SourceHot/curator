@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,8 +29,7 @@ import org.apache.curator.x.async.modeled.models.TestNewerModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-public class TestModeledFrameworkBase extends CompletableBaseClassForTests
-{
+public class TestModeledFrameworkBase extends CompletableBaseClassForTests {
     protected static final ZPath path = ZPath.parse("/test/path");
     protected CuratorFramework rawClient;
     protected ModelSpec<TestModel> modelSpec;
@@ -39,8 +38,7 @@ public class TestModeledFrameworkBase extends CompletableBaseClassForTests
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         super.setup();
 
         rawClient = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
@@ -56,8 +54,7 @@ public class TestModeledFrameworkBase extends CompletableBaseClassForTests
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         CloseableUtils.closeQuietly(rawClient);
         super.teardown();
     }

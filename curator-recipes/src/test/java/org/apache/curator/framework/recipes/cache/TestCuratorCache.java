@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,6 +25,7 @@ import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.compatibility.CuratorTestBase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,20 +34,17 @@ import static org.apache.curator.framework.recipes.cache.CuratorCache.Options.DO
 import static org.apache.curator.framework.recipes.cache.CuratorCacheListener.builder;
 
 @Test(groups = CuratorTestBase.zk36Group)
-public class TestCuratorCache extends CuratorTestBase
-{
+public class TestCuratorCache extends CuratorTestBase {
     @Test
     public void testUpdateWhenNotCachingData() throws Exception // mostly copied from TestPathChildrenCache
     {
         CuratorCacheStorage storage = new StandardCuratorCacheStorage(false);
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-        {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             client.start();
             final CountDownLatch updatedLatch = new CountDownLatch(1);
             final CountDownLatch addedLatch = new CountDownLatch(1);
             client.create().creatingParentsIfNeeded().forPath("/test");
-            try (CuratorCache cache = CuratorCache.builder(client, "/test").withStorage(storage).build())
-            {
+            try (CuratorCache cache = CuratorCache.builder(client, "/test").withStorage(storage).build()) {
                 cache.listenable().addListener(builder().forChanges((__, ___) -> updatedLatch.countDown()).build());
                 cache.listenable().addListener(builder().forCreates(__ -> addedLatch.countDown()).build());
                 cache.start();
@@ -61,30 +59,24 @@ public class TestCuratorCache extends CuratorTestBase
     }
 
     @Test
-    public void testAfterInitialized() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-        {
+    public void testAfterInitialized() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             client.start();
             client.create().creatingParentsIfNeeded().forPath("/test");
             client.create().creatingParentsIfNeeded().forPath("/test/one");
             client.create().creatingParentsIfNeeded().forPath("/test/one/two");
             client.create().creatingParentsIfNeeded().forPath("/test/one/two/three");
-            try (CuratorCache cache = CuratorCache.build(client, "/test"))
-            {
+            try (CuratorCache cache = CuratorCache.build(client, "/test")) {
                 CountDownLatch initializedLatch = new CountDownLatch(1);
                 AtomicInteger eventCount = new AtomicInteger(0);
-                CuratorCacheListener listener = new CuratorCacheListener()
-                {
+                CuratorCacheListener listener = new CuratorCacheListener() {
                     @Override
-                    public void event(Type type, ChildData oldData, ChildData data)
-                    {
+                    public void event(Type type, ChildData oldData, ChildData data) {
                         eventCount.incrementAndGet();
                     }
 
                     @Override
-                    public void initialized()
-                    {
+                    public void initialized() {
                         initializedLatch.countDown();
                     }
                 };
@@ -103,13 +95,10 @@ public class TestCuratorCache extends CuratorTestBase
     }
 
     @Test
-    public void testListenerBuilder() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-        {
+    public void testListenerBuilder() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             client.start();
-            try (CuratorCache cache = CuratorCache.build(client, "/test"))
-            {
+            try (CuratorCache cache = CuratorCache.build(client, "/test")) {
                 Semaphore all = new Semaphore(0);
                 Semaphore deletes = new Semaphore(0);
                 Semaphore changes = new Semaphore(0);
@@ -145,17 +134,14 @@ public class TestCuratorCache extends CuratorTestBase
     }
 
     @Test
-    public void testClearOnClose() throws Exception
-    {
-        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)))
-        {
+    public void testClearOnClose() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             CuratorCacheStorage storage;
             client.start();
 
-            try ( CuratorCache cache = CuratorCache.builder(client, "/test").withOptions(DO_NOT_CLEAR_ON_CLOSE).build() )
-            {
+            try (CuratorCache cache = CuratorCache.builder(client, "/test").withOptions(DO_NOT_CLEAR_ON_CLOSE).build()) {
                 cache.start();
-                storage = ((CuratorCacheImpl)cache).storage();
+                storage = ((CuratorCacheImpl) cache).storage();
 
                 client.create().forPath("/test", "foo".getBytes());
                 client.create().forPath("/test/bar", "bar".getBytes());
@@ -163,10 +149,9 @@ public class TestCuratorCache extends CuratorTestBase
             }
             Assert.assertEquals(storage.size(), 2);
 
-            try ( CuratorCache cache = CuratorCache.build(client, "/test") )
-            {
+            try (CuratorCache cache = CuratorCache.build(client, "/test")) {
                 cache.start();
-                storage = ((CuratorCacheImpl)cache).storage();
+                storage = ((CuratorCacheImpl) cache).storage();
 
                 timing.sleepABit();
             }

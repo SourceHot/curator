@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,8 +20,7 @@ package org.apache.curator.framework.api;
 
 import org.apache.curator.framework.CuratorFrameworkFactory;
 
-public interface PathAndBytesable<T>
-{
+public interface PathAndBytesable<T> {
     /**
      * Commit the currently building operation using the given path and data
      *
@@ -30,7 +29,7 @@ public interface PathAndBytesable<T>
      * @return operation result if any
      * @throws Exception errors
      */
-    public T        forPath(String path, byte[] data) throws Exception;
+    public T forPath(String path, byte[] data) throws Exception;
 
     /**
      * Commit the currently building operation using the given path and the default data
@@ -41,5 +40,5 @@ public interface PathAndBytesable<T>
      * @return operation result if any
      * @throws Exception errors
      */
-    public T        forPath(String path) throws Exception;
+    public T forPath(String path) throws Exception;
 }

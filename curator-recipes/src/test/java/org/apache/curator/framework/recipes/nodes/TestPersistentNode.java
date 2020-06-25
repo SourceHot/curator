@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,49 +32,41 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class TestPersistentNode extends BaseClassForTests
-{
+public class TestPersistentNode extends BaseClassForTests {
     @Test
-    public void testQuickSetData() throws Exception
-    {
+    public void testQuickSetData() throws Exception {
         final byte[] TEST_DATA = "hey".getBytes();
         final byte[] ALT_TEST_DATA = "there".getBytes();
 
         Timing timing = new Timing();
         PersistentNode pen = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             pen = new PersistentNode(client, CreateMode.PERSISTENT, false, "/test", TEST_DATA);
             pen.start();
-            try
-            {
+            try {
                 pen.setData(ALT_TEST_DATA);
                 Assert.fail("IllegalStateException should have been thrown");
             }
-            catch ( IllegalStateException dummy )
-            {
+            catch (IllegalStateException dummy) {
                 // expected
             }
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(pen);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         final byte[] TEST_DATA = "hey".getBytes();
 
         Timing2 timing = new Timing2();
         PersistentNode pen = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             pen = new PersistentNode(client, CreateMode.PERSISTENT, false, "/test", TEST_DATA);
             pen.debugWaitMsForBackgroundBeforeClose.set(timing.forSleepingABit().milliseconds());
@@ -88,21 +80,18 @@ public class TestPersistentNode extends BaseClassForTests
             byte[] bytes = client.getData().forPath("/test");
             Assert.assertEquals(bytes, TEST_DATA);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(pen);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testQuickClose() throws Exception
-    {
+    public void testQuickClose() throws Exception {
         Timing timing = new Timing();
         PersistentNode pen = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             pen = new PersistentNode(client, CreateMode.PERSISTENT, false, "/test/one/two", new byte[0]);
             pen.start();
@@ -110,21 +99,18 @@ public class TestPersistentNode extends BaseClassForTests
             timing.sleepABit();
             Assert.assertNull(client.checkExists().forPath("/test/one/two"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(pen);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testQuickCloseNodeExists() throws Exception
-    {
+    public void testQuickCloseNodeExists() throws Exception {
         Timing timing = new Timing();
         PersistentNode pen = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().creatingParentsIfNeeded().forPath("/test/one/two");
 
@@ -134,39 +120,35 @@ public class TestPersistentNode extends BaseClassForTests
             timing.sleepABit();
             Assert.assertNull(client.checkExists().forPath("/test/one/two"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(pen);
             CloseableUtils.closeQuietly(client);
         }
     }
-    
+
     @Test
-    public void testEphemeralSequentialWithProtectionReconnection() throws Exception
-    {
+    public void testEphemeralSequentialWithProtectionReconnection() throws Exception {
         Timing timing = new Timing();
         PersistentNode pen = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().creatingParentsIfNeeded().forPath("/test/one");
 
             pen = new PersistentNode(client, CreateMode.EPHEMERAL_SEQUENTIAL, true, "/test/one/two", new byte[0]);
             pen.start();
             List<String> children = client.getChildren().forPath("/test/one");
-            System.out.println("children before restart: "+children);
+            System.out.println("children before restart: " + children);
             Assert.assertEquals(1, children.size());
             server.stop();
             timing.sleepABit();
             server.restart();
             timing.sleepABit();
             List<String> childrenAfter = client.getChildren().forPath("/test/one");
-            System.out.println("children after restart: "+childrenAfter);
-            Assert.assertEquals(children, childrenAfter, "unexpected znodes: "+childrenAfter);
+            System.out.println("children after restart: " + childrenAfter);
+            Assert.assertEquals(children, childrenAfter, "unexpected znodes: " + childrenAfter);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(pen);
             CloseableUtils.closeQuietly(client);
         }

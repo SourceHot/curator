@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,207 +30,167 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestBoundedDistributedQueue extends BaseClassForTests
-{
-    private static final QueueSerializer<String> serializer = new QueueSerializer<String>()
-    {
+public class TestBoundedDistributedQueue extends BaseClassForTests {
+    private static final QueueSerializer<String> serializer = new QueueSerializer<String>() {
         @Override
-        public byte[] serialize(String item)
-        {
+        public byte[] serialize(String item) {
             return item.getBytes();
         }
 
         @Override
-        public String deserialize(byte[] bytes)
-        {
+        public String deserialize(byte[] bytes) {
             return new String(bytes);
         }
     };
 
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     @Test
-    public void         testMulti() throws Exception
-    {
-        final String        PATH = "/queue";
-        final int           CLIENT_QTY = 4;
-        final int           MAX_ITEMS = 10;
-        final int           ADD_ITEMS = MAX_ITEMS * 100;
+    public void testMulti() throws Exception {
+        final String PATH = "/queue";
+        final int CLIENT_QTY = 4;
+        final int MAX_ITEMS = 10;
+        final int ADD_ITEMS = MAX_ITEMS * 100;
 
-        final QueueConsumer<String>     consumer = new QueueConsumer<String>()
-        {
+        final QueueConsumer<String> consumer = new QueueConsumer<String>() {
             @Override
-            public void consumeMessage(String message) throws Exception
-            {
+            public void consumeMessage(String message) throws Exception {
                 Thread.sleep(10);
             }
 
             @Override
-            public void stateChanged(CuratorFramework client, ConnectionState newState)
-            {
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
             }
         };
 
-        final Timing                        timing = new Timing();
-        final ExecutorService               executor = Executors.newCachedThreadPool();
-        ExecutorCompletionService<Void>     completionService = new ExecutorCompletionService<Void>(executor);
+        final Timing timing = new Timing();
+        final ExecutorService executor = Executors.newCachedThreadPool();
+        ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
 
-        final CuratorFramework              client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+        try {
             client.start();
             client.create().forPath(PATH);
 
-            final CountDownLatch    isWaitingLatch = new CountDownLatch(1);
-            final AtomicBoolean     isDone = new AtomicBoolean(false);
-            final List<Integer>     counts = new CopyOnWriteArrayList<Integer>();
-            final Object            lock = new Object();
+            final CountDownLatch isWaitingLatch = new CountDownLatch(1);
+            final AtomicBoolean isDone = new AtomicBoolean(false);
+            final List<Integer> counts = new CopyOnWriteArrayList<Integer>();
+            final Object lock = new Object();
             executor.submit
-            (
-                new Callable<Void>()
-                {
-                    @Override
-                    public Void call() throws Exception
-                    {
-                        Watcher     watcher = new Watcher()
-                        {
-                            @Override
-                            public void process(WatchedEvent event)
-                            {
-                                synchronized(lock)
-                                {
-                                    lock.notifyAll();
+                    (
+                            new Callable<Void>() {
+                                @Override
+                                public Void call() throws Exception {
+                                    Watcher watcher = new Watcher() {
+                                        @Override
+                                        public void process(WatchedEvent event) {
+                                            synchronized (lock) {
+                                                lock.notifyAll();
+                                            }
+                                        }
+                                    };
+
+                                    while (!Thread.currentThread().isInterrupted() && client.getState() == CuratorFrameworkState.STARTED && !isDone.get()) {
+                                        synchronized (lock) {
+                                            int size = client.getChildren().usingWatcher(watcher).forPath(PATH).size();
+                                            counts.add(size);
+                                            isWaitingLatch.countDown();
+                                            lock.wait();
+                                        }
+                                    }
+                                    return null;
                                 }
                             }
-                        };
-
-                        while ( !Thread.currentThread().isInterrupted() && client.getState() == CuratorFrameworkState.STARTED && !isDone.get() )
-                        {
-                            synchronized(lock)
-                            {
-                                int     size = client.getChildren().usingWatcher(watcher).forPath(PATH).size();
-                                counts.add(size);
-                                isWaitingLatch.countDown();
-                                lock.wait();
-                            }
-                        }
-                        return null;
-                    }
-                }
-            );
+                    );
             isWaitingLatch.await();
 
-            for ( int i = 0; i < CLIENT_QTY; ++i )
-            {
-                final int       index = i;
+            for (int i = 0; i < CLIENT_QTY; ++i) {
+                final int index = i;
                 completionService.submit
-                (
-                    new Callable<Void>()
-                    {
-                        @Override
-                        public Void call() throws Exception
-                        {
-                            CuratorFramework            client = null;
-                            DistributedQueue<String>    queue = null;
+                        (
+                                new Callable<Void>() {
+                                    @Override
+                                    public Void call() throws Exception {
+                                        CuratorFramework client = null;
+                                        DistributedQueue<String> queue = null;
 
-                            try
-                            {
-                                client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-                                client.start();
-                                queue = QueueBuilder.builder(client, consumer, serializer, PATH).executor(executor).maxItems(MAX_ITEMS).putInBackground(false).lockPath("/locks").buildQueue();
-                                queue.start();
+                                        try {
+                                            client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+                                            client.start();
+                                            queue = QueueBuilder.builder(client, consumer, serializer, PATH).executor(executor).maxItems(MAX_ITEMS).putInBackground(false).lockPath("/locks").buildQueue();
+                                            queue.start();
 
-                                for ( int i = 0; i < ADD_ITEMS; ++i )
-                                {
-                                    queue.put("" + index + "-" + i);
+                                            for (int i = 0; i < ADD_ITEMS; ++i) {
+                                                queue.put("" + index + "-" + i);
+                                            }
+                                        }
+                                        finally {
+                                            CloseableUtils.closeQuietly(queue);
+                                            CloseableUtils.closeQuietly(client);
+                                        }
+                                        return null;
+                                    }
                                 }
-                            }
-                            finally
-                            {
-                                CloseableUtils.closeQuietly(queue);
-                                CloseableUtils.closeQuietly(client);
-                            }
-                            return null;
-                        }
-                    }
-                );
+                        );
             }
 
-            for ( int i = 0; i < CLIENT_QTY; ++i )
-            {
+            for (int i = 0; i < CLIENT_QTY; ++i) {
                 completionService.take().get();
             }
 
             isDone.set(true);
-            synchronized(lock)
-            {
+            synchronized (lock) {
                 lock.notifyAll();
             }
 
-            for ( int count : counts )
-            {
+            for (int count : counts) {
                 Assert.assertTrue(count <= (MAX_ITEMS * CLIENT_QTY), counts.toString());
             }
         }
-        finally
-        {
+        finally {
             executor.shutdownNow();
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void         testSimple() throws Exception
-    {
-        Timing                      timing = new Timing();
-        DistributedQueue<String>    queue = null;
-        CuratorFramework            client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+    public void testSimple() throws Exception {
+        Timing timing = new Timing();
+        DistributedQueue<String> queue = null;
+        CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
+        try {
             client.start();
 
-            final List<String>          messages = new CopyOnWriteArrayList<String>();
-            final CountDownLatch        latch = new CountDownLatch(2);
-            final Semaphore             semaphore = new Semaphore(0);
-            QueueConsumer<String>       consumer = new QueueConsumer<String>()
-            {
+            final List<String> messages = new CopyOnWriteArrayList<String>();
+            final CountDownLatch latch = new CountDownLatch(2);
+            final Semaphore semaphore = new Semaphore(0);
+            QueueConsumer<String> consumer = new QueueConsumer<String>() {
                 @Override
-                public void consumeMessage(String message) throws Exception
-                {
+                public void consumeMessage(String message) throws Exception {
                     messages.add(message);
                     semaphore.acquire();
                 }
 
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 }
             };
             queue = QueueBuilder.builder(client, consumer, serializer, "/queue").executor(Executors.newSingleThreadExecutor()).maxItems(1).buildQueue();
             queue.start();
 
-            QueuePutListener<String>    listener = new QueuePutListener<String>()
-            {
+            QueuePutListener<String> listener = new QueuePutListener<String>() {
                 @Override
-                public void putCompleted(String item)
-                {
+                public void putCompleted(String item) {
                     latch.countDown();
                 }
 
                 @Override
-                public void putMultiCompleted(MultiItem<String> items)
-                {
+                public void putMultiCompleted(MultiItem<String> items) {
                 }
             };
             queue.getPutListenerContainer().addListener(listener);
@@ -246,10 +206,8 @@ public class TestBoundedDistributedQueue extends BaseClassForTests
             Assert.assertTrue(queue.put("4", timing.milliseconds(), TimeUnit.MILLISECONDS));
             Assert.assertTrue(queue.put("5", timing.milliseconds(), TimeUnit.MILLISECONDS));
 
-            for ( int i = 0; i < 5; ++i )
-            {
-                if ( messages.size() == 3 )
-                {
+            for (int i = 0; i < 5; ++i) {
+                if (messages.size() == 3) {
                     break;
                 }
                 timing.sleepABit();
@@ -258,8 +216,7 @@ public class TestBoundedDistributedQueue extends BaseClassForTests
 
             Assert.assertEquals(messages, Arrays.asList("1", "2", "3", "4", "5"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(queue);
             CloseableUtils.closeQuietly(client);
         }

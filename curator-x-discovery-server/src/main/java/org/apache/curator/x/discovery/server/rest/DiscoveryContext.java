@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,21 +26,20 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 /**
  * Bridge between the specifics of your needs and the generic implementation
  */
-public interface DiscoveryContext<T>
-{
+public interface DiscoveryContext<T> {
     /**
      * Return the threshold in milliseconds to consider a registration stale
      *
      * @return number of milliseconds
      */
-    public int                      getInstanceRefreshMs();
+    public int getInstanceRefreshMs();
 
     /**
      * Return the service singleton
      *
      * @return service
      */
-    public ServiceDiscovery<T>      getServiceDiscovery();
+    public ServiceDiscovery<T> getServiceDiscovery();
 
     /**
      * Serialize your payload
@@ -50,7 +49,7 @@ public interface DiscoveryContext<T>
      * @param payload the payload value (can be null)
      * @throws Exception any errors
      */
-    public void                     marshallJson(ObjectNode node, String fieldName, T payload) throws Exception;
+    public void marshallJson(ObjectNode node, String fieldName, T payload) throws Exception;
 
     /**
      * Deserialize your payload
@@ -59,12 +58,12 @@ public interface DiscoveryContext<T>
      * @return the payload or null
      * @throws Exception any errors
      */
-    public T                        unMarshallJson(JsonNode node) throws Exception;
+    public T unMarshallJson(JsonNode node) throws Exception;
 
     /**
      * Return the provider strategy to use for {@link DiscoveryResource#getAny(String)}
      *
      * @return strategy
      */
-    public ProviderStrategy<T>      getProviderStrategy();
+    public ProviderStrategy<T> getProviderStrategy();
 }

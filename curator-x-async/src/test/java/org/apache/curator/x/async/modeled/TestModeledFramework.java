@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -40,6 +40,7 @@ import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -47,11 +48,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-public class TestModeledFramework extends TestModeledFrameworkBase
-{
+public class TestModeledFramework extends TestModeledFrameworkBase {
     @Test
-    public void testCrud()
-    {
+    public void testCrud() {
         TestModel rawModel = new TestModel("John", "Galt", "1 Galt's Gulch", 42, BigInteger.valueOf(1));
         TestModel rawModel2 = new TestModel("Wayne", "Rooney", "Old Trafford", 10, BigInteger.valueOf(1));
         ModeledFramework<TestModel> client = ModeledFramework.wrap(async, modelSpec);
@@ -66,8 +65,7 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testBackwardCompatibility()
-    {
+    public void testBackwardCompatibility() {
         TestNewerModel rawNewModel = new TestNewerModel("John", "Galt", "1 Galt's Gulch", 42, BigInteger.valueOf(1), 100);
         ModeledFramework<TestNewerModel> clientForNew = ModeledFramework.wrap(async, newModelSpec);
         complete(clientForNew.set(rawNewModel), (s, e) -> Assert.assertNotNull(s));
@@ -77,8 +75,7 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testWatched() throws InterruptedException
-    {
+    public void testWatched() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         ModeledFramework<TestModel> client = ModeledFramework.builder(async, modelSpec).watched().build();
         client.checkExists().event().whenComplete((event, ex) -> latch.countDown());
@@ -89,8 +86,7 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testGetChildren()
-    {
+    public void testGetChildren() {
         TestModel model = new TestModel("John", "Galt", "1 Galt's Gulch", 42, BigInteger.valueOf(1));
         ModeledFramework<TestModel> client = ModeledFramework.builder(async, modelSpec).build();
         complete(client.child("one").set(model));
@@ -102,8 +98,7 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testBadNode()
-    {
+    public void testBadNode() {
         complete(async.create().forPath(modelSpec.path().fullPath(), "fubar".getBytes()), (v, e) -> {
         });    // ignore error
 
@@ -112,20 +107,16 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testSchema() throws Exception
-    {
+    public void testSchema() throws Exception {
         Schema schema = modelSpec.schema();
-        try (CuratorFramework schemaClient = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).schemaSet(new SchemaSet(Collections.singletonList(schema), false)).build())
-        {
+        try (CuratorFramework schemaClient = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).schemaSet(new SchemaSet(Collections.singletonList(schema), false)).build()) {
             schemaClient.start();
 
-            try
-            {
+            try {
                 schemaClient.create().forPath(modelSpec.path().fullPath(), "asflasfas".getBytes());
                 Assert.fail("Should've thrown SchemaViolation");
             }
-            catch ( SchemaViolation dummy )
-            {
+            catch (SchemaViolation dummy) {
                 // expected
             }
 
@@ -135,8 +126,7 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testVersioned()
-    {
+    public void testVersioned() {
         ModeledFramework<TestModel> client = ModeledFramework.wrap(async, modelSpec);
         TestModel model = new TestModel("John", "Galt", "Galt's Gulch", 21, BigInteger.valueOf(1010101));
         complete(client.set(model));
@@ -147,10 +137,10 @@ public class TestModeledFramework extends TestModeledFrameworkBase
             Assert.assertNull(e);
             Assert.assertTrue(v.version() > 0);
         }).thenCompose(versioned::set), (s, e) -> Assert.assertNull(e)); // version is correct should succeed
-        
+
         Versioned<TestModel> badVersion = Versioned.from(model, 100000);
         complete(versioned.set(badVersion), (v, e) -> Assert.assertTrue(e instanceof KeeperException.BadVersionException));
-        
+
         final Stat stat = new Stat();
         complete(client.read(stat));
         // wrong version, needs to fail
@@ -160,16 +150,14 @@ public class TestModeledFramework extends TestModeledFrameworkBase
     }
 
     @Test
-    public void testAcl() throws NoSuchAlgorithmException
-    {
+    public void testAcl() throws NoSuchAlgorithmException {
         List<ACL> aclList = Collections.singletonList(new ACL(ZooDefs.Perms.WRITE, new Id("digest", DigestAuthenticationProvider.generateDigest("test:test"))));
         ModelSpec<TestModel> aclModelSpec = ModelSpec.builder(modelSpec.path(), modelSpec.serializer()).withAclList(aclList).build();
         ModeledFramework<TestModel> client = ModeledFramework.wrap(async, aclModelSpec);
         complete(client.set(new TestModel("John", "Galt", "Galt's Gulch", 21, BigInteger.valueOf(1010101))));
         complete(client.update(new TestModel("John", "Galt", "Galt's Gulch", 54, BigInteger.valueOf(88))), (__, e) -> Assert.assertNotNull(e, "Should've gotten an auth failure"));
 
-        try (CuratorFramework authCurator = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).authorization("digest", "test:test".getBytes()).build())
-        {
+        try (CuratorFramework authCurator = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).authorization("digest", "test:test".getBytes()).build()) {
             authCurator.start();
             ModeledFramework<TestModel> authClient = ModeledFramework.wrap(AsyncCuratorFramework.wrap(authCurator), aclModelSpec);
             complete(authClient.update(new TestModel("John", "Galt", "Galt's Gulch", 42, BigInteger.valueOf(66))), (__, e) -> Assert.assertNull(e, "Should've succeeded"));

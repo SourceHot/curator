@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,11 +25,9 @@ import org.testng.annotations.Test;
 
 import static org.apache.curator.x.async.modeled.ZPath.parameter;
 
-public class TestZPath
-{
+public class TestZPath {
     @Test
-    public void testRoot()
-    {
+    public void testRoot() {
         Assert.assertEquals(ZPath.root.nodeName(), ZKPaths.PATH_SEPARATOR);
         Assert.assertEquals(ZPath.root, ZPathImpl.root);
         Assert.assertTrue(ZPath.root.isRoot());
@@ -38,8 +36,7 @@ public class TestZPath
     }
 
     @Test
-    public void testBasic()
-    {
+    public void testBasic() {
         ZPath path = ZPath.root.child("one").child("two");
         Assert.assertFalse(path.isRoot());
         Assert.assertEquals(path, ZPath.root.child("one").child("two"));
@@ -62,8 +59,7 @@ public class TestZPath
     }
 
     @Test
-    public void testParsing()
-    {
+    public void testParsing() {
         Assert.assertEquals(ZPath.parse("/"), ZPath.root);
         Assert.assertEquals(ZPath.parse("/one/two/three"), ZPath.root.child("one").child("two").child("three"));
         Assert.assertEquals(ZPath.parse("/one/two/three"), ZPath.from("one", "two", "three"));
@@ -71,22 +67,19 @@ public class TestZPath
     }
 
     @Test(expectedExceptions = IllegalStateException.class)
-    public void testUnresolvedPath()
-    {
+    public void testUnresolvedPath() {
         ZPath path = ZPath.from("one", parameter(), "two");
         path.fullPath();
     }
 
     @Test
-    public void testResolvedPath()
-    {
+    public void testResolvedPath() {
         ZPath path = ZPath.from("one", parameter(), "two", parameter());
         Assert.assertEquals(path.resolved("a", "b"), ZPath.from("one", "a", "two", "b"));
     }
 
     @Test
-    public void testSchema()
-    {
+    public void testSchema() {
         ZPath path = ZPath.from("one", parameter(), "two", parameter());
         Assert.assertEquals(path.toSchemaPathPattern().toString(), "/one/.*/two/.*");
         path = ZPath.parse("/one/two/three");
@@ -98,16 +91,14 @@ public class TestZPath
     }
 
     @Test
-    public void testCustomIds()
-    {
+    public void testCustomIds() {
         Assert.assertEquals(ZPath.parseWithIds("/a/{a}/bee/{bee}/c/{c}").toString(), "/a/{a}/bee/{bee}/c/{c}");
         Assert.assertEquals(ZPath.from("a", parameter(), "b", parameter()).toString(), "/a/{id}/b/{id}");
         Assert.assertEquals(ZPath.from("a", parameter("foo"), "b", parameter("bar")).toString(), "/a/{foo}/b/{bar}");
     }
 
     @Test
-    public void testPartialResolution()
-    {
+    public void testPartialResolution() {
         ZPath path = ZPath.parseWithIds("/one/{1}/two/{2}");
         Assert.assertFalse(path.parent().isResolved());
         Assert.assertFalse(path.parent().parent().isResolved());

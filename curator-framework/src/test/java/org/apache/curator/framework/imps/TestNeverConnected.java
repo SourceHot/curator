@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,35 +20,31 @@
 package org.apache.curator.framework.imps;
 
 import com.google.common.collect.Queues;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.Timing;
+import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class TestNeverConnected
-{
+public class TestNeverConnected {
     @Test
-    public void testNeverConnected() throws Exception
-    {
+    public void testNeverConnected() throws Exception {
         Timing timing = new Timing();
 
         // use a connection string to a non-existent server
         CuratorFramework client = CuratorFrameworkFactory.newClient("localhost:1111", 100, 100, new RetryOneTime(1));
-        try
-        {
+        try {
             final BlockingQueue<ConnectionState> queue = Queues.newLinkedBlockingQueue();
-            ConnectionStateListener listener = new ConnectionStateListener()
-            {
+            ConnectionStateListener listener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState state)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState state) {
                     queue.add(state);
                 }
             };
@@ -62,8 +58,7 @@ public class TestNeverConnected
             polled = queue.poll(timing.forWaiting().seconds(), TimeUnit.SECONDS);
             Assert.assertEquals(polled, ConnectionState.LOST);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Similar to {@link org.apache.curator.utils.EnsurePath} but creates containers.
  *
  */
-public class EnsureContainers
-{
+public class EnsureContainers {
     private final CuratorFramework client;
     private final String path;
     private final AtomicBoolean ensureNeeded = new AtomicBoolean(true);
@@ -34,8 +33,7 @@ public class EnsureContainers
      * @param client the client
      * @param path path to ensure is containers
      */
-    public EnsureContainers(CuratorFramework client, String path)
-    {
+    public EnsureContainers(CuratorFramework client, String path) {
         this.client = client;
         this.path = path;
     }
@@ -46,10 +44,8 @@ public class EnsureContainers
      *
      * @throws Exception errors
      */
-    public void ensure() throws Exception
-    {
-        if ( ensureNeeded.get() )
-        {
+    public void ensure() throws Exception {
+        if (ensureNeeded.get()) {
             internalEnsure();
         }
     }
@@ -57,15 +53,12 @@ public class EnsureContainers
     /**
      * Reset so that the next call to {@link #ensure()} will attempt to create containers
      */
-    public void reset()
-    {
+    public void reset() {
         ensureNeeded.set(true);
     }
 
-    private synchronized void internalEnsure() throws Exception
-    {
-        if ( ensureNeeded.compareAndSet(true, false) )
-        {
+    private synchronized void internalEnsure() throws Exception {
+        if (ensureNeeded.compareAndSet(true, false)) {
             client.createContainers(path);
         }
     }

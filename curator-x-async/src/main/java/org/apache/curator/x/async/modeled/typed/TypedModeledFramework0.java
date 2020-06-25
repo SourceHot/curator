@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,8 +27,7 @@ import org.apache.curator.x.async.modeled.ModeledFrameworkBuilder;
  * Same as {@link TypedModeledFramework}, but with 0 parameters
  */
 @FunctionalInterface
-public interface TypedModeledFramework0<M>
-{
+public interface TypedModeledFramework0<M> {
     ModeledFramework<M> resolved(AsyncCuratorFramework client);
 
     /**
@@ -40,8 +39,7 @@ public interface TypedModeledFramework0<M>
      * @param modelSpec TypedModelSpec
      * @return new TypedModeledFramework
      */
-    static <M> TypedModeledFramework0<M> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec0<M> modelSpec)
-    {
+    static <M> TypedModeledFramework0<M> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec0<M> modelSpec) {
         return (client) -> frameworkBuilder.withClient(client).withModelSpec(modelSpec.resolved()).build();
     }
 
@@ -55,8 +53,7 @@ public interface TypedModeledFramework0<M>
      * @param pathWithIds path with {XXXX} parameters
      * @return new TypedModeledFramework
      */
-    static <M> TypedModeledFramework0<M> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds)
-    {
+    static <M> TypedModeledFramework0<M> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds) {
         TypedModelSpec0<M> typedModelSpec = TypedModelSpec0.from(modelSpecBuilder, pathWithIds);
         return (client) -> frameworkBuilder.withClient(client).withModelSpec(typedModelSpec.resolved()).build();
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,11 +29,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestServiceDiscoveryBuilder extends BaseClassForTests
-{
+public class TestServiceDiscoveryBuilder extends BaseClassForTests {
     @Test
-    public void testDefaultSerializer()
-    {        
+    public void testDefaultSerializer() {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         ServiceDiscoveryBuilder<Object> builder = ServiceDiscoveryBuilder.builder(Object.class).client(client);
         ServiceDiscoveryImpl<?> discovery = (ServiceDiscoveryImpl<?>) builder.basePath("/path").build();
@@ -43,21 +41,17 @@ public class TestServiceDiscoveryBuilder extends BaseClassForTests
     }
 
     @Test
-    public void testSetSerializer()
-    {
+    public void testSetSerializer() {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
         ServiceDiscoveryBuilder<Object> builder = ServiceDiscoveryBuilder.builder(Object.class).client(client);
-        builder.serializer(new InstanceSerializer<Object>()
-        {
+        builder.serializer(new InstanceSerializer<Object>() {
             @Override
-            public byte[] serialize(ServiceInstance<Object> instance)
-            {
+            public byte[] serialize(ServiceInstance<Object> instance) {
                 return null;
             }
 
             @Override
-            public ServiceInstance<Object> deserialize(byte[] bytes)
-            {
+            public ServiceInstance<Object> deserialize(byte[] bytes) {
                 return null;
             }
         });

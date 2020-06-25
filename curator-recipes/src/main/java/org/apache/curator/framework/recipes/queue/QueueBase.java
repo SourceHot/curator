@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,17 +19,17 @@
 package org.apache.curator.framework.recipes.queue;
 
 import org.apache.curator.framework.listen.Listenable;
+
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
-public interface QueueBase<T> extends Closeable
-{
+public interface QueueBase<T> extends Closeable {
     /**
      * Start the queue. No other methods work until this is called
      *
      * @throws Exception startup errors
      */
-    void     start() throws Exception;
+    void start() throws Exception;
 
     /**
      * Return the manager for put listeners
@@ -44,7 +44,7 @@ public interface QueueBase<T> extends Closeable
      *
      * @param newErrorMode the new error mode (the default is {@link ErrorMode#REQUEUE}
      */
-    void     setErrorMode(ErrorMode newErrorMode);
+    void setErrorMode(ErrorMode newErrorMode);
 
     /**
      * Wait until any pending puts are committed

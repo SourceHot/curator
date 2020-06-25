@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,28 +20,25 @@ package org.apache.curator.x.discovery.server.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import java.util.Collection;
 import java.util.List;
 
 /**
  * Raw generic lists don't work well in JAX-RS. Thus, this wrapper is needed.
  */
-public class ServiceNames
-{
+public class ServiceNames {
     private final List<String> names;
 
-    public ServiceNames()
-    {
+    public ServiceNames() {
         names = Lists.newArrayList();
     }
 
-    public ServiceNames(Collection<? extends String> c)
-    {
+    public ServiceNames(Collection<? extends String> c) {
         names = Lists.newArrayList(c);
     }
 
-    public List<String> getNames()
-    {
+    public List<String> getNames() {
         return ImmutableList.copyOf(names);
     }
 }

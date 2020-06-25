@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,6 +20,7 @@
 package org.apache.curator.framework.recipes.cache;
 
 import org.apache.curator.utils.ZKPaths;
+
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -27,8 +28,7 @@ import java.util.stream.Stream;
 /**
  * Methods to access the underlying storage
  */
-public interface CuratorCacheAccessor
-{
+public interface CuratorCacheAccessor {
     /**
      * Return an entry from storage
      *
@@ -65,8 +65,7 @@ public interface CuratorCacheAccessor
      * @param parentPath the parent path to filter on
      * @return filtered stream
      */
-    static Predicate<ChildData> parentPathFilter(String parentPath)
-    {
+    static Predicate<ChildData> parentPathFilter(String parentPath) {
         return d -> {
             ZKPaths.PathAndNode pathAndNode = ZKPaths.getPathAndNode(d.getPath());
             return pathAndNode.getPath().equals(parentPath);

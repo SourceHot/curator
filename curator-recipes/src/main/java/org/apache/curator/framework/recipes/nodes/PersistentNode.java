@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,13 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.WatcherRemoveCuratorFramework;
-import org.apache.curator.framework.api.ACLBackgroundPathAndBytesable;
-import org.apache.curator.framework.api.BackgroundCallback;
-import org.apache.curator.framework.api.CreateBuilder;
-import org.apache.curator.framework.api.CreateBuilderMain;
-import org.apache.curator.framework.api.CreateModable;
-import org.apache.curator.framework.api.CuratorEvent;
-import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.curator.framework.api.*;
 import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.listen.StandardListenerManager;
 import org.apache.curator.framework.state.ConnectionState;
@@ -43,6 +37,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
@@ -61,8 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Thanks to bbeck (https://github.com/bbeck) for the initial coding and design
  * </p>
  */
-public class PersistentNode implements Closeable
-{
+public class PersistentNode implements Closeable {
     private final AtomicReference<CountDownLatch> initialCreateLatch = new AtomicReference<CountDownLatch>(new CountDownLatch(1));
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final WatcherRemoveCuratorFramework client;
@@ -77,80 +71,61 @@ public class PersistentNode implements Closeable
     private final boolean useProtection;
     private final AtomicReference<CreateModable<ACLBackgroundPathAndBytesable<String>>> createMethod = new AtomicReference<CreateModable<ACLBackgroundPathAndBytesable<String>>>(null);
     private final StandardListenerManager<PersistentNodeListener> listeners = StandardListenerManager.standard();
-    private final CuratorWatcher watcher = new CuratorWatcher()
-    {
+    private final CuratorWatcher watcher = new CuratorWatcher() {
         @Override
-        public void process(WatchedEvent event) throws Exception
-        {
-            if ( isActive() )
-            {
-                if ( event.getType() == EventType.NodeDeleted )
-                {
+        public void process(WatchedEvent event) throws Exception {
+            if (isActive()) {
+                if (event.getType() == EventType.NodeDeleted) {
                     createNode();
                 }
-                else if ( event.getType() == EventType.NodeDataChanged )
-                {
+                else if (event.getType() == EventType.NodeDataChanged) {
                     watchNode();
                 }
             }
         }
     };
 
-    private final BackgroundCallback checkExistsCallback = new BackgroundCallback()
-    {
+    private final BackgroundCallback checkExistsCallback = new BackgroundCallback() {
         @Override
-        public void processResult(CuratorFramework dummy, CuratorEvent event) throws Exception
-        {
-            if ( isActive() )
-            {
-                if ( event.getResultCode() == KeeperException.Code.NONODE.intValue() )
-                {
+        public void processResult(CuratorFramework dummy, CuratorEvent event) throws Exception {
+            if (isActive()) {
+                if (event.getResultCode() == KeeperException.Code.NONODE.intValue()) {
                     createNode();
                 }
-                else
-                {
+                else {
                     boolean isEphemeral = event.getStat().getEphemeralOwner() != 0;
-                    if ( isEphemeral != mode.isEphemeral() )
-                    {
+                    if (isEphemeral != mode.isEphemeral()) {
                         log.warn("Existing node ephemeral state doesn't match requested state. Maybe the node was created outside of PersistentNode? " + basePath);
                     }
                 }
             }
-            else
-            {
+            else {
                 client.removeWatchers();
             }
         }
     };
-    private final BackgroundCallback setDataCallback = new BackgroundCallback()
-    {
+    private final BackgroundCallback setDataCallback = new BackgroundCallback() {
 
         @Override
         public void processResult(CuratorFramework dummy, CuratorEvent event)
-            throws Exception
-        {
+                throws Exception {
             //If the result is ok then initialisation is complete (if we're still initialising)
             //Don't retry on other errors as the only recoverable cases will be connection loss
             //and the node not existing, both of which are already handled by other watches.
-            if ( event.getResultCode() == KeeperException.Code.OK.intValue() )
-            {
+            if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
                 //Update is ok, mark initialisation as complete if required.
                 initialisationComplete();
             }
-            else if ( event.getResultCode() == KeeperException.Code.NOAUTH.intValue() )
-            {
+            else if (event.getResultCode() == KeeperException.Code.NOAUTH.intValue()) {
                 log.warn("Client does not have authorisation to write node at path {}", event.getPath());
                 authFailure.set(true);
             }
         }
     };
-    private final ConnectionStateListener connectionStateListener = new ConnectionStateListener()
-    {
+    private final ConnectionStateListener connectionStateListener = new ConnectionStateListener() {
         @Override
-        public void stateChanged(CuratorFramework dummy, ConnectionState newState)
-        {
-            if ( (newState == ConnectionState.RECONNECTED) && isActive() )
-            {
+        public void stateChanged(CuratorFramework dummy, ConnectionState newState) {
+            if ((newState == ConnectionState.RECONNECTED) && isActive()) {
                 createNode();
             }
         }
@@ -159,8 +134,7 @@ public class PersistentNode implements Closeable
     @VisibleForTesting
     volatile CountDownLatch debugCreateNodeLatch = null;
 
-    private enum State
-    {
+    private enum State {
         LATENT,
         STARTED,
         CLOSED
@@ -173,8 +147,7 @@ public class PersistentNode implements Closeable
      * @param basePath the base path for the node
      * @param initData data for the node
      */
-    public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData)
-    {
+    public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData) {
         this(givenClient, mode, useProtection, basePath, initData, -1);
     }
 
@@ -186,8 +159,7 @@ public class PersistentNode implements Closeable
      * @param initData data for the node
      * @param ttl for ttl modes, the ttl to use
      */
-    public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData, long ttl)
-    {
+    public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData, long ttl) {
         this.useProtection = useProtection;
         this.client = Preconditions.checkNotNull(givenClient, "client cannot be null").newWatcherRemoveCuratorFramework();
         this.basePath = PathUtils.validatePath(basePath);
@@ -195,17 +167,13 @@ public class PersistentNode implements Closeable
         this.ttl = ttl;
         final byte[] data = Preconditions.checkNotNull(initData, "data cannot be null");
 
-        backgroundCallback = new BackgroundCallback()
-        {
+        backgroundCallback = new BackgroundCallback() {
             @Override
-            public void processResult(CuratorFramework dummy, CuratorEvent event) throws Exception
-            {
-                if ( isActive() )
-                {
+            public void processResult(CuratorFramework dummy, CuratorEvent event) throws Exception {
+                if (isActive()) {
                     processBackgroundCallback(event);
                 }
-                else
-                {
+                else {
                     processBackgroundCallbackClosedState(event);
                 }
             }
@@ -214,77 +182,61 @@ public class PersistentNode implements Closeable
         this.data.set(Arrays.copyOf(data, data.length));
     }
 
-    private void processBackgroundCallbackClosedState(CuratorEvent event)
-    {
+    private void processBackgroundCallbackClosedState(CuratorEvent event) {
         String path = null;
-        if ( event.getResultCode() == KeeperException.Code.NODEEXISTS.intValue() )
-        {
+        if (event.getResultCode() == KeeperException.Code.NODEEXISTS.intValue()) {
             path = event.getPath();
         }
-        else if ( event.getResultCode() == KeeperException.Code.OK.intValue() )
-        {
+        else if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
             path = event.getName();
         }
 
-        if ( path != null )
-        {
-            try
-            {
+        if (path != null) {
+            try {
                 client.delete().guaranteed().inBackground().forPath(path);
             }
-            catch ( Exception e )
-            {
+            catch (Exception e) {
                 log.error("Could not delete node after close", e);
             }
         }
     }
 
-    private void processBackgroundCallback(CuratorEvent event) throws Exception
-    {
+    private void processBackgroundCallback(CuratorEvent event) throws Exception {
         String path = null;
         boolean nodeExists = false;
-        if ( event.getResultCode() == KeeperException.Code.NODEEXISTS.intValue() )
-        {
+        if (event.getResultCode() == KeeperException.Code.NODEEXISTS.intValue()) {
             path = event.getPath();
             nodeExists = true;
         }
-        else if ( event.getResultCode() == KeeperException.Code.OK.intValue() )
-        {
+        else if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
             path = event.getName();
         }
-        else if ( event.getResultCode() == KeeperException.Code.NOAUTH.intValue() )
-        {
+        else if (event.getResultCode() == KeeperException.Code.NOAUTH.intValue()) {
             log.warn("Client does not have authorisation to create node at path {}", event.getPath());
             authFailure.set(true);
             return;
         }
-        if ( path != null )
-        {
+        if (path != null) {
             authFailure.set(false);
             nodePath.set(path);
             watchNode();
 
-            if ( nodeExists )
-            {
+            if (nodeExists) {
                 client.setData().inBackground(setDataCallback).forPath(getActualPath(), getData());
             }
-            else
-            {
+            else {
                 initialisationComplete();
                 notifyListeners();
             }
         }
-        else
-        {
+        else {
             createNode();
         }
     }
 
-    private void initialisationComplete()
-    {
+    private void initialisationComplete() {
         CountDownLatch localLatch = initialCreateLatch.getAndSet(null);
-        if ( localLatch != null )
-        {
+        if (localLatch != null) {
             localLatch.countDown();
         }
     }
@@ -293,8 +245,7 @@ public class PersistentNode implements Closeable
      * You must call start() to initiate the persistent node. An attempt to create the node
      * in the background will be started
      */
-    public void start()
-    {
+    public void start() {
         Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "Already started");
 
         client.getConnectionStateListenable().addListener(connectionStateListener);
@@ -310,8 +261,7 @@ public class PersistentNode implements Closeable
      * @return if the node was created before timeout
      * @throws InterruptedException if the thread is interrupted
      */
-    public boolean waitForInitialCreate(long timeout, TimeUnit unit) throws InterruptedException
-    {
+    public boolean waitForInitialCreate(long timeout, TimeUnit unit) throws InterruptedException {
         Preconditions.checkState(state.get() == State.STARTED, "Not started");
 
         CountDownLatch localLatch = initialCreateLatch.get();
@@ -322,33 +272,26 @@ public class PersistentNode implements Closeable
     final AtomicLong debugWaitMsForBackgroundBeforeClose = new AtomicLong(0);
 
     @Override
-    public void close() throws IOException
-    {
-        if ( debugWaitMsForBackgroundBeforeClose.get() > 0 )
-        {
-            try
-            {
+    public void close() throws IOException {
+        if (debugWaitMsForBackgroundBeforeClose.get() > 0) {
+            try {
                 Thread.sleep(debugWaitMsForBackgroundBeforeClose.get());
             }
-            catch ( InterruptedException e )
-            {
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
 
-        if ( !state.compareAndSet(State.STARTED, State.CLOSED) )
-        {
+        if (!state.compareAndSet(State.STARTED, State.CLOSED)) {
             return;
         }
 
         client.getConnectionStateListenable().removeListener(connectionStateListener);
 
-        try
-        {
+        try {
             deleteNode();
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             throw new IOException(e);
         }
@@ -361,8 +304,7 @@ public class PersistentNode implements Closeable
      *
      * @return listenable
      */
-    public Listenable<PersistentNodeListener> getListenable()
-    {
+    public Listenable<PersistentNodeListener> getListenable() {
         return listeners;
     }
 
@@ -371,8 +313,7 @@ public class PersistentNode implements Closeable
      *
      * @return node path or null
      */
-    public String getActualPath()
-    {
+    public String getActualPath() {
         return nodePath.get();
     }
 
@@ -385,13 +326,11 @@ public class PersistentNode implements Closeable
      * @param data new data value
      * @throws Exception errors
      */
-    public void setData(byte[] data) throws Exception
-    {
+    public void setData(byte[] data) throws Exception {
         data = Preconditions.checkNotNull(data, "data cannot be null");
         Preconditions.checkState(nodePath.get() != null, "initial create has not been processed. Call waitForInitialCreate() to ensure.");
         this.data.set(Arrays.copyOf(data, data.length));
-        if ( isActive() )
-        {
+        if (isActive()) {
             client.setData().inBackground(setDataCallback).forPath(getActualPath(), getData());
         }
     }
@@ -401,66 +340,51 @@ public class PersistentNode implements Closeable
      *
      * @return our data
      */
-    public byte[] getData()
-    {
+    public byte[] getData() {
         return this.data.get();
     }
 
-    protected void deleteNode() throws Exception
-    {
+    protected void deleteNode() throws Exception {
         String localNodePath = nodePath.getAndSet(null);
-        if ( localNodePath != null )
-        {
-            try
-            {
+        if (localNodePath != null) {
+            try {
                 client.delete().guaranteed().forPath(localNodePath);
             }
-            catch ( KeeperException.NoNodeException ignore )
-            {
+            catch (KeeperException.NoNodeException ignore) {
                 // ignore
             }
         }
     }
 
-    private void createNode()
-    {
-        if ( !isActive() )
-        {
+    private void createNode() {
+        if (!isActive()) {
             return;
         }
 
-        if ( debugCreateNodeLatch != null )
-        {
-            try
-            {
+        if (debugCreateNodeLatch != null) {
+            try {
                 debugCreateNodeLatch.await();
             }
-            catch ( InterruptedException e )
-            {
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
             }
         }
 
-        try
-        {
+        try {
             String existingPath = nodePath.get(), createPath;
-            if ( existingPath != null && !useProtection )
-            {
+            if (existingPath != null && !useProtection) {
                 createPath = existingPath;
             }
-            else if ( existingPath != null && mode.isSequential() )
-            {
+            else if (existingPath != null && mode.isSequential()) {
                 createPath = basePath + ZKPaths.extractSequentialSuffix(existingPath);
             }
-            else
-            {
+            else {
                 createPath = basePath;
             }
 
             CreateModable<ACLBackgroundPathAndBytesable<String>> localCreateMethod = createMethod.get();
-            if ( localCreateMethod == null )
-            {
+            if (localCreateMethod == null) {
                 CreateBuilderMain createBuilder = mode.isTTL() ? client.create().withTtl(ttl) : client.create();
                 CreateModable<ACLBackgroundPathAndBytesable<String>> tempCreateMethod = useProtection ? createBuilder.creatingParentContainersIfNeeded().withProtection() : createBuilder.creatingParentContainersIfNeeded();
                 createMethod.compareAndSet(null, tempCreateMethod);
@@ -468,36 +392,28 @@ public class PersistentNode implements Closeable
             }
             localCreateMethod.withMode(getCreateMode(existingPath != null)).inBackground(backgroundCallback).forPath(createPath, data.get());
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             ThreadUtils.checkInterrupted(e);
             throw new RuntimeException("Creating node. BasePath: " + basePath, e);  // should never happen unless there's a programming error - so throw RuntimeException
         }
     }
 
-    private CreateMode getCreateMode(boolean pathIsSet)
-    {
-        if ( pathIsSet )
-        {
-            switch ( mode )
-            {
-                default:
-                {
+    private CreateMode getCreateMode(boolean pathIsSet) {
+        if (pathIsSet) {
+            switch (mode) {
+                default: {
                     break;
                 }
 
-                case EPHEMERAL_SEQUENTIAL:
-                {
+                case EPHEMERAL_SEQUENTIAL: {
                     return CreateMode.EPHEMERAL;    // protection case - node already set
                 }
 
-                case PERSISTENT_SEQUENTIAL:
-                {
+                case PERSISTENT_SEQUENTIAL: {
                     return CreateMode.PERSISTENT;    // protection case - node already set
                 }
 
-                case PERSISTENT_SEQUENTIAL_WITH_TTL:
-                {
+                case PERSISTENT_SEQUENTIAL_WITH_TTL: {
                     return CreateMode.PERSISTENT_WITH_TTL;    // protection case - node already set
                 }
             }
@@ -505,44 +421,36 @@ public class PersistentNode implements Closeable
         return mode;
     }
 
-    private void watchNode() throws Exception
-    {
-        if ( !isActive() )
-        {
+    private void watchNode() throws Exception {
+        if (!isActive()) {
             return;
         }
 
         String localNodePath = nodePath.get();
-        if ( localNodePath != null )
-        {
+        if (localNodePath != null) {
             client.checkExists().usingWatcher(watcher).inBackground(checkExistsCallback).forPath(localNodePath);
         }
     }
 
-    private void notifyListeners()
-    {
+    private void notifyListeners() {
         final String path = getActualPath();
         listeners.forEach(listener -> {
-            try
-            {
+            try {
                 listener.nodeCreated(path);
             }
-            catch ( Exception e )
-            {
+            catch (Exception e) {
                 ThreadUtils.checkInterrupted(e);
                 log.error("From PersistentNode listener", e);
             }
         });
     }
 
-    private boolean isActive()
-    {
+    private boolean isActive() {
         return (state.get() == State.STARTED);
     }
 
     @VisibleForTesting
-    boolean isAuthFailure()
-    {
+    boolean isAuthFailure() {
         return authFailure.get();
     }
 }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,38 +22,33 @@ import com.google.common.base.Preconditions;
 import org.apache.curator.framework.api.transaction.CuratorOp;
 import org.apache.curator.framework.api.transaction.TypeAndPath;
 import org.apache.zookeeper.Op;
+
 import java.security.MessageDigest;
 
-public class ExtractingCuratorOp implements CuratorOp
-{
+public class ExtractingCuratorOp implements CuratorOp {
     private final CuratorMultiTransactionRecord record = new CuratorMultiTransactionRecord();
 
-    CuratorMultiTransactionRecord getRecord()
-    {
+    CuratorMultiTransactionRecord getRecord() {
         return record;
     }
 
     @Override
-    public TypeAndPath getTypeAndPath()
-    {
+    public TypeAndPath getTypeAndPath() {
         validate();
         return record.getMetadata(0);
     }
 
     @Override
-    public Op get()
-    {
+    public Op get() {
         validate();
         return record.iterator().next();
     }
 
-    public void addToDigest(MessageDigest digest)
-    {
+    public void addToDigest(MessageDigest digest) {
         record.addToDigest(digest);
     }
 
-    private void validate()
-    {
+    private void validate() {
         Preconditions.checkArgument(record.size() > 0, "No operation has been added");
         Preconditions.checkArgument(record.size() == 1, "Multiple operations added");
     }

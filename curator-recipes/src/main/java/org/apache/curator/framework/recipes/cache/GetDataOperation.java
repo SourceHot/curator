@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,40 +20,33 @@ package org.apache.curator.framework.recipes.cache;
 
 import org.apache.curator.utils.PathUtils;
 
-class GetDataOperation implements Operation
-{
+class GetDataOperation implements Operation {
     private final PathChildrenCache cache;
     private final String fullPath;
 
-    GetDataOperation(PathChildrenCache cache, String fullPath)
-    {
+    GetDataOperation(PathChildrenCache cache, String fullPath) {
         this.cache = cache;
         this.fullPath = PathUtils.validatePath(fullPath);
     }
 
     @Override
-    public void invoke() throws Exception
-    {
+    public void invoke() throws Exception {
         cache.getDataAndStat(fullPath);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
-        GetDataOperation that = (GetDataOperation)o;
+        GetDataOperation that = (GetDataOperation) o;
 
         //noinspection RedundantIfStatement
-        if ( !fullPath.equals(that.fullPath) )
-        {
+        if (!fullPath.equals(that.fullPath)) {
             return false;
         }
 
@@ -61,16 +54,14 @@ class GetDataOperation implements Operation
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return fullPath.hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "GetDataOperation{" +
-            "fullPath='" + fullPath + '\'' +
-            '}';
+                "fullPath='" + fullPath + '\'' +
+                '}';
     }
 }

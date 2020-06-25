@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,13 +24,11 @@ import org.apache.curator.x.async.modeled.ModelSpec;
 import org.apache.curator.x.async.modeled.ModeledFramework;
 import org.apache.curator.x.async.modeled.ZPath;
 
-public class PersonModelSpec
-{
+public class PersonModelSpec {
     private final AsyncCuratorFramework client;
     private final ModelSpec<PersonModel> modelSpec;
 
-    public PersonModelSpec(AsyncCuratorFramework client)
-    {
+    public PersonModelSpec(AsyncCuratorFramework client) {
         this.client = client;
 
         JacksonModelSerializer<PersonModel> serializer = JacksonModelSerializer.build(PersonModel.class);
@@ -38,8 +36,7 @@ public class PersonModelSpec
         modelSpec = ModelSpec.builder(path, serializer).build();
     }
 
-    public ModeledFramework<PersonModel> resolved(ContainerType containerType, PersonId personId)
-    {
+    public ModeledFramework<PersonModel> resolved(ContainerType containerType, PersonId personId) {
         ModelSpec<PersonModel> resolved = modelSpec.resolved(containerType.getTypeId(), personId.getId());
         return ModeledFramework.wrap(client, resolved);
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,13 +20,13 @@ package org.apache.curator.x.async;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+
 import java.util.concurrent.CompletionStage;
 
 /**
  * The exception type set for async watchers
  */
-public abstract class AsyncEventException extends Exception
-{
+public abstract class AsyncEventException extends Exception {
     /**
      * Returns the error condition that temporarily triggered the watcher. NOTE: the watcher
      * will most likely still be set. Use {@link #reset()} to stage on the successful trigger

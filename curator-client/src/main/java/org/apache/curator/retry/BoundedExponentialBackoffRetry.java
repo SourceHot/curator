@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,8 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 /**
  * Retry policy that retries a set number of times with an increasing (up to a maximum bound) sleep time between retries
  */
-public class BoundedExponentialBackoffRetry extends ExponentialBackoffRetry
-{
+public class BoundedExponentialBackoffRetry extends ExponentialBackoffRetry {
     private final int maxSleepTimeMs;
 
     /**
@@ -32,21 +31,18 @@ public class BoundedExponentialBackoffRetry extends ExponentialBackoffRetry
      * @param maxSleepTimeMs maximum amount of time to wait between retries
      * @param maxRetries maximum number of times to retry
      */
-    public BoundedExponentialBackoffRetry(int baseSleepTimeMs, int maxSleepTimeMs, int maxRetries)
-    {
+    public BoundedExponentialBackoffRetry(int baseSleepTimeMs, int maxSleepTimeMs, int maxRetries) {
         super(baseSleepTimeMs, maxRetries);
         this.maxSleepTimeMs = maxSleepTimeMs;
     }
 
     @VisibleForTesting
-    public int getMaxSleepTimeMs()
-    {
+    public int getMaxSleepTimeMs() {
         return maxSleepTimeMs;
     }
 
     @Override
-    protected long getSleepTimeMs(int retryCount, long elapsedTimeMs)
-    {
+    protected long getSleepTimeMs(int retryCount, long elapsedTimeMs) {
         return Math.min(maxSleepTimeMs, super.getSleepTimeMs(retryCount, elapsedTimeMs));
     }
 }

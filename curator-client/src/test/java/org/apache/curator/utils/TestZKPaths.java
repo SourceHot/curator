@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,15 +21,14 @@ package org.apache.curator.utils;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 
-public class TestZKPaths
-{
+public class TestZKPaths {
     @SuppressWarnings("NullArgumentToVariableArgMethod")
     @Test
-    public void testMakePath()
-    {
+    public void testMakePath() {
         Assert.assertEquals(ZKPaths.makePath(null, "/"), "/");
         Assert.assertEquals(ZKPaths.makePath("", null), "/");
         Assert.assertEquals(ZKPaths.makePath("/", null), "/");
@@ -77,8 +76,7 @@ public class TestZKPaths
     }
 
     @Test
-    public void testSplit()
-    {
+    public void testSplit() {
         Assert.assertEquals(ZKPaths.split("/"), Collections.emptyList());
         Assert.assertEquals(ZKPaths.split("/test"), Collections.singletonList("test"));
         Assert.assertEquals(ZKPaths.split("/test/one"), Arrays.asList("test", "one"));

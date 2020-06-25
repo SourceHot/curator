@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,6 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.CompletionStage;
@@ -41,14 +42,12 @@ import static org.apache.curator.x.async.api.CreateOption.setDataIfExists;
 import static org.apache.zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL;
 import static org.apache.zookeeper.CreateMode.PERSISTENT_SEQUENTIAL;
 
-public class TestBasicOperations extends CompletableBaseClassForTests
-{
+public class TestBasicOperations extends CompletableBaseClassForTests {
     private AsyncCuratorFramework client;
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         super.setup();
 
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(timing.forSleepingABit().milliseconds()));
@@ -58,16 +57,14 @@ public class TestBasicOperations extends CompletableBaseClassForTests
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         CloseableUtils.closeQuietly(client.unwrap());
 
         super.teardown();
     }
 
     @Test
-    public void testCreateTransactionWithMode() throws Exception
-    {
+    public void testCreateTransactionWithMode() throws Exception {
         complete(AsyncWrappers.asyncEnsureContainers(client, "/test"));
 
         CuratorOp op1 = client.transactionOp().create().withMode(PERSISTENT_SEQUENTIAL).forPath("/test/node-");
@@ -78,8 +75,7 @@ public class TestBasicOperations extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testCrud()
-    {
+    public void testCrud() {
         AsyncStage<String> createStage = client.create().forPath("/test", "one".getBytes());
         complete(createStage, (path, e) -> Assert.assertEquals(path, "/test"));
 
@@ -87,25 +83,24 @@ public class TestBasicOperations extends CompletableBaseClassForTests
         complete(getStage, (data, e) -> Assert.assertEquals(data, "one".getBytes()));
 
         CompletionStage<byte[]> combinedStage = client.setData().forPath("/test", "new".getBytes()).thenCompose(
-            __ -> client.getData().forPath("/test"));
+                __ -> client.getData().forPath("/test"));
         complete(combinedStage, (data, e) -> Assert.assertEquals(data, "new".getBytes()));
 
         CompletionStage<Void> combinedDelete = client.create().withMode(EPHEMERAL_SEQUENTIAL).forPath("/deleteme").thenCompose(
-            path -> client.delete().forPath(path));
+                path -> client.delete().forPath(path));
         complete(combinedDelete, (v, e) -> Assert.assertNull(e));
 
         CompletionStage<byte[]> setDataIfStage = client.create().withOptions(of(compress, setDataIfExists)).forPath("/test", "last".getBytes())
-            .thenCompose(__ -> client.getData().decompressed().forPath("/test"));
+                .thenCompose(__ -> client.getData().decompressed().forPath("/test"));
         complete(setDataIfStage, (data, e) -> Assert.assertEquals(data, "last".getBytes()));
     }
 
     @Test
-    public void testException()
-    {
+    public void testException() {
         CountDownLatch latch = new CountDownLatch(1);
         client.getData().forPath("/woop").exceptionally(e -> {
             Assert.assertTrue(e instanceof KeeperException);
-            Assert.assertEquals(((KeeperException)e).code(), KeeperException.Code.NONODE);
+            Assert.assertEquals(((KeeperException) e).code(), KeeperException.Code.NONODE);
             latch.countDown();
             return null;
         });
@@ -113,8 +108,7 @@ public class TestBasicOperations extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testWatching()
-    {
+    public void testWatching() {
         CountDownLatch latch = new CountDownLatch(1);
         client.watched().checkExists().forPath("/test").event().whenComplete((event, exception) -> {
             Assert.assertNull(exception);
@@ -126,16 +120,13 @@ public class TestBasicOperations extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testWatchingWithServerLoss() throws Exception
-    {
+    public void testWatchingWithServerLoss() throws Exception {
         AsyncStage<Stat> stage = client.watched().checkExists().forPath("/test");
         stage.thenRun(() -> {
-            try
-            {
+            try {
                 server.stop();
             }
-            catch ( IOException e )
-            {
+            catch (IOException e) {
                 // ignore
             }
         });
@@ -143,8 +134,8 @@ public class TestBasicOperations extends CompletableBaseClassForTests
         CountDownLatch latch = new CountDownLatch(1);
         complete(stage.event(), (v, e) -> {
             Assert.assertTrue(e instanceof AsyncEventException);
-            Assert.assertEquals(((AsyncEventException)e).getKeeperState(), Watcher.Event.KeeperState.Disconnected);
-            ((AsyncEventException)e).reset().thenRun(latch::countDown);
+            Assert.assertEquals(((AsyncEventException) e).getKeeperState(), Watcher.Event.KeeperState.Disconnected);
+            ((AsyncEventException) e).reset().thenRun(latch::countDown);
         });
 
         server.restart();
@@ -153,8 +144,7 @@ public class TestBasicOperations extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testResultWrapper() throws Exception
-    {
+    public void testResultWrapper() throws Exception {
         CompletionStage<AsyncResult<String>> resultStage = AsyncResult.of(client.create().forPath("/first"));
         complete(resultStage, (v, e) -> {
             Assert.assertNull(e);
@@ -191,8 +181,7 @@ public class TestBasicOperations extends CompletableBaseClassForTests
     }
 
     @Test
-    public void testGetDataWithStat()
-    {
+    public void testGetDataWithStat() {
         complete(client.create().forPath("/test", "hey".getBytes()));
 
         Stat stat = new Stat();

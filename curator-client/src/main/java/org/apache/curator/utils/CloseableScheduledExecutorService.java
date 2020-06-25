@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,25 +20,20 @@
 package org.apache.curator.utils;
 
 import com.google.common.base.Preconditions;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.*;
 
 /**
  * Decoration on an ScheduledExecutorService that tracks created futures and provides
  * a method to close futures created via this class
  */
-public class CloseableScheduledExecutorService extends CloseableExecutorService
-{
+public class CloseableScheduledExecutorService extends CloseableExecutorService {
     private final ScheduledExecutorService scheduledExecutorService;
 
     /**
      * @param scheduledExecutorService the service to decorate
      */
-    public CloseableScheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
-    {
+    public CloseableScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
         super(scheduledExecutorService, false);
         this.scheduledExecutorService = scheduledExecutorService;
     }
@@ -47,8 +42,7 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService
      * @param scheduledExecutorService the service to decorate
      * @param shutdownOnClose if true, shutdown the executor service when this is closed
      */
-    public CloseableScheduledExecutorService(ScheduledExecutorService scheduledExecutorService, boolean shutdownOnClose)
-    {
+    public CloseableScheduledExecutorService(ScheduledExecutorService scheduledExecutorService, boolean shutdownOnClose) {
         super(scheduledExecutorService, shutdownOnClose);
         this.scheduledExecutorService = scheduledExecutorService;
     }
@@ -64,8 +58,7 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService
      *         the task and whose <tt>get()</tt> method will return
      *         <tt>null</tt> upon completion
      */
-    public Future<?> schedule(Runnable task, long delay, TimeUnit unit)
-    {
+    public Future<?> schedule(Runnable task, long delay, TimeUnit unit) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");
 
         InternalFutureTask<Void> futureTask = new InternalFutureTask<Void>(new FutureTask<Void>(task, null));
@@ -91,8 +84,7 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService
      *         the task, and whose <tt>get()</tt> method will throw an
      *         exception upon cancellation
      */
-    public Future<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit)
-    {
+    public Future<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");
 
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(task, initialDelay, delay, unit);

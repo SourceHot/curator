@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,8 +18,6 @@
  */
 package org.apache.curator.framework.imps;
 
-import org.apache.curator.test.compatibility.CuratorTestBase;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -29,34 +27,32 @@ import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.curator.test.TestingCluster;
 import org.apache.curator.test.Timing;
+import org.apache.curator.test.compatibility.CuratorTestBase;
+import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 
-public class TestWithCluster extends CuratorTestBase
-{
+public class TestWithCluster extends CuratorTestBase {
     @Test
-    public void     testSessionSurvives() throws Exception
-    {
-        Timing              timing = new Timing();
+    public void testSessionSurvives() throws Exception {
+        Timing timing = new Timing();
 
-        CuratorFramework    client = null;
-        TestingCluster      cluster = createAndStartCluster(3);
-        try
-        {
+        CuratorFramework client = null;
+        TestingCluster cluster = createAndStartCluster(3);
+        try {
             client = CuratorFrameworkFactory.newClient(cluster.getConnectString(), timing.session(), timing.connection(), new ExponentialBackoffRetry(100, 3));
             client.start();
 
             final CountDownLatch reconnectedLatch = new CountDownLatch(1);
-            ConnectionStateListener listener = new ConnectionStateListener()
-            {
+            ConnectionStateListener listener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
-                    if ( newState == ConnectionState.RECONNECTED )
-                    {
-                        reconnectedLatch.countDown();;
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                    if (newState == ConnectionState.RECONNECTED) {
+                        reconnectedLatch.countDown();
+                        ;
                     }
                 }
             };
@@ -65,8 +61,7 @@ public class TestWithCluster extends CuratorTestBase
             client.create().withMode(CreateMode.EPHEMERAL).forPath("/temp", "value".getBytes());
             Assert.assertNotNull(client.checkExists().forPath("/temp"));
 
-            for ( InstanceSpec spec : cluster.getInstances() )
-            {
+            for (InstanceSpec spec : cluster.getInstances()) {
                 cluster.killServer(spec);
                 timing.sleepABit();
                 cluster.restartServer(spec);
@@ -76,25 +71,21 @@ public class TestWithCluster extends CuratorTestBase
             Assert.assertTrue(timing.awaitLatch(reconnectedLatch));
             Assert.assertNotNull(client.checkExists().forPath("/temp"));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
             CloseableUtils.closeQuietly(cluster);
         }
     }
 
     @Test
-    public void     testSplitBrain() throws Exception
-    {
-        Timing              timing = new Timing();
+    public void testSplitBrain() throws Exception {
+        Timing timing = new Timing();
 
-        CuratorFramework    client = null;
+        CuratorFramework client = null;
         TestingCluster cluster = createAndStartCluster(3);
-        try
-        {
+        try {
             // make sure all instances are up
-            for ( InstanceSpec instanceSpec : cluster.getInstances() )
-            {
+            for (InstanceSpec instanceSpec : cluster.getInstances()) {
                 client = CuratorFrameworkFactory.newClient(instanceSpec.getConnectString(), new RetryOneTime(1));
                 client.start();
                 client.checkExists().forPath("/");
@@ -105,44 +96,37 @@ public class TestWithCluster extends CuratorTestBase
             client = CuratorFrameworkFactory.newClient(cluster.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
             client.start();
 
-            final CountDownLatch        latch = new CountDownLatch(2);
+            final CountDownLatch latch = new CountDownLatch(2);
             client.getConnectionStateListenable().addListener
-            (
-                new ConnectionStateListener()
-                {
-                    @Override
-                    public void stateChanged(CuratorFramework client, ConnectionState newState)
-                    {
-                        if ( (newState == ConnectionState.SUSPENDED) || (newState == ConnectionState.LOST) )
-                        {
-                            latch.countDown();
-                        }
-                    }
-                }
-            );
+                    (
+                            new ConnectionStateListener() {
+                                @Override
+                                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                                    if ((newState == ConnectionState.SUSPENDED) || (newState == ConnectionState.LOST)) {
+                                        latch.countDown();
+                                    }
+                                }
+                            }
+                    );
 
             client.checkExists().forPath("/");
 
-            for ( InstanceSpec instanceSpec : cluster.getInstances() )
-            {
-                if ( !instanceSpec.equals(cluster.findConnectionInstance(client.getZookeeperClient().getZooKeeper())) )
-                {
+            for (InstanceSpec instanceSpec : cluster.getInstances()) {
+                if (!instanceSpec.equals(cluster.findConnectionInstance(client.getZookeeperClient().getZooKeeper()))) {
                     Assert.assertTrue(cluster.killServer(instanceSpec));
                 }
             }
 
             Assert.assertTrue(timing.awaitLatch(latch));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
             CloseableUtils.closeQuietly(cluster);
         }
     }
 
     @Override
-    protected void createServer() throws Exception
-    {
+    protected void createServer() throws Exception {
         // NOP
     }
 }

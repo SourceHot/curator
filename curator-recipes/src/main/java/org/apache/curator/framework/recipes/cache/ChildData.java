@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,18 +18,17 @@
  */
 package org.apache.curator.framework.recipes.cache;
 
-import org.apache.zookeeper.data.Stat;
-import java.util.Arrays;
 import org.apache.curator.utils.PathUtils;
+import org.apache.zookeeper.data.Stat;
 
-public class ChildData implements Comparable<ChildData>
-{
+import java.util.Arrays;
+
+public class ChildData implements Comparable<ChildData> {
     private final String path;
     private final Stat stat;
     private final byte[] data;
 
-    public ChildData(String path, Stat stat, byte[] data)
-    {
+    public ChildData(String path, Stat stat, byte[] data) {
         this.path = PathUtils.validatePath(path);
         this.stat = stat;
         this.data = data;
@@ -41,14 +40,11 @@ public class ChildData implements Comparable<ChildData>
      * Note: this class has a natural ordering that is inconsistent with equals.
      */
     @Override
-    public int compareTo(ChildData rhs)
-    {
-        if ( this == rhs )
-        {
+    public int compareTo(ChildData rhs) {
+        if (this == rhs) {
             return 0;
         }
-        if ( rhs == null || getClass() != rhs.getClass() )
-        {
+        if (rhs == null || getClass() != rhs.getClass()) {
             return -1;
         }
 
@@ -57,29 +53,23 @@ public class ChildData implements Comparable<ChildData>
 
     @SuppressWarnings("RedundantIfStatement")
     @Override
-    public boolean equals(Object o)
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
-        ChildData childData = (ChildData)o;
+        ChildData childData = (ChildData) o;
 
-        if ( !Arrays.equals(data, childData.data) )
-        {
+        if (!Arrays.equals(data, childData.data)) {
             return false;
         }
-        if ( path != null ? !path.equals(childData.path) : childData.path != null )
-        {
+        if (path != null ? !path.equals(childData.path) : childData.path != null) {
             return false;
         }
-        if ( stat != null ? !stat.equals(childData.stat) : childData.stat != null )
-        {
+        if (stat != null ? !stat.equals(childData.stat) : childData.stat != null) {
             return false;
         }
 
@@ -87,8 +77,7 @@ public class ChildData implements Comparable<ChildData>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = path != null ? path.hashCode() : 0;
         result = 31 * result + (stat != null ? stat.hashCode() : 0);
         result = 31 * result + Arrays.hashCode(data);
@@ -100,8 +89,7 @@ public class ChildData implements Comparable<ChildData>
      *
      * @return full path
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
@@ -110,8 +98,7 @@ public class ChildData implements Comparable<ChildData>
      *
      * @return stat or null
      */
-    public Stat getStat()
-    {
+    public Stat getStat() {
         return stat;
     }
 
@@ -123,18 +110,16 @@ public class ChildData implements Comparable<ChildData>
      *
      * @return node data or null
      */
-    public byte[] getData()
-    {
+    public byte[] getData() {
         return data;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ChildData{" +
-            "path='" + path + '\'' +
-            ", stat=" + stat +
-            ", data=" + Arrays.toString(data) +
-            '}';
+                "path='" + path + '\'' +
+                ", stat=" + stat +
+                ", data=" + Arrays.toString(data) +
+                '}';
     }
 }

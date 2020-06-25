@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,13 +24,13 @@ import org.apache.curator.x.async.api.DeleteOption;
 import org.apache.curator.x.async.modeled.details.ModelSpecImpl;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.ACL;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class ModelSpecBuilder<T>
-{
+public class ModelSpecBuilder<T> {
     private final ModelSerializer<T> serializer;
     private ZPath path;
     private CreateMode createMode = CreateMode.PERSISTENT;
@@ -44,8 +44,7 @@ public class ModelSpecBuilder<T>
      *
      * @return new ModelSpec instance
      */
-    public ModelSpec<T> build()
-    {
+    public ModelSpec<T> build() {
         return new ModelSpecImpl<>(path, serializer, createMode, aclList, createOptions, deleteOptions, ttl);
     }
 
@@ -55,8 +54,7 @@ public class ModelSpecBuilder<T>
      * @param createMode create mode
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withCreateMode(CreateMode createMode)
-    {
+    public ModelSpecBuilder<T> withCreateMode(CreateMode createMode) {
         this.createMode = createMode;
         return this;
     }
@@ -71,8 +69,7 @@ public class ModelSpecBuilder<T>
      * @param ttl the ttl
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withTtl(long ttl)
-    {
+    public ModelSpecBuilder<T> withTtl(long ttl) {
         this.ttl = ttl;
         return this;
     }
@@ -83,8 +80,7 @@ public class ModelSpecBuilder<T>
      * @param aclList ACLs
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withAclList(List<ACL> aclList)
-    {
+    public ModelSpecBuilder<T> withAclList(List<ACL> aclList) {
         this.aclList = aclList;
         return this;
     }
@@ -95,8 +91,7 @@ public class ModelSpecBuilder<T>
      * @param createOptions options
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withCreateOptions(Set<CreateOption> createOptions)
-    {
+    public ModelSpecBuilder<T> withCreateOptions(Set<CreateOption> createOptions) {
         this.createOptions = (createOptions != null) ? ImmutableSet.copyOf(createOptions) : null;
         return this;
     }
@@ -107,8 +102,7 @@ public class ModelSpecBuilder<T>
      * @param deleteOptions options
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withDeleteOptions(Set<DeleteOption> deleteOptions)
-    {
+    public ModelSpecBuilder<T> withDeleteOptions(Set<DeleteOption> deleteOptions) {
         this.deleteOptions = (deleteOptions != null) ? ImmutableSet.copyOf(deleteOptions) : null;
         return this;
     }
@@ -119,19 +113,16 @@ public class ModelSpecBuilder<T>
      * @param path new path
      * @return this for chaining
      */
-    public ModelSpecBuilder<T> withPath(ZPath path)
-    {
+    public ModelSpecBuilder<T> withPath(ZPath path) {
         this.path = Objects.requireNonNull(path, "path cannot be null");
         return this;
     }
 
-    ModelSpecBuilder(ModelSerializer<T> serializer)
-    {
+    ModelSpecBuilder(ModelSerializer<T> serializer) {
         this.serializer = Objects.requireNonNull(serializer, "serializer cannot be null");
     }
 
-    ModelSpecBuilder(ZPath path, ModelSerializer<T> serializer)
-    {
+    ModelSpecBuilder(ZPath path, ModelSerializer<T> serializer) {
         this.path = Objects.requireNonNull(path, "path cannot be null");
         this.serializer = Objects.requireNonNull(serializer, "serializer cannot be null");
     }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,36 +21,32 @@ package org.apache.curator.x.async.modeled.details;
 import org.apache.curator.x.async.modeled.ZNode;
 import org.apache.curator.x.async.modeled.ZPath;
 import org.apache.zookeeper.data.Stat;
+
 import java.util.Objects;
 
-public class ZNodeImpl<T> implements ZNode<T>
-{
+public class ZNodeImpl<T> implements ZNode<T> {
     private final ZPath path;
     private final Stat stat;
     private final T model;
 
-    public ZNodeImpl(ZPath path, Stat stat, T model)
-    {
+    public ZNodeImpl(ZPath path, Stat stat, T model) {
         this.path = Objects.requireNonNull(path, "path cannot be null");
         this.stat = Objects.requireNonNull(stat, "stat cannot be null");
         this.model = Objects.requireNonNull(model, "model cannot be null");
     }
 
     @Override
-    public ZPath path()
-    {
+    public ZPath path() {
         return path;
     }
 
     @Override
-    public Stat stat()
-    {
+    public Stat stat() {
         return stat;
     }
 
     @Override
-    public T model()
-    {
+    public T model() {
         return model;
     }
 }

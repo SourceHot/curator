@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -36,33 +36,29 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class TestReadOnly extends BaseClassForTests
-{
+public class TestReadOnly extends BaseClassForTests {
     @BeforeMethod
-    public void setup()
-    {
+    public void setup() {
         System.setProperty("readonlymode.enabled", "true");
     }
 
     @AfterMethod
-    public void tearDown()
-    {
+    public void tearDown() {
         System.setProperty("readonlymode.enabled", "false");
     }
 
     @Test
-    public void testConnectionStateNewClient() throws Exception
-    {
+    public void testConnectionStateNewClient() throws Exception {
         Timing timing = new Timing();
         CuratorFramework client = null;
         TestingCluster cluster = createAndStartCluster(3);
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(cluster.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(100));
             client.start();
             client.checkExists().forPath("/");
@@ -70,31 +66,28 @@ public class TestReadOnly extends BaseClassForTests
             client = null;
 
             Iterator<InstanceSpec> iterator = cluster.getInstances().iterator();
-            for ( int i = 0; i < 2; ++i )
-            {
+            for (int i = 0; i < 2; ++i) {
                 cluster.killServer(iterator.next());
             }
 
             client = CuratorFrameworkFactory.builder()
-                .connectString(cluster.getConnectString())
-                .sessionTimeoutMs(timing.session())
-                .connectionTimeoutMs(timing.connection())
-                .retryPolicy(new RetryNTimes(3, timing.milliseconds()))
-                .canBeReadOnly(true)
-                .build();
+                    .connectString(cluster.getConnectString())
+                    .sessionTimeoutMs(timing.session())
+                    .connectionTimeoutMs(timing.connection())
+                    .retryPolicy(new RetryNTimes(3, timing.milliseconds()))
+                    .canBeReadOnly(true)
+                    .build();
 
             final BlockingQueue<ConnectionState> states = Queues.newLinkedBlockingQueue();
             client.getConnectionStateListenable().addListener
-            (
-                new ConnectionStateListener()
-                {
-                    @Override
-                    public void stateChanged(CuratorFramework client, ConnectionState newState)
-                    {
-                        states.add(newState);
-                    }
-                }
-            );
+                    (
+                            new ConnectionStateListener() {
+                                @Override
+                                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                                    states.add(newState);
+                                }
+                            }
+                    );
             client.start();
 
             client.checkExists().forPath("/");
@@ -102,22 +95,19 @@ public class TestReadOnly extends BaseClassForTests
             ConnectionState state = states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS);
             Assert.assertEquals(state, ConnectionState.READ_ONLY);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
             CloseableUtils.closeQuietly(cluster);
         }
     }
 
     @Test
-    public void testReadOnly() throws Exception
-    {
+    public void testReadOnly() throws Exception {
         Timing timing = new Timing();
 
         CuratorFramework client = null;
         TestingCluster cluster = createAndStartCluster(2);
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.builder().connectString(cluster.getConnectString()).canBeReadOnly(true).connectionTimeoutMs(timing.connection()).sessionTimeoutMs(timing.session()).retryPolicy(new ExponentialBackoffRetry(100, 3)).build();
             client.start();
 
@@ -125,17 +115,13 @@ public class TestReadOnly extends BaseClassForTests
 
             final CountDownLatch readOnlyLatch = new CountDownLatch(1);
             final CountDownLatch reconnectedLatch = new CountDownLatch(1);
-            ConnectionStateListener listener = new ConnectionStateListener()
-            {
+            ConnectionStateListener listener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
-                    if ( newState == ConnectionState.READ_ONLY )
-                    {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                    if (newState == ConnectionState.READ_ONLY) {
                         readOnlyLatch.countDown();
                     }
-                    else if ( newState == ConnectionState.RECONNECTED )
-                    {
+                    else if (newState == ConnectionState.RECONNECTED) {
                         reconnectedLatch.countDown();
                     }
                 }
@@ -145,8 +131,7 @@ public class TestReadOnly extends BaseClassForTests
             InstanceSpec ourInstance = cluster.findConnectionInstance(client.getZookeeperClient().getZooKeeper());
             Iterator<InstanceSpec> iterator = cluster.getInstances().iterator();
             InstanceSpec killInstance = iterator.next();
-            if ( killInstance.equals(ourInstance) )
-            {
+            if (killInstance.equals(ourInstance)) {
                 killInstance = iterator.next(); // kill the instance we're not connected to
             }
             cluster.killServer(killInstance);
@@ -158,16 +143,14 @@ public class TestReadOnly extends BaseClassForTests
             cluster.restartServer(killInstance);
             Assert.assertTrue(timing.awaitLatch(reconnectedLatch));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
             CloseableUtils.closeQuietly(cluster);
         }
     }
 
     @Override
-    protected void createServer() throws Exception
-    {
+    protected void createServer() throws Exception {
         // NOP
     }
 }

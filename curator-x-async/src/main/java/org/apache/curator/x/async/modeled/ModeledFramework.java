@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,11 +25,11 @@ import org.apache.curator.x.async.AsyncStage;
 import org.apache.curator.x.async.modeled.cached.CachedModeledFramework;
 import org.apache.curator.x.async.modeled.versioned.VersionedModeledFramework;
 import org.apache.zookeeper.data.Stat;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public interface ModeledFramework<T>
-{
+public interface ModeledFramework<T> {
     /**
      * Return a new ModeledFramework for the given model
      *
@@ -37,8 +37,7 @@ public interface ModeledFramework<T>
      * @param model the model
      * @return new Modeled Curator instance
      */
-    static <T> ModeledFramework<T> wrap(AsyncCuratorFramework client, ModelSpec<T> model)
-    {
+    static <T> ModeledFramework<T> wrap(AsyncCuratorFramework client, ModelSpec<T> model) {
         return builder(client, model).build();
     }
 
@@ -49,8 +48,7 @@ public interface ModeledFramework<T>
      * @param model the model
      * @return builder
      */
-    static <T> ModeledFrameworkBuilder<T> builder(AsyncCuratorFramework client, ModelSpec<T> model)
-    {
+    static <T> ModeledFrameworkBuilder<T> builder(AsyncCuratorFramework client, ModelSpec<T> model) {
         return new ModeledFrameworkBuilder<>(client, model);
     }
 
@@ -61,8 +59,7 @@ public interface ModeledFramework<T>
      *
      * @return builder
      */
-    static <T> ModeledFrameworkBuilder<T> builder()
-    {
+    static <T> ModeledFrameworkBuilder<T> builder() {
         return new ModeledFrameworkBuilder<>();
     }
 

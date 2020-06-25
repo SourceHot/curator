@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,6 +25,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.utils.PathUtils;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
+
 import java.util.Arrays;
 
 /**
@@ -35,12 +36,11 @@ import java.util.Arrays;
  * <p>The various methods return an {@link AtomicValue} object. You must <b>always</b> check
  * {@link AtomicValue#succeeded()}. None of the methods (other than get()) are guaranteed to succeed.</p>
  */
-public class DistributedAtomicValue
-{
-    private final CuratorFramework  client;
-    private final String            path;
-    private final RetryPolicy       retryPolicy;
-    private final PromotedToLock    promotedToLock;
+public class DistributedAtomicValue {
+    private final CuratorFramework client;
+    private final String path;
+    private final RetryPolicy retryPolicy;
+    private final PromotedToLock promotedToLock;
     private final InterProcessMutex mutex;
 
     /**
@@ -50,8 +50,7 @@ public class DistributedAtomicValue
      * @param path path to hold the value
      * @param retryPolicy the retry policy to use
      */
-    public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy)
-    {
+    public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy) {
         this(client, path, retryPolicy, null);
     }
 
@@ -65,8 +64,7 @@ public class DistributedAtomicValue
      * @param retryPolicy the retry policy to use
      * @param promotedToLock the arguments for the mutex promotion
      */
-    public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy, PromotedToLock promotedToLock)
-    {
+    public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy, PromotedToLock promotedToLock) {
         this.client = client;
         this.path = PathUtils.validatePath(path);
         this.retryPolicy = retryPolicy;
@@ -81,9 +79,8 @@ public class DistributedAtomicValue
      * @return value info
      * @throws Exception ZooKeeper errors
      */
-    public AtomicValue<byte[]>     get() throws Exception
-    {
-        MutableAtomicValue<byte[]>  result = new MutableAtomicValue<byte[]>(null, null, false);
+    public AtomicValue<byte[]> get() throws Exception {
+        MutableAtomicValue<byte[]> result = new MutableAtomicValue<byte[]>(null, null, false);
         getCurrentValue(result, new Stat());
         result.postValue = result.preValue;
         result.succeeded = true;
@@ -96,20 +93,15 @@ public class DistributedAtomicValue
      * @param newValue the new value
      * @throws Exception ZooKeeper errors
      */
-    public void forceSet(byte[] newValue) throws Exception
-    {
-        try
-        {
+    public void forceSet(byte[] newValue) throws Exception {
+        try {
             client.setData().forPath(path, newValue);
         }
-        catch ( KeeperException.NoNodeException dummy )
-        {
-            try
-            {
+        catch (KeeperException.NoNodeException dummy) {
+            try {
                 client.create().creatingParentContainersIfNeeded().forPath(path, newValue);
             }
-            catch ( KeeperException.NodeExistsException dummy2 )
-            {
+            catch (KeeperException.NodeExistsException dummy2) {
                 client.setData().forPath(path, newValue);
             }
         }
@@ -126,30 +118,24 @@ public class DistributedAtomicValue
      * @return value info
      * @throws Exception ZooKeeper errors
      */
-    public AtomicValue<byte[]> compareAndSet(byte[] expectedValue, byte[] newValue) throws Exception
-    {
-        Stat                        stat = new Stat();
-        MutableAtomicValue<byte[]>  result = new MutableAtomicValue<byte[]>(null, null, false);
-        boolean                     createIt = getCurrentValue(result, stat);
-        if ( !createIt && Arrays.equals(expectedValue, result.preValue) )
-        {
-            try
-            {
+    public AtomicValue<byte[]> compareAndSet(byte[] expectedValue, byte[] newValue) throws Exception {
+        Stat stat = new Stat();
+        MutableAtomicValue<byte[]> result = new MutableAtomicValue<byte[]>(null, null, false);
+        boolean createIt = getCurrentValue(result, stat);
+        if (!createIt && Arrays.equals(expectedValue, result.preValue)) {
+            try {
                 client.setData().withVersion(stat.getVersion()).forPath(path, newValue);
                 result.succeeded = true;
                 result.postValue = newValue;
             }
-            catch ( KeeperException.BadVersionException dummy )
-            {
+            catch (KeeperException.BadVersionException dummy) {
                 result.succeeded = false;
             }
-            catch ( KeeperException.NoNodeException dummy )
-            {
+            catch (KeeperException.NoNodeException dummy) {
                 result.succeeded = false;
             }
         }
-        else
-        {
+        else {
             result.succeeded = false;
         }
         return result;
@@ -163,21 +149,17 @@ public class DistributedAtomicValue
      * @return value info
      * @throws Exception ZooKeeper errors
      */
-    public AtomicValue<byte[]>   trySet(final byte[] newValue) throws Exception
-    {
-        MutableAtomicValue<byte[]>  result = new MutableAtomicValue<byte[]>(null, null, false);
+    public AtomicValue<byte[]> trySet(final byte[] newValue) throws Exception {
+        MutableAtomicValue<byte[]> result = new MutableAtomicValue<byte[]>(null, null, false);
 
-        MakeValue                   makeValue = new MakeValue()
-        {
+        MakeValue makeValue = new MakeValue() {
             @Override
-            public byte[] makeFrom(byte[] previous)
-            {
+            public byte[] makeFrom(byte[] previous) {
                 return newValue;
             }
         };
         tryOptimistic(result, makeValue);
-        if ( !result.succeeded() && (mutex != null) )
-        {
+        if (!result.succeeded() && (mutex != null)) {
             tryWithMutex(result, makeValue);
         }
 
@@ -192,46 +174,37 @@ public class DistributedAtomicValue
      * @return true if the value was set, false if the node already existed
      * @throws Exception ZooKeeper errors
      */
-    public boolean initialize(byte[] value) throws Exception
-    {
-        try
-        {
+    public boolean initialize(byte[] value) throws Exception {
+        try {
             client.create().creatingParentContainersIfNeeded().forPath(path, value);
         }
-        catch ( KeeperException.NodeExistsException ignore )
-        {
+        catch (KeeperException.NodeExistsException ignore) {
             // ignore
             return false;
         }
         return true;
     }
 
-    AtomicValue<byte[]>   trySet(MakeValue makeValue) throws Exception
-    {
-        MutableAtomicValue<byte[]>  result = new MutableAtomicValue<byte[]>(null, null, false);
+    AtomicValue<byte[]> trySet(MakeValue makeValue) throws Exception {
+        MutableAtomicValue<byte[]> result = new MutableAtomicValue<byte[]>(null, null, false);
 
         tryOptimistic(result, makeValue);
-        if ( !result.succeeded() && (mutex != null) )
-        {
+        if (!result.succeeded() && (mutex != null)) {
             tryWithMutex(result, makeValue);
         }
 
         return result;
     }
 
-    RuntimeException createCorruptionException(byte[] bytes)
-    {
-        StringBuilder       str = new StringBuilder();
+    RuntimeException createCorruptionException(byte[] bytes) {
+        StringBuilder str = new StringBuilder();
         str.append('[');
-        boolean             first = true;
-        for ( byte b : bytes )
-        {
-            if ( first )
-            {
+        boolean first = true;
+        for (byte b : bytes) {
+            if (first) {
                 first = false;
             }
-            else
-            {
+            else {
                 str.append(", ");
             }
             str.append("0x").append(Integer.toHexString((b & 0xff)));
@@ -240,75 +213,59 @@ public class DistributedAtomicValue
         return new RuntimeException(String.format("Corrupted data for node \"%s\": %s", path, str.toString()));
     }
 
-    private boolean getCurrentValue(MutableAtomicValue<byte[]> result, Stat stat) throws Exception
-    {
-        boolean             createIt = false;
-        try
-        {
+    private boolean getCurrentValue(MutableAtomicValue<byte[]> result, Stat stat) throws Exception {
+        boolean createIt = false;
+        try {
             result.preValue = client.getData().storingStatIn(stat).forPath(path);
         }
-        catch ( KeeperException.NoNodeException e )
-        {
+        catch (KeeperException.NoNodeException e) {
             result.preValue = null;
             createIt = true;
         }
         return createIt;
     }
 
-    private void tryWithMutex(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception
-     {
-         long            startMs = System.currentTimeMillis();
-         int             retryCount = 0;
+    private void tryWithMutex(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception {
+        long startMs = System.currentTimeMillis();
+        int retryCount = 0;
 
-         if ( mutex.acquire(promotedToLock.getMaxLockTime(), promotedToLock.getMaxLockTimeUnit()) )
-         {
-             try
-             {
-                 boolean         done = false;
-                 while ( !done )
-                 {
-                     result.stats.incrementPromotedTries();
-                     if ( tryOnce(result, makeValue) )
-                     {
-                         result.succeeded = true;
-                         done = true;
-                     }
-                     else
-                     {
-                         if ( !promotedToLock.getRetryPolicy().allowRetry(retryCount++, System.currentTimeMillis() - startMs, RetryLoop.getDefaultRetrySleeper()) )
-                         {
-                             done = true;
-                         }
-                     }
-                 }
-             }
-             finally
-             {
-                 mutex.release();
-             }
-         }
+        if (mutex.acquire(promotedToLock.getMaxLockTime(), promotedToLock.getMaxLockTimeUnit())) {
+            try {
+                boolean done = false;
+                while (!done) {
+                    result.stats.incrementPromotedTries();
+                    if (tryOnce(result, makeValue)) {
+                        result.succeeded = true;
+                        done = true;
+                    }
+                    else {
+                        if (!promotedToLock.getRetryPolicy().allowRetry(retryCount++, System.currentTimeMillis() - startMs, RetryLoop.getDefaultRetrySleeper())) {
+                            done = true;
+                        }
+                    }
+                }
+            }
+            finally {
+                mutex.release();
+            }
+        }
 
-         result.stats.setPromotedTimeMs(System.currentTimeMillis() - startMs);
+        result.stats.setPromotedTimeMs(System.currentTimeMillis() - startMs);
     }
 
-    private void tryOptimistic(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception
-    {
-        long            startMs = System.currentTimeMillis();
-        int             retryCount = 0;
+    private void tryOptimistic(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception {
+        long startMs = System.currentTimeMillis();
+        int retryCount = 0;
 
-        boolean         done = false;
-        while ( !done )
-        {
+        boolean done = false;
+        while (!done) {
             result.stats.incrementOptimisticTries();
-            if ( tryOnce(result, makeValue) )
-            {
+            if (tryOnce(result, makeValue)) {
                 result.succeeded = true;
                 done = true;
             }
-            else
-            {
-                if ( !retryPolicy.allowRetry(retryCount++, System.currentTimeMillis() - startMs, RetryLoop.getDefaultRetrySleeper()) )
-                {
+            else {
+                if (!retryPolicy.allowRetry(retryCount++, System.currentTimeMillis() - startMs, RetryLoop.getDefaultRetrySleeper())) {
                     done = true;
                 }
             }
@@ -317,36 +274,29 @@ public class DistributedAtomicValue
         result.stats.setOptimisticTimeMs(System.currentTimeMillis() - startMs);
     }
 
-    private boolean tryOnce(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception
-    {
-        Stat        stat = new Stat();
-        boolean     createIt = getCurrentValue(result, stat);
+    private boolean tryOnce(MutableAtomicValue<byte[]> result, MakeValue makeValue) throws Exception {
+        Stat stat = new Stat();
+        boolean createIt = getCurrentValue(result, stat);
 
-        boolean     success = false;
-        try
-        {
-            byte[]  newValue = makeValue.makeFrom(result.preValue);
-            if ( createIt )
-            {
+        boolean success = false;
+        try {
+            byte[] newValue = makeValue.makeFrom(result.preValue);
+            if (createIt) {
                 client.create().creatingParentContainersIfNeeded().forPath(path, newValue);
             }
-            else
-            {
+            else {
                 client.setData().withVersion(stat.getVersion()).forPath(path, newValue);
             }
             result.postValue = Arrays.copyOf(newValue, newValue.length);
             success = true;
         }
-        catch ( KeeperException.NodeExistsException e )
-        {
+        catch (KeeperException.NodeExistsException e) {
             // do Retry
         }
-        catch ( KeeperException.BadVersionException e )
-        {
+        catch (KeeperException.BadVersionException e) {
             // do Retry
         }
-        catch ( KeeperException.NoNodeException e )
-        {
+        catch (KeeperException.NoNodeException e) {
             // do Retry
         }
 

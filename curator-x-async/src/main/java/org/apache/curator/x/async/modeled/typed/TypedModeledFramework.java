@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -50,8 +50,7 @@ import org.apache.curator.x.async.modeled.ModeledFrameworkBuilder;
  * </p>
  */
 @FunctionalInterface
-public interface TypedModeledFramework<M, P1>
-{
+public interface TypedModeledFramework<M, P1> {
     /**
      * Resolve into a ModeledFramework using the given parameter
      *
@@ -70,8 +69,7 @@ public interface TypedModeledFramework<M, P1>
      * @param modelSpec TypedModelSpec
      * @return new TypedModeledFramework
      */
-    static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec<M, P1> modelSpec)
-    {
+    static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec<M, P1> modelSpec) {
         return (client, p1) -> frameworkBuilder.withClient(client).withModelSpec(modelSpec.resolved(p1)).build();
     }
 
@@ -85,8 +83,7 @@ public interface TypedModeledFramework<M, P1>
      * @param pathWithIds path with {XXXX} parameters
      * @return new TypedModeledFramework
      */
-    static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds)
-    {
+    static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds) {
         TypedModelSpec<M, P1> typedModelSpec = TypedModelSpec.from(modelSpecBuilder, pathWithIds);
         return (client, p1) -> frameworkBuilder.withClient(client).withModelSpec(typedModelSpec.resolved(p1)).build();
     }

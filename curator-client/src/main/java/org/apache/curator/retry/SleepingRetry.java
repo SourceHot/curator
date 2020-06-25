@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,33 +20,27 @@ package org.apache.curator.retry;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.RetrySleeper;
+
 import java.util.concurrent.TimeUnit;
 
-abstract class SleepingRetry implements RetryPolicy
-{
+abstract class SleepingRetry implements RetryPolicy {
     private final int n;
 
-    protected SleepingRetry(int n)
-    {
+    protected SleepingRetry(int n) {
         this.n = n;
     }
 
     // made public for testing
-    public int getN()
-    {
+    public int getN() {
         return n;
     }
 
-    public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper)
-    {
-        if ( retryCount < n )
-        {
-            try
-            {
+    public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
+        if (retryCount < n) {
+            try {
                 sleeper.sleepFor(getSleepTimeMs(retryCount, elapsedTimeMs), TimeUnit.MILLISECONDS);
             }
-            catch ( InterruptedException e )
-            {
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }
@@ -55,5 +49,5 @@ abstract class SleepingRetry implements RetryPolicy
         return false;
     }
 
-    protected abstract long   getSleepTimeMs(int retryCount, long elapsedTimeMs);
+    protected abstract long getSleepTimeMs(int retryCount, long elapsedTimeMs);
 }

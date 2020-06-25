@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,13 +19,13 @@
 package org.apache.curator;
 
 import org.apache.curator.drivers.TracerDriver;
+
 import java.util.concurrent.TimeUnit;
 
 /**
  * Utility to time a method or portion of code
  */
-public class TimeTrace
-{
+public class TimeTrace {
     private final String name;
     private final TracerDriver driver;
     private final long startTimeNanos = System.nanoTime();
@@ -36,8 +36,7 @@ public class TimeTrace
      * @param name name of the event
      * @param driver driver
      */
-    public TimeTrace(String name, TracerDriver driver)
-    {
+    public TimeTrace(String name, TracerDriver driver) {
         this.name = name;
         this.driver = driver;
     }
@@ -45,9 +44,8 @@ public class TimeTrace
     /**
      * Record the elapsed time
      */
-    public void commit()
-    {
-        long        elapsed = System.nanoTime() - startTimeNanos;
+    public void commit() {
+        long elapsed = System.nanoTime() - startTimeNanos;
         driver.addTrace(name, elapsed, TimeUnit.NANOSECONDS);
     }
 }

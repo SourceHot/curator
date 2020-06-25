@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,24 +26,19 @@ import org.apache.curator.framework.state.ConnectionState;
  * cause {@link LeaderSelector#interruptLeadership()} to get called. IMPORTANT: this is only supported
  * when thrown from {@link LeaderSelectorListener#stateChanged(CuratorFramework, ConnectionState)}.
  */
-public class CancelLeadershipException extends RuntimeException
-{
-    public CancelLeadershipException()
-    {
+public class CancelLeadershipException extends RuntimeException {
+    public CancelLeadershipException() {
     }
 
-    public CancelLeadershipException(String message)
-    {
+    public CancelLeadershipException(String message) {
         super(message);
     }
 
-    public CancelLeadershipException(String message, Throwable cause)
-    {
+    public CancelLeadershipException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CancelLeadershipException(Throwable cause)
-    {
+    public CancelLeadershipException(Throwable cause) {
         super(cause);
     }
 }

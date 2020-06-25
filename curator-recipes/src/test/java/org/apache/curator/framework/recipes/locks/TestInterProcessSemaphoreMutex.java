@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,31 +21,26 @@ package org.apache.curator.framework.recipes.locks;
 import org.apache.curator.framework.CuratorFramework;
 import org.testng.annotations.Test;
 
-public class TestInterProcessSemaphoreMutex extends TestInterProcessMutexBase
-{
+public class TestInterProcessSemaphoreMutex extends TestInterProcessMutexBase {
     private static final String LOCK_PATH = LOCK_BASE_PATH + "/our-lock";
 
     @Override
     @Test(enabled = false)
-    public void testReentrant()
-    {
+    public void testReentrant() {
     }
 
     @Override
     @Test(enabled = false)
-    public void testReentrant2Threads()
-    {
+    public void testReentrant2Threads() {
     }
 
     @Override
     @Test(enabled = false)
-    public void testReentrantSingleLock()
-    {
+    public void testReentrantSingleLock() {
     }
 
     @Override
-    protected InterProcessLock makeLock(CuratorFramework client)
-    {
+    protected InterProcessLock makeLock(CuratorFramework client) {
         return new InterProcessSemaphoreMutex(client, LOCK_PATH);
     }
 }

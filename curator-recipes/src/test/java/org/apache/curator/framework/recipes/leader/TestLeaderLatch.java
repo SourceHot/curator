@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,11 +26,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.TestCleanState;
-import org.apache.curator.framework.state.ConnectionState;
-import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.curator.framework.state.ConnectionStateListenerManagerFactory;
-import org.apache.curator.framework.state.SessionConnectionStateErrorPolicy;
-import org.apache.curator.framework.state.StandardConnectionStateErrorPolicy;
+import org.apache.curator.framework.state.*;
 import org.apache.curator.retry.RetryForever;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.retry.RetryOneTime;
@@ -42,19 +38,12 @@ import org.apache.curator.test.compatibility.Timing2;
 import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -62,21 +51,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestLeaderLatch extends BaseClassForTests
-{
+public class TestLeaderLatch extends BaseClassForTests {
     private static final String PATH_NAME = "/one/two/me";
     private static final int MAX_LOOPS = 5;
 
-    private static class Holder
-    {
+    private static class Holder {
         final BlockingQueue<ConnectionState> stateChanges = new LinkedBlockingQueue<>();
         final CountDownLatch isLockedLatch = new CountDownLatch(1);
         volatile LeaderLatch latch;
     }
 
     @Test
-    public void testWithCircuitBreaker() throws Exception
-    {
+    public void testWithCircuitBreaker() throws Exception {
         final int threadQty = 5;
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadQty);
@@ -84,51 +70,45 @@ public class TestLeaderLatch extends BaseClassForTests
         Timing2 timing = new Timing2();
         ConnectionStateListenerManagerFactory managerFactory = ConnectionStateListenerManagerFactory.circuitBreaking(new RetryForever(timing.multiple(2).milliseconds()));
         CuratorFramework client = CuratorFrameworkFactory.builder()
-            .connectString(server.getConnectString())
-            .retryPolicy(new RetryOneTime(1))
-            .connectionStateListenerManagerFactory(managerFactory)
-            .connectionTimeoutMs(timing.connection())
-            .sessionTimeoutMs(timing.session())
-            .build();
+                .connectString(server.getConnectString())
+                .retryPolicy(new RetryOneTime(1))
+                .connectionStateListenerManagerFactory(managerFactory)
+                .connectionTimeoutMs(timing.connection())
+                .sessionTimeoutMs(timing.session())
+                .build();
         try {
             client.start();
             client.create().forPath("/hey");
 
             Semaphore lostSemaphore = new Semaphore(0);
-            ConnectionStateListener unProxiedListener = new ConnectionStateListener()
-            {
+            ConnectionStateListener unProxiedListener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
-                    if ( newState == ConnectionState.LOST )
-                    {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                    if (newState == ConnectionState.LOST) {
                         lostSemaphore.release();
                     }
                 }
 
                 @Override
-                public boolean doNotProxy()
-                {
+                public boolean doNotProxy() {
                     return true;
                 }
             };
             client.getConnectionStateListenable().addListener(unProxiedListener);
 
             holders = IntStream.range(0, threadQty)
-                .mapToObj(index -> {
-                    Holder holder = new Holder();
-                    holder.latch = new LeaderLatch(client, "/foo/bar/" + index)
-                    {
-                        @Override
-                        protected void handleStateChange(ConnectionState newState)
-                        {
-                            holder.stateChanges.offer(newState);
-                            super.handleStateChange(newState);
-                        }
-                    };
-                    return holder;
-                })
-                .collect(Collectors.toList());
+                    .mapToObj(index -> {
+                        Holder holder = new Holder();
+                        holder.latch = new LeaderLatch(client, "/foo/bar/" + index) {
+                            @Override
+                            protected void handleStateChange(ConnectionState newState) {
+                                holder.stateChanges.offer(newState);
+                                super.handleStateChange(newState);
+                            }
+                        };
+                        return holder;
+                    })
+                    .collect(Collectors.toList());
 
             holders.forEach(holder -> {
                 executorService.submit(() -> {
@@ -140,7 +120,7 @@ public class TestLeaderLatch extends BaseClassForTests
                 timing.awaitLatch(holder.isLockedLatch);
             });
 
-            for ( int i = 0; i < 4; ++i )   // note: 4 is just a random number of loops to simulate disconnections
+            for (int i = 0; i < 4; ++i)   // note: 4 is just a random number of loops to simulate disconnections
             {
                 server.stop();
                 Assert.assertTrue(timing.acquireSemaphore(lostSemaphore));
@@ -148,16 +128,14 @@ public class TestLeaderLatch extends BaseClassForTests
                 timing.sleepABit();
             }
 
-            for ( Holder holder : holders )
-            {
+            for (Holder holder : holders) {
                 Assert.assertTrue(holder.latch.await(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS));
                 Assert.assertEquals(timing.takeFromQueue(holder.stateChanges), ConnectionState.SUSPENDED);
                 Assert.assertEquals(timing.takeFromQueue(holder.stateChanges), ConnectionState.LOST);
                 Assert.assertEquals(timing.takeFromQueue(holder.stateChanges), ConnectionState.RECONNECTED);
             }
         }
-        finally
-        {
+        finally {
             holders.forEach(holder -> CloseableUtils.closeQuietly(holder.latch));
             CloseableUtils.closeQuietly(client);
             executorService.shutdownNow();
@@ -165,10 +143,8 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testUncreatedPathGetLeader() throws Exception
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1)) )
-        {
+    public void testUncreatedPathGetLeader() throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1))) {
             client.start();
             LeaderLatch latch = new LeaderLatch(client, "/foo/bar");
             latch.getLeader();  // CURATOR-436 - was throwing NoNodeException
@@ -176,16 +152,13 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testWatchedNodeDeletedOnReconnect() throws Exception
-    {
+    public void testWatchedNodeDeletedOnReconnect() throws Exception {
         final String latchPath = "/foo/bar";
         Timing2 timing = new Timing2();
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)) )
-        {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             client.start();
             LeaderLatch latch1 = new LeaderLatch(client, latchPath, "1");
-            try ( LeaderLatch latch2 = new LeaderLatch(client, latchPath, "2") )
-            {
+            try (LeaderLatch latch2 = new LeaderLatch(client, latchPath, "2")) {
                 latch1.start();
                 Assert.assertTrue(latch1.await(timing.milliseconds(), TimeUnit.MILLISECONDS));
 
@@ -204,37 +177,31 @@ public class TestLeaderLatch extends BaseClassForTests
                 timing.sleepABit();
                 Assert.assertEquals(client.getChildren().forPath(latchPath).size(), 1);
             }
-            finally
-            {
+            finally {
                 CloseableUtils.closeQuietly(latch1);
             }
         }
     }
 
     @Test
-    public void testSessionErrorPolicy() throws Exception
-    {
+    public void testSessionErrorPolicy() throws Exception {
         Timing timing = new Timing();
         LeaderLatch latch = null;
         CuratorFramework client = null;
-        for ( int i = 0; i < 2; ++i )
-        {
+        for (int i = 0; i < 2; ++i) {
             boolean isSessionIteration = (i == 0);
-            try
-            {
+            try {
                 client = CuratorFrameworkFactory.builder()
-                    .connectString(server.getConnectString())
-                    .connectionTimeoutMs(10000)
-                    .sessionTimeoutMs(60000)
-                    .retryPolicy(new RetryOneTime(1))
-                    .connectionStateErrorPolicy(isSessionIteration ? new SessionConnectionStateErrorPolicy() : new StandardConnectionStateErrorPolicy())
-                    .build();
+                        .connectString(server.getConnectString())
+                        .connectionTimeoutMs(10000)
+                        .sessionTimeoutMs(60000)
+                        .retryPolicy(new RetryOneTime(1))
+                        .connectionStateErrorPolicy(isSessionIteration ? new SessionConnectionStateErrorPolicy() : new StandardConnectionStateErrorPolicy())
+                        .build();
                 final BlockingQueue<String> states = Queues.newLinkedBlockingQueue();
-                ConnectionStateListener stateListener = new ConnectionStateListener()
-                {
+                ConnectionStateListener stateListener = new ConnectionStateListener() {
                     @Override
-                    public void stateChanged(CuratorFramework client, ConnectionState newState)
-                    {
+                    public void stateChanged(CuratorFramework client, ConnectionState newState) {
                         states.add(newState.name());
                     }
                 };
@@ -242,17 +209,14 @@ public class TestLeaderLatch extends BaseClassForTests
                 client.start();
 
                 latch = new LeaderLatch(client, "/test");
-                LeaderLatchListener listener = new LeaderLatchListener()
-                {
+                LeaderLatchListener listener = new LeaderLatchListener() {
                     @Override
-                    public void isLeader()
-                    {
+                    public void isLeader() {
                         states.add("true");
                     }
 
                     @Override
-                    public void notLeader()
-                    {
+                    public void notLeader() {
                         states.add("false");
                     }
                 };
@@ -261,15 +225,13 @@ public class TestLeaderLatch extends BaseClassForTests
                 Assert.assertEquals(states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.CONNECTED.name());
                 Assert.assertEquals(states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS), "true");
                 server.stop();
-                if ( isSessionIteration )
-                {
+                if (isSessionIteration) {
                     Assert.assertEquals(states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.SUSPENDED.name());
                     server.restart();
                     Assert.assertEquals(states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS), ConnectionState.RECONNECTED.name());
                     Assert.assertNull(states.poll(timing.milliseconds(), TimeUnit.MILLISECONDS));
                 }
-                else
-                {
+                else {
                     String s = states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS);
                     Assert.assertTrue("false".equals(s) || ConnectionState.SUSPENDED.name().equals(s));
                     s = states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS);
@@ -279,8 +241,7 @@ public class TestLeaderLatch extends BaseClassForTests
                     Assert.assertEquals(states.poll(timing.forWaiting().milliseconds(), TimeUnit.MILLISECONDS), "true");
                 }
             }
-            finally
-            {
+            finally {
                 CloseableUtils.closeQuietly(latch);
                 CloseableUtils.closeQuietly(client);
             }
@@ -288,42 +249,35 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testErrorPolicies() throws Exception
-    {
+    public void testErrorPolicies() throws Exception {
         Timing2 timing = new Timing2();
         LeaderLatch latch = null;
         CuratorFramework client = CuratorFrameworkFactory.builder()
-            .connectString(server.getConnectString())
-            .connectionTimeoutMs(1000)
-            .sessionTimeoutMs(timing.session())
-            .retryPolicy(new RetryOneTime(1))
-            .connectionStateErrorPolicy(new StandardConnectionStateErrorPolicy())
-            .build();
-        try
-        {
+                .connectString(server.getConnectString())
+                .connectionTimeoutMs(1000)
+                .sessionTimeoutMs(timing.session())
+                .retryPolicy(new RetryOneTime(1))
+                .connectionStateErrorPolicy(new StandardConnectionStateErrorPolicy())
+                .build();
+        try {
             final BlockingQueue<String> states = Queues.newLinkedBlockingQueue();
-            ConnectionStateListener stateListener = new ConnectionStateListener()
-            {
+            ConnectionStateListener stateListener = new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
                     states.add(newState.name());
                 }
             };
             client.getConnectionStateListenable().addListener(stateListener);
             client.start();
             latch = new LeaderLatch(client, "/test");
-            LeaderLatchListener listener = new LeaderLatchListener()
-            {
+            LeaderLatchListener listener = new LeaderLatchListener() {
                 @Override
-                public void isLeader()
-                {
+                public void isLeader() {
                     states.add("true");
                 }
 
                 @Override
-                public void notLeader()
-                {
+                public void notLeader() {
                     states.add("false");
                 }
             };
@@ -345,12 +299,12 @@ public class TestLeaderLatch extends BaseClassForTests
 
             server = new TestingServer();
             client = CuratorFrameworkFactory.builder()
-                .connectString(server.getConnectString())
-                .connectionTimeoutMs(1000)
-                .sessionTimeoutMs(timing.session())
-                .retryPolicy(new RetryOneTime(1))
-                .connectionStateErrorPolicy(new SessionConnectionStateErrorPolicy())
-                .build();
+                    .connectString(server.getConnectString())
+                    .connectionTimeoutMs(1000)
+                    .sessionTimeoutMs(timing.session())
+                    .retryPolicy(new RetryOneTime(1))
+                    .connectionStateErrorPolicy(new SessionConnectionStateErrorPolicy())
+                    .build();
             client.getConnectionStateListenable().addListener(stateListener);
             client.start();
             latch = new LeaderLatch(client, "/test");
@@ -365,41 +319,34 @@ public class TestLeaderLatch extends BaseClassForTests
             next.add(states.poll(timing.forSessionSleep().milliseconds(), TimeUnit.MILLISECONDS));
             Assert.assertTrue(next.equals(Arrays.asList(ConnectionState.LOST.name(), "false")) || next.equals(Arrays.asList("false", ConnectionState.LOST.name())), next.toString());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(latch);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testProperCloseWithoutConnectionEstablished() throws Exception
-    {
+    public void testProperCloseWithoutConnectionEstablished() throws Exception {
         server.stop();
 
         Timing timing = new Timing();
         LeaderLatch latch = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             final AtomicBoolean resetCalled = new AtomicBoolean(false);
             final CountDownLatch cancelStartTaskLatch = new CountDownLatch(1);
-            latch = new LeaderLatch(client, PATH_NAME)
-            {
+            latch = new LeaderLatch(client, PATH_NAME) {
                 @Override
-                void reset() throws Exception
-                {
+                void reset() throws Exception {
                     resetCalled.set(true);
                     super.reset();
                 }
 
                 @Override
-                protected boolean cancelStartTask()
-                {
-                    if ( super.cancelStartTask() )
-                    {
+                protected boolean cancelStartTask() {
+                    if (super.cancelStartTask()) {
                         cancelStartTaskLatch.countDown();
                         return true;
                     }
@@ -414,21 +361,18 @@ public class TestLeaderLatch extends BaseClassForTests
             Assert.assertTrue(timing.awaitLatch(cancelStartTaskLatch));
             Assert.assertFalse(resetCalled.get());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(latch);
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testResetRace() throws Exception
-    {
+    public void testResetRace() throws Exception {
         Timing timing = new Timing();
         LeaderLatch latch = null;
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             latch = new LeaderLatch(client, PATH_NAME);
 
@@ -444,20 +388,17 @@ public class TestLeaderLatch extends BaseClassForTests
 
             Assert.assertEquals(client.getChildren().forPath(PATH_NAME).size(), 1);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(latch);
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testCreateDeleteRace() throws Exception
-    {
+    public void testCreateDeleteRace() throws Exception {
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
             client.create().creatingParentsIfNeeded().forPath(PATH_NAME);
 
@@ -477,40 +418,33 @@ public class TestLeaderLatch extends BaseClassForTests
             Assert.assertEquals(client.getChildren().forPath(PATH_NAME).size(), 0);
 
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testLostConnection() throws Exception
-    {
+    public void testLostConnection() throws Exception {
         final int PARTICIPANT_QTY = 10;
 
         List<LeaderLatch> latches = Lists.newArrayList();
 
         final Timing timing = new Timing();
         final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             final CountDownLatch countDownLatch = new CountDownLatch(1);
-            client.getConnectionStateListenable().addListener(new ConnectionStateListener()
-            {
+            client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
-                public void stateChanged(CuratorFramework client, ConnectionState newState)
-                {
-                    if ( newState == ConnectionState.LOST )
-                    {
+                public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                    if (newState == ConnectionState.LOST) {
                         countDownLatch.countDown();
                     }
                 }
             });
 
-            for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-            {
+            for (int i = 0; i < PARTICIPANT_QTY; ++i) {
                 LeaderLatch latch = new LeaderLatch(client, PATH_NAME);
                 latch.start();
                 latches.add(latch);
@@ -528,10 +462,8 @@ public class TestLeaderLatch extends BaseClassForTests
             server.restart();
             Assert.assertEquals(waitForALeader(latches, timing).size(), 1); // should reconnect
         }
-        finally
-        {
-            for ( LeaderLatch latch : latches )
-            {
+        finally {
+            for (LeaderLatch latch : latches) {
                 CloseableUtils.closeQuietly(latch);
             }
             TestCleanState.closeAndTestClean(client);
@@ -539,8 +471,7 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testCorrectWatching() throws Exception
-    {
+    public void testCorrectWatching() throws Exception {
         final int PARTICIPANT_QTY = 10;
         final int PARTICIPANT_ID = 2;
 
@@ -548,12 +479,10 @@ public class TestLeaderLatch extends BaseClassForTests
 
         final Timing timing = new Timing();
         final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
-            for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-            {
+            for (int i = 0; i < PARTICIPANT_QTY; ++i) {
                 LeaderLatch latch = new LeaderLatch(client, PATH_NAME);
                 latch.start();
                 latches.add(latch);
@@ -567,13 +496,11 @@ public class TestLeaderLatch extends BaseClassForTests
             //we need to ensure that the PARTICIPANT_ID-1 is not getting (wrongly) elected as leader.
             Assert.assertTrue(!latches.get(PARTICIPANT_ID - 1).hasLeadership());
         }
-        finally
-        {
+        finally {
             //removes the already closed participant
             latches.remove(PARTICIPANT_ID);
 
-            for ( LeaderLatch latch : latches )
-            {
+            for (LeaderLatch latch : latches) {
                 CloseableUtils.closeQuietly(latch);
             }
             TestCleanState.closeAndTestClean(client);
@@ -581,19 +508,16 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testWaiting() throws Exception
-    {
+    public void testWaiting() throws Exception {
         final int LOOPS = 10;
-        for ( int i = 0; i < LOOPS; ++i )
-        {
+        for (int i = 0; i < LOOPS; ++i) {
             System.out.println("TRY #" + i);
             internalTestWaitingOnce();
             Thread.sleep(10);
         }
     }
 
-    private void internalTestWaitingOnce() throws Exception
-    {
+    private void internalTestWaitingOnce() throws Exception {
         final int PARTICIPANT_QTY = 10;
 
         ExecutorService executorService = Executors.newFixedThreadPool(PARTICIPANT_QTY);
@@ -601,29 +525,23 @@ public class TestLeaderLatch extends BaseClassForTests
 
         final Timing timing = new Timing();
         final CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             final AtomicBoolean thereIsALeader = new AtomicBoolean(false);
-            for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-            {
-                service.submit(new Callable<Void>()
-                {
+            for (int i = 0; i < PARTICIPANT_QTY; ++i) {
+                service.submit(new Callable<Void>() {
                     @Override
-                    public Void call() throws Exception
-                    {
+                    public Void call() throws Exception {
                         LeaderLatch latch = new LeaderLatch(client, PATH_NAME);
-                        try
-                        {
+                        try {
                             latch.start();
                             Assert.assertTrue(latch.await(timing.forWaiting().seconds(), TimeUnit.SECONDS));
                             Assert.assertTrue(thereIsALeader.compareAndSet(false, true));
-                            Thread.sleep((int)(10 * Math.random()));
+                            Thread.sleep((int) (10 * Math.random()));
                             thereIsALeader.set(false);
                         }
-                        finally
-                        {
+                        finally {
                             latch.close();
                         }
                         return null;
@@ -631,33 +549,28 @@ public class TestLeaderLatch extends BaseClassForTests
                 });
             }
 
-            for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-            {
+            for (int i = 0; i < PARTICIPANT_QTY; ++i) {
                 service.take().get();
             }
         }
-        finally
-        {
+        finally {
             executorService.shutdownNow();
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         basic(Mode.START_IMMEDIATELY);
     }
 
     @Test
-    public void testBasicAlt() throws Exception
-    {
+    public void testBasicAlt() throws Exception {
         basic(Mode.START_IN_THREADS);
     }
 
     @Test
-    public void testCallbackSanity() throws Exception
-    {
+    public void testCallbackSanity() throws Exception {
         final int PARTICIPANT_QTY = 10;
         final CountDownLatch timesSquare = new CountDownLatch(PARTICIPANT_QTY);
         final AtomicLong masterCounter = new AtomicLong(0);
@@ -668,31 +581,24 @@ public class TestLeaderLatch extends BaseClassForTests
         ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("callbackSanity-%s").build());
 
         List<LeaderLatch> latches = Lists.newArrayList();
-        for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-        {
+        for (int i = 0; i < PARTICIPANT_QTY; ++i) {
             final LeaderLatch latch = new LeaderLatch(client, PATH_NAME);
-            latch.addListener(new LeaderLatchListener()
-            {
+            latch.addListener(new LeaderLatchListener() {
                 boolean beenLeader = false;
 
                 @Override
-                public void isLeader()
-                {
-                    if ( !beenLeader )
-                    {
+                public void isLeader() {
+                    if (!beenLeader) {
                         masterCounter.incrementAndGet();
                         beenLeader = true;
-                        try
-                        {
+                        try {
                             latch.reset();
                         }
-                        catch ( Exception e )
-                        {
+                        catch (Exception e) {
                             throw Throwables.propagate(e);
                         }
                     }
-                    else
-                    {
+                    else {
                         masterCounter.incrementAndGet();
                         CloseableUtils.closeQuietly(latch);
                         timesSquare.countDown();
@@ -700,20 +606,17 @@ public class TestLeaderLatch extends BaseClassForTests
                 }
 
                 @Override
-                public void notLeader()
-                {
+                public void notLeader() {
                     notLeaderCounter.incrementAndGet();
                 }
             }, exec);
             latches.add(latch);
         }
 
-        try
-        {
+        try {
             client.start();
 
-            for ( LeaderLatch latch : latches )
-            {
+            for (LeaderLatch latch : latches) {
                 latch.start();
             }
 
@@ -721,17 +624,13 @@ public class TestLeaderLatch extends BaseClassForTests
 
             Assert.assertEquals(masterCounter.get(), PARTICIPANT_QTY * 2);
             Assert.assertEquals(notLeaderCounter.get(), PARTICIPANT_QTY);
-            for ( LeaderLatch latch : latches )
-            {
+            for (LeaderLatch latch : latches) {
                 Assert.assertEquals(latch.getState(), LeaderLatch.State.CLOSED);
             }
         }
-        finally
-        {
-            for ( LeaderLatch latch : latches )
-            {
-                if ( latch.getState() != LeaderLatch.State.CLOSED )
-                {
+        finally {
+            for (LeaderLatch latch : latches) {
+                if (latch.getState() != LeaderLatch.State.CLOSED) {
                     CloseableUtils.closeQuietly(latch);
                 }
             }
@@ -740,8 +639,7 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testCallbackNotifyLeader() throws Exception
-    {
+    public void testCallbackNotifyLeader() throws Exception {
         final int PARTICIPANT_QTY = 10;
         final int SILENT_QTY = 3;
 
@@ -754,33 +652,26 @@ public class TestLeaderLatch extends BaseClassForTests
         ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("callbackNotifyLeader-%s").build());
 
         List<LeaderLatch> latches = Lists.newArrayList();
-        for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-        {
+        for (int i = 0; i < PARTICIPANT_QTY; ++i) {
             LeaderLatch.CloseMode closeMode = i < SILENT_QTY ? LeaderLatch.CloseMode.SILENT : LeaderLatch.CloseMode.NOTIFY_LEADER;
 
             final LeaderLatch latch = new LeaderLatch(client, PATH_NAME, "", closeMode);
-            latch.addListener(new LeaderLatchListener()
-            {
+            latch.addListener(new LeaderLatchListener() {
                 boolean beenLeader = false;
 
                 @Override
-                public void isLeader()
-                {
-                    if ( !beenLeader )
-                    {
+                public void isLeader() {
+                    if (!beenLeader) {
                         masterCounter.incrementAndGet();
                         beenLeader = true;
-                        try
-                        {
+                        try {
                             latch.reset();
                         }
-                        catch ( Exception e )
-                        {
+                        catch (Exception e) {
                             throw Throwables.propagate(e);
                         }
                     }
-                    else
-                    {
+                    else {
                         masterCounter.incrementAndGet();
                         CloseableUtils.closeQuietly(latch);
                         timesSquare.countDown();
@@ -788,20 +679,17 @@ public class TestLeaderLatch extends BaseClassForTests
                 }
 
                 @Override
-                public void notLeader()
-                {
+                public void notLeader() {
                     notLeaderCounter.incrementAndGet();
                 }
             }, exec);
             latches.add(latch);
         }
 
-        try
-        {
+        try {
             client.start();
 
-            for ( LeaderLatch latch : latches )
-            {
+            for (LeaderLatch latch : latches) {
                 latch.start();
             }
 
@@ -809,17 +697,13 @@ public class TestLeaderLatch extends BaseClassForTests
 
             Assert.assertEquals(masterCounter.get(), PARTICIPANT_QTY * 2);
             Assert.assertEquals(notLeaderCounter.get(), PARTICIPANT_QTY * 2 - SILENT_QTY);
-            for ( LeaderLatch latch : latches )
-            {
+            for (LeaderLatch latch : latches) {
                 Assert.assertEquals(latch.getState(), LeaderLatch.State.CLOSED);
             }
         }
-        finally
-        {
-            for ( LeaderLatch latch : latches )
-            {
-                if ( latch.getState() != LeaderLatch.State.CLOSED )
-                {
+        finally {
+            for (LeaderLatch latch : latches) {
+                if (latch.getState() != LeaderLatch.State.CLOSED) {
                     CloseableUtils.closeQuietly(latch);
                 }
             }
@@ -828,8 +712,7 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testCallbackDontNotify() throws Exception
-    {
+    public void testCallbackDontNotify() throws Exception {
         final AtomicLong masterCounter = new AtomicLong(0);
         final AtomicLong notLeaderCounter = new AtomicLong(0);
 
@@ -839,36 +722,29 @@ public class TestLeaderLatch extends BaseClassForTests
         final LeaderLatch leader = new LeaderLatch(client, PATH_NAME);
         final LeaderLatch notifiedLeader = new LeaderLatch(client, PATH_NAME, "", LeaderLatch.CloseMode.NOTIFY_LEADER);
 
-        leader.addListener(new LeaderLatchListener()
-        {
+        leader.addListener(new LeaderLatchListener() {
             @Override
-            public void isLeader()
-            {
+            public void isLeader() {
             }
 
             @Override
-            public void notLeader()
-            {
+            public void notLeader() {
                 masterCounter.incrementAndGet();
             }
         });
 
-        notifiedLeader.addListener(new LeaderLatchListener()
-        {
+        notifiedLeader.addListener(new LeaderLatchListener() {
             @Override
-            public void isLeader()
-            {
+            public void isLeader() {
             }
 
             @Override
-            public void notLeader()
-            {
+            public void notLeader() {
                 notLeaderCounter.incrementAndGet();
             }
         });
 
-        try
-        {
+        try {
             client.start();
 
             leader.start();
@@ -892,14 +768,11 @@ public class TestLeaderLatch extends BaseClassForTests
             Assert.assertEquals(masterCounter.get(), 1);
             Assert.assertEquals(notLeaderCounter.get(), 0);
         }
-        finally
-        {
-            if ( leader.getState() != LeaderLatch.State.CLOSED )
-            {
+        finally {
+            if (leader.getState() != LeaderLatch.State.CLOSED) {
                 CloseableUtils.closeQuietly(leader);
             }
-            if ( notifiedLeader.getState() != LeaderLatch.State.CLOSED )
-            {
+            if (notifiedLeader.getState() != LeaderLatch.State.CLOSED) {
                 CloseableUtils.closeQuietly(notifiedLeader);
             }
             TestCleanState.closeAndTestClean(client);
@@ -907,8 +780,7 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test
-    public void testNoServerAtStart()
-    {
+    public void testNoServerAtStart() {
         CloseableUtils.closeQuietly(server);
 
         Timing timing = new Timing();
@@ -920,25 +792,21 @@ public class TestLeaderLatch extends BaseClassForTests
         final CountDownLatch leaderCounter = new CountDownLatch(1);
         final AtomicInteger leaderCount = new AtomicInteger(0);
         final AtomicInteger notLeaderCount = new AtomicInteger(0);
-        leader.addListener(new LeaderLatchListener()
-        {
+        leader.addListener(new LeaderLatchListener() {
             @Override
-            public void isLeader()
-            {
+            public void isLeader() {
                 leaderCounter.countDown();
                 leaderCount.incrementAndGet();
             }
 
             @Override
-            public void notLeader()
-            {
+            public void notLeader() {
                 notLeaderCount.incrementAndGet();
             }
 
         });
 
-        try
-        {
+        try {
             leader.start();
 
             timing.sleepABit();
@@ -951,56 +819,45 @@ public class TestLeaderLatch extends BaseClassForTests
             Assert.assertEquals(leaderCount.get(), 1, "Elected too many times");
             Assert.assertEquals(notLeaderCount.get(), 0, "Unelected too many times");
         }
-        catch ( Exception e )
-        {
+        catch (Exception e) {
             Assert.fail("Unexpected exception", e);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(leader);
             TestCleanState.closeAndTestClean(client);
             CloseableUtils.closeQuietly(server);
         }
     }
 
-    private enum Mode
-    {
+    private enum Mode {
         START_IMMEDIATELY,
         START_IN_THREADS
     }
 
-    private void basic(Mode mode) throws Exception
-    {
+    private void basic(Mode mode) throws Exception {
         final int PARTICIPANT_QTY = 1;//0;
 
         List<LeaderLatch> latches = Lists.newArrayList();
 
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
-            for ( int i = 0; i < PARTICIPANT_QTY; ++i )
-            {
+            for (int i = 0; i < PARTICIPANT_QTY; ++i) {
                 LeaderLatch latch = new LeaderLatch(client, PATH_NAME);
-                if ( mode == Mode.START_IMMEDIATELY )
-                {
+                if (mode == Mode.START_IMMEDIATELY) {
                     latch.start();
                 }
                 latches.add(latch);
             }
-            if ( mode == Mode.START_IN_THREADS )
-            {
+            if (mode == Mode.START_IN_THREADS) {
                 ExecutorService service = Executors.newFixedThreadPool(latches.size());
-                for ( final LeaderLatch latch : latches )
-                {
-                    service.submit(new Callable<Object>()
-                    {
+                for (final LeaderLatch latch : latches) {
+                    service.submit(new Callable<Object>() {
                         @Override
-                        public Object call() throws Exception
-                        {
-                            Thread.sleep((int)(100 * Math.random()));
+                        public Object call() throws Exception {
+                            Thread.sleep((int) (100 * Math.random()));
                             latch.start();
                             return null;
                         }
@@ -1009,36 +866,29 @@ public class TestLeaderLatch extends BaseClassForTests
                 service.shutdown();
             }
 
-            while ( latches.size() > 0 )
-            {
+            while (latches.size() > 0) {
                 List<LeaderLatch> leaders = waitForALeader(latches, timing);
                 Assert.assertEquals(leaders.size(), 1); // there can only be one leader
                 LeaderLatch theLeader = leaders.get(0);
-                if ( mode == Mode.START_IMMEDIATELY )
-                {
+                if (mode == Mode.START_IMMEDIATELY) {
                     Assert.assertEquals(latches.indexOf(theLeader), 0); // assert ordering - leadership should advance in start order
                 }
                 theLeader.close();
                 latches.remove(theLeader);
             }
         }
-        finally
-        {
-            for ( LeaderLatch latch : latches )
-            {
+        finally {
+            for (LeaderLatch latch : latches) {
                 CloseableUtils.closeQuietly(latch);
             }
             TestCleanState.closeAndTestClean(client);
         }
     }
 
-    private List<LeaderLatch> waitForALeader(List<LeaderLatch> latches, Timing timing) throws InterruptedException
-    {
-        for ( int i = 0; i < MAX_LOOPS; ++i )
-        {
+    private List<LeaderLatch> waitForALeader(List<LeaderLatch> latches, Timing timing) throws InterruptedException {
+        for (int i = 0; i < MAX_LOOPS; ++i) {
             List<LeaderLatch> leaders = getLeaders(latches);
-            if ( leaders.size() != 0 )
-            {
+            if (leaders.size() != 0) {
                 return leaders;
             }
             timing.sleepABit();
@@ -1046,13 +896,10 @@ public class TestLeaderLatch extends BaseClassForTests
         return Lists.newArrayList();
     }
 
-    private List<LeaderLatch> getLeaders(Collection<LeaderLatch> latches)
-    {
+    private List<LeaderLatch> getLeaders(Collection<LeaderLatch> latches) {
         List<LeaderLatch> leaders = Lists.newArrayList();
-        for ( LeaderLatch latch : latches )
-        {
-            if ( latch.hasLeadership() )
-            {
+        for (LeaderLatch latch : latches) {
+            if (latch.hasLeadership()) {
                 leaders.add(latch);
             }
         }
@@ -1060,8 +907,7 @@ public class TestLeaderLatch extends BaseClassForTests
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testRelativePath() throws Exception
-    {
+    public void testRelativePath() throws Exception {
         Timing timing = new Timing();
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
         new LeaderLatch(client, "parent");

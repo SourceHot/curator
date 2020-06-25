@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,21 +25,17 @@ import org.apache.curator.framework.api.WatchesBuilder;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.WatcherType;
 
-public class WatchesBuilderImpl extends RemoveWatchesBuilderImpl implements WatchesBuilder
-{
-    public WatchesBuilderImpl(CuratorFrameworkImpl client)
-    {
+public class WatchesBuilderImpl extends RemoveWatchesBuilderImpl implements WatchesBuilder {
+    public WatchesBuilderImpl(CuratorFrameworkImpl client) {
         super(client);
     }
 
-    public WatchesBuilderImpl(CuratorFrameworkImpl client, Watcher watcher, CuratorWatcher curatorWatcher, WatcherType watcherType, boolean guaranteed, boolean local, boolean quietly, Backgrounding backgrounding)
-    {
+    public WatchesBuilderImpl(CuratorFrameworkImpl client, Watcher watcher, CuratorWatcher curatorWatcher, WatcherType watcherType, boolean guaranteed, boolean local, boolean quietly, Backgrounding backgrounding) {
         super(client, watcher, curatorWatcher, watcherType, guaranteed, local, quietly, backgrounding);
     }
 
     @Override
-    public AddWatchBuilder add()
-    {
+    public AddWatchBuilder add() {
         return new AddWatchBuilderImpl(getClient());
     }
 }

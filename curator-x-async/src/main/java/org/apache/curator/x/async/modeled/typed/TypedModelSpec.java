@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -45,8 +45,7 @@ import org.apache.curator.x.async.modeled.ModelSpecBuilder;
  * </p>
  */
 @FunctionalInterface
-public interface TypedModelSpec<M, P1>
-{
+public interface TypedModelSpec<M, P1> {
     /**
      * Resolve into a ZPath using the given parameter
      *
@@ -64,8 +63,7 @@ public interface TypedModelSpec<M, P1>
      * @param path typed path
      * @return new TypedModelSpec
      */
-    static <M, P1> TypedModelSpec<M, P1> from(ModelSpecBuilder<M> builder, TypedZPath<P1> path)
-    {
+    static <M, P1> TypedModelSpec<M, P1> from(ModelSpecBuilder<M> builder, TypedZPath<P1> path) {
         return p1 -> builder.withPath(path.resolved(p1)).build();
     }
 
@@ -79,8 +77,7 @@ public interface TypedModelSpec<M, P1>
      * @param pathWithIds typed path
      * @return new TypedModelSpec
      */
-    static <M, P1> TypedModelSpec<M, P1> from(ModelSpecBuilder<M> builder, String pathWithIds)
-    {
+    static <M, P1> TypedModelSpec<M, P1> from(ModelSpecBuilder<M> builder, String pathWithIds) {
         TypedZPath<P1> zPath = TypedZPath.from(pathWithIds);
         return p1 -> builder.withPath(zPath.resolved(p1)).build();
     }

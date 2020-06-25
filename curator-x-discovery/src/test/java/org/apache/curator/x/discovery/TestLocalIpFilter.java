@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,36 +21,31 @@ package org.apache.curator.x.discovery;
 import com.google.common.collect.Lists;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.List;
 
-public class TestLocalIpFilter
-{
+public class TestLocalIpFilter {
     @Test
-    public void     testFilterEverything() throws SocketException
-    {
+    public void testFilterEverything() throws SocketException {
         LocalIpFilter localIpFilter = ServiceInstanceBuilder.getLocalIpFilter();
-        try
-        {
+        try {
             ServiceInstanceBuilder.setLocalIpFilter
-                (
-                    new LocalIpFilter()
-                    {
-                        @Override
-                        public boolean use(NetworkInterface networkInterface, InetAddress address) throws SocketException
-                        {
-                            return false;
-                        }
-                    }
-                );
+                    (
+                            new LocalIpFilter() {
+                                @Override
+                                public boolean use(NetworkInterface networkInterface, InetAddress address) throws SocketException {
+                                    return false;
+                                }
+                            }
+                    );
 
             List<InetAddress> allLocalIPs = Lists.newArrayList(ServiceInstanceBuilder.getAllLocalIPs());
             Assert.assertEquals(allLocalIPs.size(), 0);
         }
-        finally
-        {
+        finally {
             ServiceInstanceBuilder.setLocalIpFilter(localIpFilter);
         }
 

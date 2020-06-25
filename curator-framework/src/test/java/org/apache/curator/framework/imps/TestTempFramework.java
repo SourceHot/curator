@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,48 +18,41 @@
  */
 package org.apache.curator.framework.imps;
 
-import org.apache.curator.test.BaseClassForTests;
-import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorTempFramework;
 import org.apache.curator.retry.RetryOneTime;
+import org.apache.curator.test.BaseClassForTests;
+import org.apache.curator.utils.CloseableUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TestTempFramework extends BaseClassForTests
-{
+public class TestTempFramework extends BaseClassForTests {
     @Test
-    public void testBasic() throws Exception
-    {
-        CuratorTempFramework        client = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).buildTemp();
-        try
-        {
+    public void testBasic() throws Exception {
+        CuratorTempFramework client = CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).buildTemp();
+        try {
             client.inTransaction().create().forPath("/foo", "data".getBytes()).and().commit();
 
             byte[] bytes = client.getData().forPath("/foo");
             Assert.assertEquals(bytes, "data".getBytes());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testInactivity() throws Exception
-    {
-        final CuratorTempFrameworkImpl        client = (CuratorTempFrameworkImpl)CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).buildTemp(1, TimeUnit.SECONDS);
-        try
-        {
-            ScheduledExecutorService    service = Executors.newScheduledThreadPool(1);
-            Runnable                    command = new Runnable()
-            {
+    public void testInactivity() throws Exception {
+        final CuratorTempFrameworkImpl client = (CuratorTempFrameworkImpl) CuratorFrameworkFactory.builder().connectString(server.getConnectString()).retryPolicy(new RetryOneTime(1)).buildTemp(1, TimeUnit.SECONDS);
+        try {
+            ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+            Runnable command = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     client.updateLastAccess();
                 }
             };
@@ -71,8 +64,7 @@ public class TestTempFramework extends BaseClassForTests
             Assert.assertNull(client.getCleanup());
             Assert.assertNull(client.getClient());
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }

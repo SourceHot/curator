@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,29 +27,21 @@ import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.BaseClassForTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestInterProcessReadWriteLock extends BaseClassForTests
-{
+public class TestInterProcessReadWriteLock extends BaseClassForTests {
     @Test
-    public void testGetParticipantNodes() throws Exception
-    {
+    public void testGetParticipantNodes() throws Exception {
         final int READERS = 20;
         final int WRITERS = 8;
 
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             final CountDownLatch latch = new CountDownLatch(READERS + WRITERS);
@@ -58,55 +50,45 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             final CountDownLatch exitLatch = new CountDownLatch(1);
             ExecutorCompletionService<Void> service = new ExecutorCompletionService<Void>(Executors.newCachedThreadPool());
-            for ( int i = 0; i < READERS; ++i )
-            {
+            for (int i = 0; i < READERS; ++i) {
                 service.submit
-                (
-                    new Callable<Void>()
-                    {
-                        @Override
-                        public Void call() throws Exception
-                        {
-                            lock.readLock().acquire();
-                            try
-                            {
-                                latch.countDown();
-                                readLatch.countDown();
-                                exitLatch.await();
-                            }
-                            finally
-                            {
-                                lock.readLock().release();
-                            }
-                            return null;
-                        }
-                    }
-                );
+                        (
+                                new Callable<Void>() {
+                                    @Override
+                                    public Void call() throws Exception {
+                                        lock.readLock().acquire();
+                                        try {
+                                            latch.countDown();
+                                            readLatch.countDown();
+                                            exitLatch.await();
+                                        }
+                                        finally {
+                                            lock.readLock().release();
+                                        }
+                                        return null;
+                                    }
+                                }
+                        );
             }
-            for ( int i = 0; i < WRITERS; ++i )
-            {
+            for (int i = 0; i < WRITERS; ++i) {
                 service.submit
-                (
-                    new Callable<Void>()
-                    {
-                        @Override
-                        public Void call() throws Exception
-                        {
-                            Assert.assertTrue(readLatch.await(10, TimeUnit.SECONDS));
-                            latch.countDown();  // must be before as there can only be one writer
-                            lock.writeLock().acquire();
-                            try
-                            {
-                                exitLatch.await();
-                            }
-                            finally
-                            {
-                                lock.writeLock().release();
-                            }
-                            return null;
-                        }
-                    }
-                );
+                        (
+                                new Callable<Void>() {
+                                    @Override
+                                    public Void call() throws Exception {
+                                        Assert.assertTrue(readLatch.await(10, TimeUnit.SECONDS));
+                                        latch.countDown();  // must be before as there can only be one writer
+                                        lock.writeLock().acquire();
+                                        try {
+                                            exitLatch.await();
+                                        }
+                                        finally {
+                                            lock.writeLock().release();
+                                        }
+                                        return null;
+                                    }
+                                }
+                        );
             }
 
             Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
@@ -118,23 +100,19 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
             Assert.assertEquals(writers.size(), WRITERS);
 
             exitLatch.countDown();
-            for ( int i = 0; i < (READERS + WRITERS); ++i )
-            {
+            for (int i = 0; i < (READERS + WRITERS); ++i) {
                 service.take().get();
             }
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testThatUpgradingIsDisallowed() throws Exception
-    {
+    public void testThatUpgradingIsDisallowed() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             InterProcessReadWriteLock lock = new InterProcessReadWriteLock(client, "/lock");
@@ -143,18 +121,15 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             lock.readLock().release();
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testThatDowngradingRespectsThreads() throws Exception
-    {
+    public void testThatDowngradingRespectsThreads() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             final InterProcessReadWriteLock lock = new InterProcessReadWriteLock(client, "/lock");
@@ -165,57 +140,48 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             final CountDownLatch releaseLatch = new CountDownLatch(1);
             Future<Object> f1 = t1.submit
-                (
-                    new Callable<Object>()
-                    {
-                        @Override
-                        public Object call() throws Exception
-                        {
-                            lock.writeLock().acquire();
-                            latch.countDown();
-                            try
-                            {
-                                releaseLatch.await();
+                    (
+                            new Callable<Object>() {
+                                @Override
+                                public Object call() throws Exception {
+                                    lock.writeLock().acquire();
+                                    latch.countDown();
+                                    try {
+                                        releaseLatch.await();
+                                    }
+                                    finally {
+                                        lock.writeLock().release();
+                                    }
+                                    return null;
+                                }
                             }
-                            finally
-                            {
-                                lock.writeLock().release();
-                            }
-                            return null;
-                        }
-                    }
-                );
+                    );
 
             Future<Object> f2 = t2.submit
-                (
-                    new Callable<Object>()
-                    {
-                        @Override
-                        public Object call() throws Exception
-                        {
-                            Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
-                            Assert.assertFalse(lock.readLock().acquire(5, TimeUnit.SECONDS));
-                            return null;
-                        }
-                    }
-                );
+                    (
+                            new Callable<Object>() {
+                                @Override
+                                public Object call() throws Exception {
+                                    Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
+                                    Assert.assertFalse(lock.readLock().acquire(5, TimeUnit.SECONDS));
+                                    return null;
+                                }
+                            }
+                    );
 
             f2.get();
             releaseLatch.countDown();
             f1.get();
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testDowngrading() throws Exception
-    {
+    public void testDowngrading() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             client.start();
 
             InterProcessReadWriteLock lock = new InterProcessReadWriteLock(client, "/lock");
@@ -225,15 +191,13 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             lock.readLock().release();
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         final int CONCURRENCY = 8;
         final int ITERATIONS = 100;
 
@@ -245,47 +209,38 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
         List<Future<Void>> futures = Lists.newArrayList();
         ExecutorService service = Executors.newCachedThreadPool();
-        for ( int i = 0; i < CONCURRENCY; ++i )
-        {
+        for (int i = 0; i < CONCURRENCY; ++i) {
             Future<Void> future = service.submit
-                (
-                    new Callable<Void>()
-                    {
-                        @Override
-                        public Void call() throws Exception
-                        {
-                            CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
-                            client.start();
-                            try
-                            {
-                                InterProcessReadWriteLock lock = new InterProcessReadWriteLock(client, "/lock");
-                                for ( int i = 0; i < ITERATIONS; ++i )
-                                {
-                                    if ( random.nextInt(100) < 10 )
-                                    {
-                                        doLocking(lock.writeLock(), concurrentCount, maxConcurrentCount, random, 1);
-                                        writeCount.incrementAndGet();
+                    (
+                            new Callable<Void>() {
+                                @Override
+                                public Void call() throws Exception {
+                                    CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
+                                    client.start();
+                                    try {
+                                        InterProcessReadWriteLock lock = new InterProcessReadWriteLock(client, "/lock");
+                                        for (int i = 0; i < ITERATIONS; ++i) {
+                                            if (random.nextInt(100) < 10) {
+                                                doLocking(lock.writeLock(), concurrentCount, maxConcurrentCount, random, 1);
+                                                writeCount.incrementAndGet();
+                                            }
+                                            else {
+                                                doLocking(lock.readLock(), concurrentCount, maxConcurrentCount, random, Integer.MAX_VALUE);
+                                                readCount.incrementAndGet();
+                                            }
+                                        }
                                     }
-                                    else
-                                    {
-                                        doLocking(lock.readLock(), concurrentCount, maxConcurrentCount, random, Integer.MAX_VALUE);
-                                        readCount.incrementAndGet();
+                                    finally {
+                                        TestCleanState.closeAndTestClean(client);
                                     }
+                                    return null;
                                 }
                             }
-                            finally
-                            {
-                                TestCleanState.closeAndTestClean(client);
-                            }
-                            return null;
-                        }
-                    }
-                );
+                    );
             futures.add(future);
         }
 
-        for ( Future<Void> future : futures )
-        {
+        for (Future<Void> future : futures) {
             future.get();
         }
 
@@ -297,12 +252,10 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
     }
 
     @Test
-    public void testSetNodeData() throws Exception
-    {
+    public void testSetNodeData() throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
 
-        try
-        {
+        try {
             client.start();
 
             final byte[] nodeData = new byte[]{1, 2, 3, 4};
@@ -323,23 +276,18 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             lock.writeLock().release();
         }
-        finally
-        {
+        finally {
             TestCleanState.closeAndTestClean(client);
         }
     }
 
-    private void doLocking(InterProcessLock lock, AtomicInteger concurrentCount, AtomicInteger maxConcurrentCount, Random random, int maxAllowed) throws Exception
-    {
-        try
-        {
+    private void doLocking(InterProcessLock lock, AtomicInteger concurrentCount, AtomicInteger maxConcurrentCount, Random random, int maxAllowed) throws Exception {
+        try {
             Assert.assertTrue(lock.acquire(10, TimeUnit.SECONDS));
             int localConcurrentCount;
-            synchronized(this)
-            {
+            synchronized (this) {
                 localConcurrentCount = concurrentCount.incrementAndGet();
-                if ( localConcurrentCount > maxConcurrentCount.get() )
-                {
+                if (localConcurrentCount > maxConcurrentCount.get()) {
                     maxConcurrentCount.set(localConcurrentCount);
                 }
             }
@@ -348,10 +296,8 @@ public class TestInterProcessReadWriteLock extends BaseClassForTests
 
             Thread.sleep(random.nextInt(9) + 1);
         }
-        finally
-        {
-            synchronized(this)
-            {
+        finally {
+            synchronized (this) {
                 concurrentCount.decrementAndGet();
                 lock.release();
             }

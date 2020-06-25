@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -33,6 +33,7 @@ import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,24 +41,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class TestServiceDiscovery extends BaseClassForTests
-{
-    private static final Comparator<ServiceInstance<Void>> comparator = new Comparator<ServiceInstance<Void>>()
-    {
+public class TestServiceDiscovery extends BaseClassForTests {
+    private static final Comparator<ServiceInstance<Void>> comparator = new Comparator<ServiceInstance<Void>>() {
         @Override
-        public int compare(ServiceInstance<Void> o1, ServiceInstance<Void> o2)
-        {
+        public int compare(ServiceInstance<Void> o1, ServiceInstance<Void> o2) {
             return o1.getId().compareTo(o2.getId());
         }
     };
 
     @Test
-    public void testCrashedServerMultiInstances() throws Exception
-    {
+    public void testCrashedServerMultiInstances() throws Exception {
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             Timing timing = new Timing();
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
             client.start();
@@ -65,11 +61,9 @@ public class TestServiceDiscovery extends BaseClassForTests
             final Semaphore semaphore = new Semaphore(0);
             ServiceInstance<String> instance1 = ServiceInstance.<String>builder().payload("thing").name("test").port(10064).build();
             ServiceInstance<String> instance2 = ServiceInstance.<String>builder().payload("thing").name("test").port(10065).build();
-            discovery = new ServiceDiscoveryImpl<String>(client, "/test", new JsonInstanceSerializer<String>(String.class), instance1, false)
-            {
+            discovery = new ServiceDiscoveryImpl<String>(client, "/test", new JsonInstanceSerializer<String>(String.class), instance1, false) {
                 @Override
-                protected void internalRegisterService(ServiceInstance<String> service) throws Exception
-                {
+                protected void internalRegisterService(ServiceInstance<String> service) throws Exception {
                     super.internalRegisterService(service);
                     semaphore.release();
                 }
@@ -88,31 +82,26 @@ public class TestServiceDiscovery extends BaseClassForTests
             timing.acquireSemaphore(semaphore, 2);
             Assert.assertEquals(discovery.queryForInstances("test").size(), 2);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCrashedServer() throws Exception
-    {
+    public void testCrashedServer() throws Exception {
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             Timing timing = new Timing();
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
             client.start();
 
             final Semaphore semaphore = new Semaphore(0);
             ServiceInstance<String> instance = ServiceInstance.<String>builder().payload("thing").name("test").port(10064).build();
-            discovery = new ServiceDiscoveryImpl<String>(client, "/test", new JsonInstanceSerializer<String>(String.class), instance, false)
-            {
+            discovery = new ServiceDiscoveryImpl<String>(client, "/test", new JsonInstanceSerializer<String>(String.class), instance, false) {
                 @Override
-                protected void internalRegisterService(ServiceInstance<String> service) throws Exception
-                {
+                protected void internalRegisterService(ServiceInstance<String> service) throws Exception {
                     super.internalRegisterService(service);
                     semaphore.release();
                 }
@@ -130,20 +119,17 @@ public class TestServiceDiscovery extends BaseClassForTests
             timing.acquireSemaphore(semaphore);
             Assert.assertEquals(discovery.queryForInstances("test").size(), 1);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCrashedInstance() throws Exception
-    {
+    public void testCrashedInstance() throws Exception {
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             Timing timing = new Timing();
 
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1));
@@ -160,23 +146,20 @@ public class TestServiceDiscovery extends BaseClassForTests
 
             Assert.assertEquals(discovery.queryForInstances("test").size(), 1);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testMultipleInstances() throws Exception
-    {
+    public void testMultipleInstances() throws Exception {
         final String SERVICE_ONE = "one";
         final String SERVICE_TWO = "two";
 
         CuratorFramework client = null;
         ServiceDiscovery<Void> discovery = null;
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             client.start();
 
@@ -212,20 +195,17 @@ public class TestServiceDiscovery extends BaseClassForTests
             Collections.sort(queriedInstances, comparator);
             Assert.assertEquals(queriedInstances, list, String.format("Not equal 2: %s - d: %s", list, queriedInstances));
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             client.start();
 
@@ -239,23 +219,20 @@ public class TestServiceDiscovery extends BaseClassForTests
             list.add(instance);
             Assert.assertEquals(discovery.queryForInstances("test"), list);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testNoServerOnStart() throws Exception
-    {
+    public void testNoServerOnStart() throws Exception {
         Timing timing = new Timing();
         server.stop();
 
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             client.start();
 
@@ -271,8 +248,7 @@ public class TestServiceDiscovery extends BaseClassForTests
             list.add(instance);
             Assert.assertEquals(discovery.queryForInstances("test"), list);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
@@ -280,26 +256,21 @@ public class TestServiceDiscovery extends BaseClassForTests
 
     // CURATOR-164
     @Test
-    public void testUnregisterService() throws Exception
-    {
+    public void testUnregisterService() throws Exception {
         final String name = "name";
 
         final CountDownLatch restartLatch = new CountDownLatch(1);
 
-        InstanceSerializer<String> slowSerializer = new JsonInstanceSerializer<String>(String.class)
-        {
+        InstanceSerializer<String> slowSerializer = new JsonInstanceSerializer<String>(String.class) {
             private boolean first = true;
 
             @Override
-            public byte[] serialize(ServiceInstance<String> instance) throws Exception
-            {
-                if ( first )
-                {
+            public byte[] serialize(ServiceInstance<String> instance) throws Exception {
+                if (first) {
                     System.out.println("Serializer first registration.");
                     first = false;
                 }
-                else
-                {
+                else {
                     System.out.println("Waiting for reconnect to finish.");
                     // Simulate the serialize method being slow.
                     // This could just be a timed wait, but that's kind of non-deterministic.
@@ -311,8 +282,7 @@ public class TestServiceDiscovery extends BaseClassForTests
 
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             client.start();
 
@@ -332,20 +302,17 @@ public class TestServiceDiscovery extends BaseClassForTests
 
             Assert.assertTrue(discovery.queryForInstances(name).isEmpty(), "Service should have unregistered.");
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCleaning() throws Exception
-    {
+    public void testCleaning() throws Exception {
         CuratorFramework client = null;
         ServiceDiscovery<String> discovery = null;
-        try
-        {
+        try {
             client = CuratorFrameworkFactory.newClient(server.getConnectString(), new RetryOneTime(1));
             client.start();
 
@@ -354,10 +321,9 @@ public class TestServiceDiscovery extends BaseClassForTests
             discovery.start();
             discovery.unregisterService(instance);
 
-            Assert.assertEquals(((ServiceDiscoveryImpl)discovery).debugServicesQty(), 0);
+            Assert.assertEquals(((ServiceDiscoveryImpl) discovery).debugServicesQty(), 0);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(discovery);
             CloseableUtils.closeQuietly(client);
         }

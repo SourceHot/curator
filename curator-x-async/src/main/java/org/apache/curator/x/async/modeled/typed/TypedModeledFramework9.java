@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,8 +27,7 @@ import org.apache.curator.x.async.modeled.ModeledFrameworkBuilder;
  * Same as {@link org.apache.curator.x.async.modeled.typed.TypedModeledFramework}, but with 9 parameters
  */
 @FunctionalInterface
-public interface TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9>
-{
+public interface TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> {
     ModeledFramework<M> resolved(AsyncCuratorFramework client, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7, P8 p8, P9 p9);
 
     /**
@@ -40,8 +39,7 @@ public interface TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9>
      * @param modelSpec TypedModelSpec
      * @return new TypedModeledFramework
      */
-    static <M, P1, P2, P3, P4, P5, P6, P7, P8, P9> TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> modelSpec)
-    {
+    static <M, P1, P2, P3, P4, P5, P6, P7, P8, P9> TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> modelSpec) {
         return (client, p1, p2, p3, p4, p5, p6, p7, p8, p9) -> frameworkBuilder.withClient(client).withModelSpec(modelSpec.resolved(p1, p2, p3, p4, p5, p6, p7, p8, p9)).build();
     }
 
@@ -55,8 +53,7 @@ public interface TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9>
      * @param pathWithIds path with {XXXX} parameters
      * @return new TypedModeledFramework
      */
-    static <M, P1, P2, P3, P4, P5, P6, P7, P8, P9> TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds)
-    {
+    static <M, P1, P2, P3, P4, P5, P6, P7, P8, P9> TypedModeledFramework9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds) {
         TypedModelSpec9<M, P1, P2, P3, P4, P5, P6, P7, P8, P9> typedModelSpec = TypedModelSpec9.from(modelSpecBuilder, pathWithIds);
         return (client, p1, p2, p3, p4, p5, p6, p7, p8, p9) -> frameworkBuilder.withClient(client).withModelSpec(typedModelSpec.resolved(p1, p2, p3, p4, p5, p6, p7, p8, p9)).build();
     }

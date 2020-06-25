@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.curator.x.discovery.ProviderStrategy;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.server.rest.DiscoveryContext;
+
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -31,55 +32,46 @@ import javax.ws.rs.ext.Provider;
  * payload
  */
 @Provider
-public class StringDiscoveryContext implements DiscoveryContext<String>, ContextResolver<DiscoveryContext<String>>
-{
+public class StringDiscoveryContext implements DiscoveryContext<String>, ContextResolver<DiscoveryContext<String>> {
     private final ServiceDiscovery<String> serviceDiscovery;
     private final ProviderStrategy<String> providerStrategy;
     private final int instanceRefreshMs;
 
-    public StringDiscoveryContext(ServiceDiscovery<String> serviceDiscovery, ProviderStrategy<String> providerStrategy, int instanceRefreshMs)
-    {
+    public StringDiscoveryContext(ServiceDiscovery<String> serviceDiscovery, ProviderStrategy<String> providerStrategy, int instanceRefreshMs) {
         this.serviceDiscovery = serviceDiscovery;
         this.providerStrategy = providerStrategy;
         this.instanceRefreshMs = instanceRefreshMs;
     }
 
     @Override
-    public ProviderStrategy<String> getProviderStrategy()
-    {
+    public ProviderStrategy<String> getProviderStrategy() {
         return providerStrategy;
     }
 
     @Override
-    public int getInstanceRefreshMs()
-    {
+    public int getInstanceRefreshMs() {
         return instanceRefreshMs;
     }
 
     @Override
-    public ServiceDiscovery<String> getServiceDiscovery()
-    {
+    public ServiceDiscovery<String> getServiceDiscovery() {
         return serviceDiscovery;
     }
 
     @Override
-    public void marshallJson(ObjectNode node, String fieldName, String payload) throws Exception
-    {
-        if ( payload != null )
-        {
+    public void marshallJson(ObjectNode node, String fieldName, String payload) throws Exception {
+        if (payload != null) {
             node.put(fieldName, payload);
         }
     }
 
     @Override
-    public String unMarshallJson(JsonNode node) throws Exception
-    {
+    public String unMarshallJson(JsonNode node) throws Exception {
         return (node != null) ? node.asText() : null;
     }
 
     @Override
-    public DiscoveryContext<String> getContext(Class<?> type)
-    {
+    public DiscoveryContext<String> getContext(Class<?> type) {
         return this;
     }
 }

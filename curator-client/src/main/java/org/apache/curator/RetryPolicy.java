@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,8 +23,7 @@ import org.apache.zookeeper.KeeperException;
 /**
  * Abstracts the policy to use when retrying connections
  */
-public interface RetryPolicy
-{
+public interface RetryPolicy {
     /**
      * Called when an operation has failed for some reason. This method should return
      * true to make another attempt.
@@ -44,10 +43,8 @@ public interface RetryPolicy
      * @param exception the cause that this operation failed
      * @return true/false
      */
-    default boolean allowRetry(Throwable exception)
-    {
-        if ( exception instanceof KeeperException)
-        {
+    default boolean allowRetry(Throwable exception) {
+        if (exception instanceof KeeperException) {
             final int rc = ((KeeperException) exception).code().intValue();
             return (rc == KeeperException.Code.CONNECTIONLOSS.intValue()) ||
                     (rc == KeeperException.Code.OPERATIONTIMEOUT.intValue()) ||

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,22 +18,18 @@
  */
 package org.apache.curator.x.async.migrations.models;
 
-public class ModelV1
-{
+public class ModelV1 {
     private final String name;
 
-    public ModelV1()
-    {
+    public ModelV1() {
         this("");
     }
 
-    public ModelV1(String name)
-    {
+    public ModelV1(String name) {
         this.name = name;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 }

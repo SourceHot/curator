@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,12 +20,12 @@ package org.apache.curator.framework.schema;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class SchemaBuilder
-{
+public class SchemaBuilder {
     private final Pattern pathRegex;
     private final String path;
     private String name = UUID.randomUUID().toString();
@@ -42,8 +42,7 @@ public class SchemaBuilder
      *
      * @return new schema
      */
-    public Schema build()
-    {
+    public Schema build() {
         return new Schema(name, pathRegex, path, documentation, schemaValidator, ephemeral, sequential, watched, canBeDeleted, metadata);
     }
 
@@ -51,8 +50,7 @@ public class SchemaBuilder
      * @param name unique name for this schema
      * @return this for chaining
      */
-    public SchemaBuilder name(String name)
-    {
+    public SchemaBuilder name(String name) {
         this.name = Preconditions.checkNotNull(name, "name cannot be null");
         return this;
     }
@@ -61,8 +59,7 @@ public class SchemaBuilder
      * @param documentation user displayable documentation for the schema
      * @return this for chaining
      */
-    public SchemaBuilder documentation(String documentation)
-    {
+    public SchemaBuilder documentation(String documentation) {
         this.documentation = Preconditions.checkNotNull(documentation, "documentation cannot be null");
         return this;
     }
@@ -71,8 +68,7 @@ public class SchemaBuilder
      * @param schemaValidator a data validator - will be used to validate data set for the znode
      * @return this for chaining
      */
-    public SchemaBuilder dataValidator(SchemaValidator schemaValidator)
-    {
+    public SchemaBuilder dataValidator(SchemaValidator schemaValidator) {
         this.schemaValidator = Preconditions.checkNotNull(schemaValidator, "dataValidator cannot be null");
         return this;
     }
@@ -81,8 +77,7 @@ public class SchemaBuilder
      * @param ephemeral whether can, must or cannot be ephemeral
      * @return this for chaining
      */
-    public SchemaBuilder ephemeral(Schema.Allowance ephemeral)
-    {
+    public SchemaBuilder ephemeral(Schema.Allowance ephemeral) {
         this.ephemeral = Preconditions.checkNotNull(ephemeral, "ephemeral cannot be null");
         return this;
     }
@@ -91,8 +86,7 @@ public class SchemaBuilder
      * @param sequential whether can, must or cannot be sequential
      * @return this for chaining
      */
-    public SchemaBuilder sequential(Schema.Allowance sequential)
-    {
+    public SchemaBuilder sequential(Schema.Allowance sequential) {
         this.sequential = Preconditions.checkNotNull(sequential, "sequential cannot be null");
         return this;
     }
@@ -101,8 +95,7 @@ public class SchemaBuilder
      * @param watched whether can, must or cannot be watched
      * @return this for chaining
      */
-    public SchemaBuilder watched(Schema.Allowance watched)
-    {
+    public SchemaBuilder watched(Schema.Allowance watched) {
         this.watched = watched;
         return this;
     }
@@ -111,8 +104,7 @@ public class SchemaBuilder
      * @param canBeDeleted true if znode can be deleted
      * @return this for chaining
      */
-    public SchemaBuilder canBeDeleted(boolean canBeDeleted)
-    {
+    public SchemaBuilder canBeDeleted(boolean canBeDeleted) {
         this.canBeDeleted = canBeDeleted;
         return this;
     }
@@ -121,14 +113,12 @@ public class SchemaBuilder
      * @param metadata any field -> value you want
      * @return this for chaining
      */
-    public SchemaBuilder metadata(Map<String, String> metadata)
-    {
+    public SchemaBuilder metadata(Map<String, String> metadata) {
         this.metadata = ImmutableMap.copyOf(metadata);
         return this;
     }
 
-    SchemaBuilder(Pattern pathRegex, String path)
-    {
+    SchemaBuilder(Pattern pathRegex, String path) {
         this.pathRegex = pathRegex;
         this.path = path;
     }

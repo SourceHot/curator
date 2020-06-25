@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -45,21 +45,17 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TestReconfiguration extends CuratorTestBase
-{
+public class TestReconfiguration extends CuratorTestBase {
     private final Timing2 timing = new Timing2();
     private TestingCluster cluster;
     private EnsembleProvider ensembleProvider;
@@ -69,8 +65,7 @@ public class TestReconfiguration extends CuratorTestBase
 
     @BeforeMethod
     @Override
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
         super.setup();
 
         QuorumPeerConfig.setReconfigEnabled(true);
@@ -82,8 +77,7 @@ public class TestReconfiguration extends CuratorTestBase
 
     @AfterMethod
     @Override
-    public void teardown() throws Exception
-    {
+    public void teardown() throws Exception {
         CloseableUtils.closeQuietly(cluster);
         ensembleProvider = null;
         System.clearProperty("zookeeper.DigestAuthenticationProvider.superDigest");
@@ -93,8 +87,7 @@ public class TestReconfiguration extends CuratorTestBase
 
     @SuppressWarnings("ConstantConditions")
     @Test(enabled = false)
-    public void testApiPermutations() throws Exception
-    {
+    public void testApiPermutations() throws Exception {
         // not an actual test. Specifies all possible API possibilities
 
         Watcher watcher = null;
@@ -162,10 +155,8 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test
-    public void testBasicGetConfig() throws Exception
-    {
-        try ( CuratorFramework client = newClient())
-        {
+    public void testBasicGetConfig() throws Exception {
+        try (CuratorFramework client = newClient()) {
             client.start();
             byte[] configData = client.getConfig().forEnsemble();
             QuorumVerifier quorumVerifier = toQuorumVerifier(configData);
@@ -176,11 +167,9 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test
-    public void testAddWithoutEnsembleTracker() throws Exception
-    {
+    public void testAddWithoutEnsembleTracker() throws Exception {
         final String initialClusterCS = cluster.getConnectString();
-        try ( CuratorFramework client = newClient(cluster.getConnectString(), false))
-        {
+        try (CuratorFramework client = newClient(cluster.getConnectString(), false)) {
             Assert.assertEquals(((CuratorFrameworkImpl) client).getEnsembleTracker(), null);
             client.start();
 
@@ -188,8 +177,7 @@ public class TestReconfiguration extends CuratorTestBase
             assertConfig(oldConfig, cluster.getInstances());
 
             CountDownLatch latch = setChangeWaiter(client);
-            try ( TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false)) )
-            {
+            try (TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false))) {
                 newCluster.start();
 
                 client.reconfig().joining(toReconfigSpec(newCluster.getInstances())).fromConfig(oldConfig.getVersion()).forEnsemble();
@@ -206,9 +194,9 @@ public class TestReconfiguration extends CuratorTestBase
                 Assert.assertEquals(client.getZookeeperClient().getCurrentConnectionString(), initialClusterCS);
                 final CountDownLatch reconnectLatch = new CountDownLatch(1);
                 client.getConnectionStateListenable().addListener(
-                    (cfClient, newState) -> {
-                        if (newState == ConnectionState.RECONNECTED) reconnectLatch.countDown();
-                    }
+                        (cfClient, newState) -> {
+                            if (newState == ConnectionState.RECONNECTED) reconnectLatch.countDown();
+                        }
                 );
                 client.getZookeeperClient().getZooKeeper().getTestable().injectSessionExpiration();
                 Assert.assertTrue(reconnectLatch.await(2, TimeUnit.SECONDS));
@@ -221,18 +209,15 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test
-    public void testAdd() throws Exception
-    {
-        try ( CuratorFramework client = newClient())
-        {
+    public void testAdd() throws Exception {
+        try (CuratorFramework client = newClient()) {
             client.start();
 
             QuorumVerifier oldConfig = toQuorumVerifier(client.getConfig().forEnsemble());
             assertConfig(oldConfig, cluster.getInstances());
 
             CountDownLatch latch = setChangeWaiter(client);
-            try ( TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false)) )
-            {
+            try (TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false))) {
                 newCluster.start();
 
                 client.reconfig().joining(toReconfigSpec(newCluster.getInstances())).fromConfig(oldConfig.getVersion()).forEnsemble();
@@ -250,28 +235,22 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test
-    public void testAddAsync() throws Exception
-    {
-        try ( CuratorFramework client = newClient())
-        {
+    public void testAddAsync() throws Exception {
+        try (CuratorFramework client = newClient()) {
             client.start();
 
             QuorumVerifier oldConfig = toQuorumVerifier(client.getConfig().forEnsemble());
             assertConfig(oldConfig, cluster.getInstances());
 
             CountDownLatch latch = setChangeWaiter(client);
-            try ( TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false)) )
-            {
+            try (TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false))) {
                 newCluster.start();
 
                 final CountDownLatch callbackLatch = new CountDownLatch(1);
-                BackgroundCallback callback = new BackgroundCallback()
-                {
+                BackgroundCallback callback = new BackgroundCallback() {
                     @Override
-                    public void processResult(CuratorFramework client, CuratorEvent event) throws Exception
-                    {
-                        if ( event.getType() == CuratorEventType.RECONFIG )
-                        {
+                    public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
+                        if (event.getType() == CuratorEventType.RECONFIG) {
                             callbackLatch.countDown();
                         }
                     }
@@ -292,10 +271,8 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test
-    public void testAddAndRemove() throws Exception
-    {
-        try ( CuratorFramework client = newClient())
-        {
+    public void testAddAndRemove() throws Exception {
+        try (CuratorFramework client = newClient()) {
             client.start();
 
             QuorumVerifier oldConfig = toQuorumVerifier(client.getConfig().forEnsemble());
@@ -303,14 +280,13 @@ public class TestReconfiguration extends CuratorTestBase
 
             CountDownLatch latch = setChangeWaiter(client);
 
-            try ( TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false)) )
-            {
+            try (TestingCluster newCluster = new TestingCluster(TestingCluster.makeSpecs(1, false))) {
                 newCluster.start();
 
                 Collection<InstanceSpec> oldInstances = cluster.getInstances();
                 InstanceSpec us = cluster.findConnectionInstance(client.getZookeeperClient().getZooKeeper());
                 InstanceSpec removeSpec = oldInstances.iterator().next();
-                if ( us.equals(removeSpec) ) {
+                if (us.equals(removeSpec)) {
                     Iterator<InstanceSpec> iterator = oldInstances.iterator();
                     iterator.next();
                     removeSpec = iterator.next();
@@ -333,18 +309,16 @@ public class TestReconfiguration extends CuratorTestBase
     }
 
     @Test(enabled = false)  // it's what this test is inteded to do and it keeps failing - disable for now
-    public void testNewMembers() throws Exception
-    {
+    public void testNewMembers() throws Exception {
         cluster.close();
         cluster = null;
 
         TestingCluster smallCluster = null;
         TestingCluster localCluster = new TestingCluster(5);
-        try
-        {
+        try {
             List<TestingZooKeeperServer> servers = localCluster.getServers();
             List<InstanceSpec> smallClusterInstances = Lists.newArrayList();
-            for ( int i = 0; i < 3; ++i )   // only start 3 of the 5
+            for (int i = 0; i < 3; ++i)   // only start 3 of the 5
             {
                 TestingZooKeeperServer server = servers.get(i);
                 server.start();
@@ -352,8 +326,7 @@ public class TestReconfiguration extends CuratorTestBase
             }
 
             smallCluster = new TestingCluster(smallClusterInstances);
-            try ( CuratorFramework client = newClient(smallCluster.getConnectString()))
-            {
+            try (CuratorFramework client = newClient(smallCluster.getConnectString())) {
                 client.start();
 
                 QuorumVerifier oldConfig = toQuorumVerifier(client.getConfig().forEnsemble());
@@ -372,153 +345,130 @@ public class TestReconfiguration extends CuratorTestBase
                 Assert.assertEquals(EnsembleTracker.configToConnectionString(newConfig), ensembleProvider.getConnectionString());
             }
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(smallCluster);
             CloseableUtils.closeQuietly(localCluster);
         }
     }
 
     @Test
-    public void testConfigToConnectionStringIPv4Normal() throws Exception
-    {
+    public void testConfigToConnectionStringIPv4Normal() throws Exception {
         String config = "server.1=10.1.2.3:2888:3888:participant;10.2.3.4:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("10.2.3.4:2181", configString);
     }
 
     @Test
-    public void testConfigToConnectionStringIPv6Normal() throws Exception
-    {
+    public void testConfigToConnectionStringIPv6Normal() throws Exception {
         String config = "server.1=[1010:0001:0002:0003:0004:0005:0006:0007]:2888:3888:participant;[2001:db8:85a3:0:0:8a2e:370:7334]:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("2001:db8:85a3:0:0:8a2e:370:7334:2181", configString);
     }
 
     @Test
-    public void testConfigToConnectionStringIPv4NoClientAddr() throws Exception
-    {
+    public void testConfigToConnectionStringIPv4NoClientAddr() throws Exception {
         String config = "server.1=10.1.2.3:2888:3888:participant;2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("10.1.2.3:2181", configString);
     }
 
     @Test
-    public void testConfigToConnectionStringIPv4WildcardClientAddr() throws Exception
-    {
+    public void testConfigToConnectionStringIPv4WildcardClientAddr() throws Exception {
         String config = "server.1=10.1.2.3:2888:3888:participant;0.0.0.0:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("10.1.2.3:2181", configString);
     }
 
     @Test
-    public void testConfigToConnectionStringNoClientAddrOrPort() throws Exception
-    {
+    public void testConfigToConnectionStringNoClientAddrOrPort() throws Exception {
         String config = "server.1=10.1.2.3:2888:3888:participant";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("", configString);
     }
 
     @Test
-    public void testIPv6Wildcard1() throws Exception
-    {
+    public void testIPv6Wildcard1() throws Exception {
         String config = "server.1=[2001:db8:85a3:0:0:8a2e:370:7334]:2888:3888:participant;[::]:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("2001:db8:85a3:0:0:8a2e:370:7334:2181", configString);
     }
 
     @Test
-    public void testIPv6Wildcard2() throws Exception
-    {
+    public void testIPv6Wildcard2() throws Exception {
         String config = "server.1=[1010:0001:0002:0003:0004:0005:0006:0007]:2888:3888:participant;[::0]:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("1010:1:2:3:4:5:6:7:2181", configString);
     }
 
     @Test
-    public void testMixedIPv1() throws Exception
-    {
+    public void testMixedIPv1() throws Exception {
         String config = "server.1=10.1.2.3:2888:3888:participant;[::]:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("10.1.2.3:2181", configString);
     }
 
     @Test
-    public void testMixedIPv2() throws Exception
-    {
+    public void testMixedIPv2() throws Exception {
         String config = "server.1=[2001:db8:85a3:0:0:8a2e:370:7334]:2888:3888:participant;127.0.0.1:2181";
         String configString = EnsembleTracker.configToConnectionString(toQuorumVerifier(config.getBytes()));
         Assert.assertEquals("127.0.0.1:2181", configString);
     }
 
     @Override
-    protected void createServer() throws Exception
-    {
+    protected void createServer() throws Exception {
         // NOP
     }
 
-    private CuratorFramework newClient()
-    {
+    private CuratorFramework newClient() {
         return newClient(cluster.getConnectString(), true);
     }
-    
+
     private CuratorFramework newClient(String connectionString) {
-    	return newClient(connectionString, true);
+        return newClient(connectionString, true);
     }
 
-    private CuratorFramework newClient(String connectionString, boolean withEnsembleProvider)
-    {
+    private CuratorFramework newClient(String connectionString, boolean withEnsembleProvider) {
         final AtomicReference<String> connectString = new AtomicReference<>(connectionString);
-        ensembleProvider = new EnsembleProvider()
-        {
+        ensembleProvider = new EnsembleProvider() {
             @Override
-            public void start() throws Exception
-            {
+            public void start() throws Exception {
             }
 
             @Override
-            public boolean updateServerListEnabled()
-            {
+            public boolean updateServerListEnabled() {
                 return false;
             }
 
             @Override
-            public String getConnectionString()
-            {
+            public String getConnectionString() {
                 return connectString.get();
             }
 
             @Override
-            public void close() throws IOException
-            {
+            public void close() throws IOException {
             }
 
             @Override
-            public void setConnectionString(String connectionString)
-            {
+            public void setConnectionString(String connectionString) {
                 connectString.set(connectionString);
             }
         };
         return CuratorFrameworkFactory.builder()
-            .ensembleProvider(ensembleProvider)
-            .ensembleTracker(withEnsembleProvider)
-            .sessionTimeoutMs(timing.session())
-            .connectionTimeoutMs(timing.connection())
-            .authorization("digest", superUserPassword.getBytes())
-            .retryPolicy(new ExponentialBackoffRetry(timing.forSleepingABit().milliseconds(), 3))
-            .build();
+                .ensembleProvider(ensembleProvider)
+                .ensembleTracker(withEnsembleProvider)
+                .sessionTimeoutMs(timing.session())
+                .connectionTimeoutMs(timing.connection())
+                .authorization("digest", superUserPassword.getBytes())
+                .retryPolicy(new ExponentialBackoffRetry(timing.forSleepingABit().milliseconds(), 3))
+                .build();
     }
 
-    private CountDownLatch setChangeWaiter(CuratorFramework client) throws Exception
-    {
+    private CountDownLatch setChangeWaiter(CuratorFramework client) throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        Watcher watcher = new Watcher()
-        {
+        Watcher watcher = new Watcher() {
             @Override
-            public void process(WatchedEvent event)
-            {
-                if ( event.getType() == Event.EventType.NodeDataChanged )
-                {
+            public void process(WatchedEvent event) {
+                if (event.getType() == Event.EventType.NodeDataChanged) {
                     latch.countDown();
                 }
             }
@@ -527,28 +477,24 @@ public class TestReconfiguration extends CuratorTestBase
         return latch;
     }
 
-    private void assertConfig(QuorumVerifier config, Collection<InstanceSpec> instances)
-    {
-        for ( InstanceSpec instance : instances )
-        {
-            QuorumPeer.QuorumServer quorumServer = config.getAllMembers().get((long)instance.getServerId());
+    private void assertConfig(QuorumVerifier config, Collection<InstanceSpec> instances) {
+        for (InstanceSpec instance : instances) {
+            QuorumPeer.QuorumServer quorumServer = config.getAllMembers().get((long) instance.getServerId());
             Assert.assertNotNull(quorumServer, String.format("Looking for %s - found %s", instance.getServerId(), config.getAllMembers()));
             Assert.assertEquals(quorumServer.clientAddr.getPort(), instance.getPort());
         }
     }
 
-    private List<String> toReconfigSpec(Collection<InstanceSpec> instances) throws Exception
-    {
-        String localhost = new InetSocketAddress((InetAddress)null, 0).getAddress().getHostAddress();
+    private List<String> toReconfigSpec(Collection<InstanceSpec> instances) throws Exception {
+        String localhost = new InetSocketAddress((InetAddress) null, 0).getAddress().getHostAddress();
         List<String> specs = Lists.newArrayList();
-        for ( InstanceSpec instance : instances ) {
+        for (InstanceSpec instance : instances) {
             specs.add("server." + instance.getServerId() + "=" + localhost + ":" + instance.getElectionPort() + ":" + instance.getQuorumPort() + ";" + instance.getPort());
         }
         return specs;
     }
 
-    private static QuorumVerifier toQuorumVerifier(byte[] bytes) throws Exception
-    {
+    private static QuorumVerifier toQuorumVerifier(byte[] bytes) throws Exception {
         Assert.assertNotNull(bytes);
         Properties properties = new Properties();
         properties.load(new ByteArrayInputStream(bytes));

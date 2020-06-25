@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,8 +26,7 @@ import java.io.IOException;
 /**
  * manages an internally running ZooKeeper server. FOR TESTING PURPOSES ONLY
  */
-public class TestingServer implements Closeable
-{
+public class TestingServer implements Closeable {
     private final TestingZooKeeperServer testingZooKeeperServer;
     private final InstanceSpec spec;
 
@@ -36,8 +35,7 @@ public class TestingServer implements Closeable
      *
      * @throws Exception errors
      */
-    public TestingServer() throws Exception
-    {
+    public TestingServer() throws Exception {
         this(-1, null, true);
     }
 
@@ -47,8 +45,7 @@ public class TestingServer implements Closeable
      * @param start True if the server should be started, false otherwise
      * @throws Exception errors
      */
-    public TestingServer(boolean start) throws Exception
-    {
+    public TestingServer(boolean start) throws Exception {
         this(-1, null, start);
     }
 
@@ -58,8 +55,7 @@ public class TestingServer implements Closeable
      * @param port the port
      * @throws Exception errors
      */
-    public TestingServer(int port) throws Exception
-    {
+    public TestingServer(int port) throws Exception {
         this(port, null, true);
     }
 
@@ -70,8 +66,7 @@ public class TestingServer implements Closeable
      * @param start True if the server should be started, false otherwise
      * @throws Exception errors
      */
-    public TestingServer(int port, boolean start) throws Exception
-    {
+    public TestingServer(int port, boolean start) throws Exception {
         this(port, null, start);
     }
 
@@ -82,8 +77,7 @@ public class TestingServer implements Closeable
      * @param tempDirectory directory to use
      * @throws Exception errors
      */
-    public TestingServer(int port, File tempDirectory) throws Exception
-    {
+    public TestingServer(int port, File tempDirectory) throws Exception {
         this(port, tempDirectory, true);
     }
 
@@ -95,8 +89,7 @@ public class TestingServer implements Closeable
      * @param start         True if the server should be started, false otherwise
      * @throws Exception errors
      */
-    public TestingServer(int port, File tempDirectory, boolean start) throws Exception
-    {
+    public TestingServer(int port, File tempDirectory, boolean start) throws Exception {
         this(new InstanceSpec(tempDirectory, port, -1, -1, true, -1), start);
     }
 
@@ -107,13 +100,11 @@ public class TestingServer implements Closeable
      * @param start True if the server should be started, false otherwise
      * @throws Exception errors
      */
-    public TestingServer(InstanceSpec spec, boolean start) throws Exception
-    {
+    public TestingServer(InstanceSpec spec, boolean start) throws Exception {
         this.spec = spec;
         testingZooKeeperServer = new TestingZooKeeperServer(new QuorumConfigBuilder(spec));
 
-        if ( start )
-        {
+        if (start) {
             testingZooKeeperServer.start();
         }
     }
@@ -123,8 +114,7 @@ public class TestingServer implements Closeable
      *
      * @return port
      */
-    public int getPort()
-    {
+    public int getPort() {
         return spec.getPort();
     }
 
@@ -133,8 +123,7 @@ public class TestingServer implements Closeable
      *
      * @return directory
      */
-    public File getTempDirectory()
-    {
+    public File getTempDirectory() {
         return spec.getDataDirectory();
     }
 
@@ -143,16 +132,14 @@ public class TestingServer implements Closeable
      *
      * @throws Exception
      */
-    public void start() throws Exception
-    {
+    public void start() throws Exception {
         testingZooKeeperServer.start();
     }
 
     /**
      * Stop the server without deleting the temp directory
      */
-    public void stop() throws IOException
-    {
+    public void stop() throws IOException {
         testingZooKeeperServer.stop();
     }
 
@@ -164,8 +151,7 @@ public class TestingServer implements Closeable
      *
      * @throws Exception
      */
-    public void restart() throws Exception
-    {
+    public void restart() throws Exception {
         testingZooKeeperServer.restart();
     }
 
@@ -173,8 +159,7 @@ public class TestingServer implements Closeable
      * Close the server and any open clients and delete the temp directory
      */
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         testingZooKeeperServer.close();
     }
 
@@ -183,8 +168,7 @@ public class TestingServer implements Closeable
      *
      * @return connection string
      */
-    public String getConnectString()
-    {
+    public String getConnectString() {
         return spec.getConnectString();
     }
 }

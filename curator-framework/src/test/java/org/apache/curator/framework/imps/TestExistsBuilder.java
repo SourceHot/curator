@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -46,11 +46,9 @@ public class TestExistsBuilder extends BaseClassForTests {
      * parents.
      */
     @Test
-    public void  testExistsWithParentsWithAclApplyToParents() throws Exception
-    {
+    public void testExistsWithParentsWithAclApplyToParents() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
 
             String path = "/bar/foo/test";
@@ -61,27 +59,22 @@ public class TestExistsBuilder extends BaseClassForTests {
             List<ACL> actual_bar_foo = client.getACL().forPath("/bar/foo");
             Assert.assertEquals(actual_bar_foo, acl);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void  testExistsWithParentsWithAclApplyToParentsInBackground() throws Exception
-    {
+    public void testExistsWithParentsWithAclApplyToParentsInBackground() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
             final CountDownLatch latch = new CountDownLatch(1);
             String path = "/bar/foo/test";
             List<ACL> acl = Collections.singletonList(new ACL(ZooDefs.Perms.CREATE | ZooDefs.Perms.READ, ANYONE_ID_UNSAFE));
-            BackgroundCallback callback = new BackgroundCallback()
-            {
+            BackgroundCallback callback = new BackgroundCallback() {
                 @Override
-                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception
-                {
+                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
                     latch.countDown();
                 }
             };
@@ -92,14 +85,12 @@ public class TestExistsBuilder extends BaseClassForTests {
             List<ACL> actual_bar_foo = client.getACL().forPath("/bar/foo");
             Assert.assertEquals(actual_bar_foo, acl);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
-    private CuratorFramework createClient(ACLProvider aclProvider)
-    {
+    private CuratorFramework createClient(ACLProvider aclProvider) {
         return CuratorFrameworkFactory.builder().
                 aclProvider(aclProvider).
                 connectString(server.getConnectString()).

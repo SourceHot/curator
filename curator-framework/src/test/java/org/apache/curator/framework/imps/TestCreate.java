@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,6 +32,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,51 +41,43 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.zookeeper.ZooDefs.Ids.ANYONE_ID_UNSAFE;
 
-public class TestCreate extends BaseClassForTests
-{
+public class TestCreate extends BaseClassForTests {
     private static final List<ACL> READ_CREATE = Collections.singletonList(new ACL(ZooDefs.Perms.CREATE | ZooDefs.Perms.READ, ANYONE_ID_UNSAFE));
     private static final List<ACL> READ_CREATE_WRITE = Collections.singletonList(new ACL(ZooDefs.Perms.CREATE | ZooDefs.Perms.READ | ZooDefs.Perms.WRITE, ANYONE_ID_UNSAFE));
 
-    private static ACLProvider testACLProvider = new ACLProvider()
-    {
+    private static ACLProvider testACLProvider = new ACLProvider() {
         @Override
-        public List<ACL> getDefaultAcl()
-        {
+        public List<ACL> getDefaultAcl() {
             return ZooDefs.Ids.OPEN_ACL_UNSAFE;
         }
 
         @Override
-        public List<ACL> getAclForPath(String path)
-        {
-            switch ( path )
-            {
-            case "/bar":
-                return READ_CREATE;
-            case "/bar/foo":
-                return READ_CREATE_WRITE;
+        public List<ACL> getAclForPath(String path) {
+            switch (path) {
+                case "/bar":
+                    return READ_CREATE;
+                case "/bar/foo":
+                    return READ_CREATE_WRITE;
             }
             return null;
         }
     };
 
-    private CuratorFramework createClient(ACLProvider aclProvider)
-    {
+    private CuratorFramework createClient(ACLProvider aclProvider) {
         return CuratorFrameworkFactory.builder().
-            aclProvider(aclProvider).
-            connectString(server.getConnectString()).
-            retryPolicy(new RetryOneTime(1)).
-            build();
+                aclProvider(aclProvider).
+                connectString(server.getConnectString()).
+                retryPolicy(new RetryOneTime(1)).
+                build();
     }
 
     /**
      * Tests that the ACL list provided to the create builder is used for creating the parents.
      */
     @Test
-    public void testCreateWithParentsWithAcl() throws Exception
-    {
+    public void testCreateWithParentsWithAcl() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
 
             String path = "/bar/foo";
@@ -95,18 +88,15 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, ZooDefs.Ids.OPEN_ACL_UNSAFE);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCreateWithParentsWithAclApplyToParents() throws Exception
-    {
+    public void testCreateWithParentsWithAclApplyToParents() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
 
             String path = "/bar/foo";
@@ -117,8 +107,7 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, acl);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
@@ -127,20 +116,16 @@ public class TestCreate extends BaseClassForTests
      * Tests that the ACL list provided to the create builder is used for creating the parents.
      */
     @Test
-    public void testCreateWithParentsWithAclInBackground() throws Exception
-    {
+    public void testCreateWithParentsWithAclInBackground() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
             final CountDownLatch latch = new CountDownLatch(1);
             String path = "/bar/foo";
             List<ACL> acl = Collections.singletonList(new ACL(ZooDefs.Perms.CREATE | ZooDefs.Perms.READ, ANYONE_ID_UNSAFE));
-            BackgroundCallback callback = new BackgroundCallback()
-            {
+            BackgroundCallback callback = new BackgroundCallback() {
                 @Override
-                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception
-                {
+                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
                     latch.countDown();
                 }
             };
@@ -151,27 +136,22 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, ZooDefs.Ids.OPEN_ACL_UNSAFE);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCreateWithParentsWithAclApplyToParentsInBackground() throws Exception
-    {
+    public void testCreateWithParentsWithAclApplyToParentsInBackground() throws Exception {
         CuratorFramework client = createClient(new DefaultACLProvider());
-        try
-        {
+        try {
             client.start();
             final CountDownLatch latch = new CountDownLatch(1);
             String path = "/bar/foo";
             List<ACL> acl = Collections.singletonList(new ACL(ZooDefs.Perms.CREATE | ZooDefs.Perms.READ, ANYONE_ID_UNSAFE));
-            BackgroundCallback callback = new BackgroundCallback()
-            {
+            BackgroundCallback callback = new BackgroundCallback() {
                 @Override
-                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception
-                {
+                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
                     latch.countDown();
                 }
             };
@@ -182,8 +162,7 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, acl);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
@@ -192,11 +171,9 @@ public class TestCreate extends BaseClassForTests
      * Tests that if no ACL list provided to the create builder, then the ACL list is created based on the client's ACLProvider.
      */
     @Test
-    public void testCreateWithParentsWithoutAcl() throws Exception
-    {
+    public void testCreateWithParentsWithoutAcl() throws Exception {
         CuratorFramework client = createClient(testACLProvider);
-        try
-        {
+        try {
             client.start();
 
             String path = "/bar/foo/boo";
@@ -208,8 +185,7 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, READ_CREATE);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
@@ -218,19 +194,15 @@ public class TestCreate extends BaseClassForTests
      * Tests that if no ACL list provided to the create builder, then the ACL list is created based on the client's ACLProvider.
      */
     @Test
-    public void testCreateWithParentsWithoutAclInBackground() throws Exception
-    {
+    public void testCreateWithParentsWithoutAclInBackground() throws Exception {
         CuratorFramework client = createClient(testACLProvider);
-        try
-        {
+        try {
             client.start();
 
             final CountDownLatch latch = new CountDownLatch(1);
-            BackgroundCallback callback = new BackgroundCallback()
-            {
+            BackgroundCallback callback = new BackgroundCallback() {
                 @Override
-                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception
-                {
+                public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
                     latch.countDown();
                 }
             };
@@ -245,20 +217,17 @@ public class TestCreate extends BaseClassForTests
             List<ACL> actual_bar = client.getACL().forPath("/bar");
             Assert.assertEquals(actual_bar, READ_CREATE);
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(client);
         }
     }
 
     @Test
-    public void testCreateProtectedUtils() throws Exception
-    {
+    public void testCreateProtectedUtils() throws Exception {
         try (CuratorFramework client = CuratorFrameworkFactory.builder().
-            connectString(server.getConnectString()).
-            retryPolicy(new RetryOneTime(1)).
-            build())
-        {
+                connectString(server.getConnectString()).
+                retryPolicy(new RetryOneTime(1)).
+                build()) {
             client.start();
             client.blockUntilConnected();
             client.create().forPath("/parent");
@@ -278,8 +247,7 @@ public class TestCreate extends BaseClassForTests
     }
 
     @Test
-    public void testProtectedUtils() throws Exception
-    {
+    public void testProtectedUtils() throws Exception {
         String name = "_c_53345f98-9423-4e0c-a7b5-9f819e3ec2e1-yo";
         Assert.assertTrue(ProtectedUtils.isProtectedZNode(name));
         Assert.assertEquals(ProtectedUtils.normalize(name), "yo");

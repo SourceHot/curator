@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,23 +30,21 @@ import org.apache.curator.utils.ThreadUtils;
 import org.apache.zookeeper.KeeperException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestThreadLocalRetryLoop extends CuratorTestBase
-{
+public class TestThreadLocalRetryLoop extends CuratorTestBase {
     private static final int retryCount = 4;
     private static final String backgroundThreadNameBase = "ignore-curator-background-thread";
 
     @Test(description = "Check for fix for CURATOR-559")
-    public void testRecursingRetry() throws Exception
-    {
+    public void testRecursingRetry() throws Exception {
         AtomicInteger count = new AtomicInteger();
-        try (CuratorFramework client = newClient(count))
-        {
+        try (CuratorFramework client = newClient(count)) {
             prep(client, count);
             doOperation(client);
             Assert.assertEquals(count.get(), retryCount + 1);    // Curator's retry policy has been off by 1 since inception - we might consider fixing it someday
@@ -54,16 +52,13 @@ public class TestThreadLocalRetryLoop extends CuratorTestBase
     }
 
     @Test(description = "Check for fix for CURATOR-559 with multiple threads")
-    public void testThreadedRecursingRetry() throws Exception
-    {
+    public void testThreadedRecursingRetry() throws Exception {
         final int threadQty = 4;
         ExecutorService executorService = Executors.newFixedThreadPool(threadQty);
         AtomicInteger count = new AtomicInteger();
-        try (CuratorFramework client = newClient(count))
-        {
+        try (CuratorFramework client = newClient(count)) {
             prep(client, count);
-            for ( int i = 0; i < threadQty; ++i )
-            {
+            for (int i = 0; i < threadQty; ++i) {
                 executorService.submit(() -> doOperation(client));
             }
             executorService.shutdown();
@@ -73,26 +68,22 @@ public class TestThreadLocalRetryLoop extends CuratorTestBase
     }
 
     @Test(expectedExceptions = NullPointerException.class)
-    public void testBadReleaseWithNoGet()
-    {
+    public void testBadReleaseWithNoGet() {
         ThreadLocalRetryLoop retryLoopStack = new ThreadLocalRetryLoop();
         retryLoopStack.release();
     }
 
-    private CuratorFramework newClient(AtomicInteger count)
-    {
+    private CuratorFramework newClient(AtomicInteger count) {
         RetryPolicy retryPolicy = makeRetryPolicy(count);
         return CuratorFrameworkFactory.builder().connectString(server.getConnectString()).connectionTimeoutMs(100).sessionTimeoutMs(100).retryPolicy(retryPolicy).threadFactory(ThreadUtils.newThreadFactory(backgroundThreadNameBase)).build();
     }
 
-    private void prep(CuratorFramework client, AtomicInteger count) throws Exception
-    {
+    private void prep(CuratorFramework client, AtomicInteger count) throws Exception {
         client.start();
         client.create().forPath("/test");
         CountDownLatch lostLatch = new CountDownLatch(1);
         client.getConnectionStateListenable().addListener((__, newState) -> {
-            if ( newState == ConnectionState.LOST )
-            {
+            if (newState == ConnectionState.LOST) {
                 lostLatch.countDown();
             }
         });
@@ -101,31 +92,25 @@ public class TestThreadLocalRetryLoop extends CuratorTestBase
         count.set(0);   // in case the server shutdown incremented the count
     }
 
-    private Void doOperation(CuratorFramework client) throws Exception
-    {
-        try
-        {
+    private Void doOperation(CuratorFramework client) throws Exception {
+        try {
             RetryLoop.callWithRetry(client.getZookeeperClient(), () -> {
                 client.checkExists().forPath("/hey");
                 return null;
             });
             Assert.fail("Should have thrown an exception");
         }
-        catch ( KeeperException dummy )
-        {
+        catch (KeeperException dummy) {
             // correct
         }
         return null;
     }
 
-    private RetryPolicy makeRetryPolicy(AtomicInteger count)
-    {
-        return new RetryNTimes(retryCount, 1)
-        {
+    private RetryPolicy makeRetryPolicy(AtomicInteger count) {
+        return new RetryNTimes(retryCount, 1) {
             @Override
-            public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper)
-            {
-                if ( !Thread.currentThread().getName().contains(backgroundThreadNameBase) ) // if it does, it's Curator's background thread - don't count these
+            public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
+                if (!Thread.currentThread().getName().contains(backgroundThreadNameBase)) // if it does, it's Curator's background thread - don't count these
                 {
                     count.incrementAndGet();
                 }

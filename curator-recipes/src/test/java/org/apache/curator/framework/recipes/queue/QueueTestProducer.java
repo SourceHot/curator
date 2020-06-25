@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,25 +20,21 @@ package org.apache.curator.framework.recipes.queue;
 
 import java.util.concurrent.Callable;
 
-public class QueueTestProducer implements Callable<Void>
-{
+public class QueueTestProducer implements Callable<Void> {
     private final DistributedQueue<TestQueueItem> queue;
     private final int itemQty;
     private final int startIndex;
 
-    public QueueTestProducer(DistributedQueue<TestQueueItem> queue, int itemQty, int startIndex)
-    {
+    public QueueTestProducer(DistributedQueue<TestQueueItem> queue, int itemQty, int startIndex) {
         this.queue = queue;
         this.itemQty = itemQty;
         this.startIndex = startIndex;
     }
 
     @Override
-    public Void call() throws Exception
-    {
-        int     count = 0;
-        while ( !Thread.currentThread().isInterrupted() && (count < itemQty) )
-        {
+    public Void call() throws Exception {
+        int count = 0;
+        while (!Thread.currentThread().isInterrupted() && (count < itemQty)) {
             queue.put(new TestQueueItem(Integer.toString(count + startIndex)));
             ++count;
         }

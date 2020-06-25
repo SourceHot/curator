@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,17 +21,16 @@ package org.apache.curator.framework.imps;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.curator.framework.api.CreateBuilderMain;
 import org.apache.curator.utils.ZKPaths;
+
 import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Utility class to handle ZNode names when using {@link CreateBuilderMain#withProtection()}
  */
-public final class ProtectedUtils
-{
+public final class ProtectedUtils {
 
-    private ProtectedUtils()
-    {
+    private ProtectedUtils() {
         throw new RuntimeException("Protected Utils is a helper class");
     }
 
@@ -52,7 +51,7 @@ public final class ProtectedUtils
      */
     @VisibleForTesting
     static final int PROTECTED_PREFIX_WITH_UUID_LENGTH = PROTECTED_PREFIX.length() + 36 // UUID canonical text representation produced by {@link UUID#toString()}
-        + 1; // Separator length
+            + 1; // Separator length
 
     /**
      * Provides a prefix to be prepended to a ZNode name when protected. The method assumes that the provided string
@@ -61,14 +60,12 @@ public final class ProtectedUtils
      * @param protectedId canonical text representation of a UUID
      * @return string that concatenates {@value #PROTECTED_PREFIX}, the given id and {@value #PROTECTED_SEPARATOR}
      */
-    public static String getProtectedPrefix(final String protectedId)
-    {
+    public static String getProtectedPrefix(final String protectedId) {
         return PROTECTED_PREFIX + protectedId + PROTECTED_SEPARATOR;
     }
 
     /** Extracts protectedId assuming provided name has a valid protected format */
-    private static String extractProtectedIdInternal(final String znodeName)
-    {
+    private static String extractProtectedIdInternal(final String znodeName) {
         return znodeName.substring(PROTECTED_PREFIX.length(), PROTECTED_PREFIX_WITH_UUID_LENGTH - 1);
     }
 
@@ -78,18 +75,14 @@ public final class ProtectedUtils
      * @param znodeName ZNode name
      * @return {@code true} if the given ZNode name starts with Curator's generated protected prefix
      */
-    public static boolean isProtectedZNode(final String znodeName)
-    {
-        if ( znodeName.length() > PROTECTED_PREFIX_WITH_UUID_LENGTH && znodeName.startsWith(PROTECTED_PREFIX) && znodeName.charAt(PROTECTED_PREFIX_WITH_UUID_LENGTH - 1) == PROTECTED_SEPARATOR )
-        {
-            try
-            {
+    public static boolean isProtectedZNode(final String znodeName) {
+        if (znodeName.length() > PROTECTED_PREFIX_WITH_UUID_LENGTH && znodeName.startsWith(PROTECTED_PREFIX) && znodeName.charAt(PROTECTED_PREFIX_WITH_UUID_LENGTH - 1) == PROTECTED_SEPARATOR) {
+            try {
                 //noinspection ResultOfMethodCallIgnored
                 UUID.fromString(extractProtectedIdInternal(znodeName));
                 return true;
             }
-            catch ( IllegalArgumentException e )
-            {
+            catch (IllegalArgumentException e) {
                 // Not an UUID
             }
         }
@@ -102,8 +95,7 @@ public final class ProtectedUtils
      * @param znodeName ZNode name
      * @return string without Curator's generated protected prefix if present; original string if prefix not present
      */
-    public static String normalize(final String znodeName)
-    {
+    public static String normalize(final String znodeName) {
         return isProtectedZNode(znodeName) ? znodeName.substring(PROTECTED_PREFIX_WITH_UUID_LENGTH) : znodeName;
     }
 
@@ -113,8 +105,7 @@ public final class ProtectedUtils
      * @param path ZNode path
      * @return string without Curator's generated protected prefix if present in ZNode name; original string if prefix not present
      */
-    public static String normalizePath(final String path)
-    {
+    public static String normalizePath(final String path) {
         final ZKPaths.PathAndNode pathAndNode = ZKPaths.getPathAndNode(path);
         final String name = pathAndNode.getNode();
         return isProtectedZNode(name) ? ZKPaths.makePath(pathAndNode.getPath(), normalize(name)) : path;
@@ -126,8 +117,7 @@ public final class ProtectedUtils
      * @param znodeName name of the ZNode
      * @return Optional with protectedId if the name is protected or {@code Optional#empty()}
      */
-    public static Optional<String> extractProtectedId(final String znodeName)
-    {
+    public static Optional<String> extractProtectedId(final String znodeName) {
         return Optional.ofNullable(isProtectedZNode(znodeName) ? extractProtectedIdInternal(znodeName) : null);
     }
 
@@ -139,8 +129,7 @@ public final class ProtectedUtils
      * @return name with protected mode prefix (e.g. '_c_53345f98-9423-4e0c-a7b5-9f819e3ec2e1-name1')
      *         or the same name if protectedId is {@code null}
      */
-    public static String toProtectedZNode(final String znodeName, final String protectedId)
-    {
+    public static String toProtectedZNode(final String znodeName, final String protectedId) {
         return (protectedId == null) ? znodeName : getProtectedPrefix(protectedId) + znodeName;
     }
 
@@ -152,10 +141,8 @@ public final class ProtectedUtils
      * @return path with protected mode prefix (e.g. '/root/_c_53345f98-9423-4e0c-a7b5-9f819e3ec2e1-path1')
      *         or the same path if protectedId is {@code null}
      */
-    public static String toProtectedZNodePath(final String path, final String protectedId)
-    {
-        if ( protectedId == null )
-        {
+    public static String toProtectedZNodePath(final String path, final String protectedId) {
+        if (protectedId == null) {
             return path;
         }
         final ZKPaths.PathAndNode pathAndNode = ZKPaths.getPathAndNode(path);

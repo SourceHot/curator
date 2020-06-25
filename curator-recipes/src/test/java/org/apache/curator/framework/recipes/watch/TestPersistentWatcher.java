@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,45 +28,38 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Test(groups = CuratorTestBase.zk36Group)
-public class TestPersistentWatcher extends CuratorTestBase
-{
+public class TestPersistentWatcher extends CuratorTestBase {
     @Test
-    public void testConnectionLostRecursive() throws Exception
-    {
+    public void testConnectionLostRecursive() throws Exception {
         internalTest(true);
     }
 
     @Test
-    public void testConnectionLost() throws Exception
-    {
+    public void testConnectionLost() throws Exception {
         internalTest(false);
     }
 
-    private void internalTest(boolean recursive) throws Exception
-    {
-        try ( CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1)) )
-        {
+    private void internalTest(boolean recursive) throws Exception {
+        try (CuratorFramework client = CuratorFrameworkFactory.newClient(server.getConnectString(), timing.session(), timing.connection(), new RetryOneTime(1))) {
             CountDownLatch lostLatch = new CountDownLatch(1);
             CountDownLatch reconnectedLatch = new CountDownLatch(1);
             client.start();
             client.getConnectionStateListenable().addListener((__, newState) -> {
-                if ( newState == ConnectionState.LOST )
-                {
+                if (newState == ConnectionState.LOST) {
                     lostLatch.countDown();
                 }
-                else if ( newState == ConnectionState.RECONNECTED )
-                {
+                else if (newState == ConnectionState.RECONNECTED) {
                     reconnectedLatch.countDown();
                 }
             });
 
-            try ( PersistentWatcher persistentWatcher = new PersistentWatcher(client, "/top/main", recursive) )
-            {
+            try (PersistentWatcher persistentWatcher = new PersistentWatcher(client, "/top/main", recursive)) {
                 persistentWatcher.start();
 
                 BlockingQueue<WatchedEvent> events = new LinkedBlockingQueue<>();
@@ -74,12 +67,10 @@ public class TestPersistentWatcher extends CuratorTestBase
 
                 client.create().creatingParentsIfNeeded().forPath("/top/main/a");
                 Assert.assertEquals(timing.takeFromQueue(events).getPath(), "/top/main");
-                if ( recursive )
-                {
+                if (recursive) {
                     Assert.assertEquals(timing.takeFromQueue(events).getPath(), "/top/main/a");
                 }
-                else
-                {
+                else {
                     Assert.assertEquals(timing.takeFromQueue(events).getPath(), "/top/main");   // child added
                 }
 
@@ -93,8 +84,7 @@ public class TestPersistentWatcher extends CuratorTestBase
                 timing.sleepABit();     // time to allow watcher to get reset
                 events.clear();
 
-                if ( recursive )
-                {
+                if (recursive) {
                     client.setData().forPath("/top/main/a", "foo".getBytes());
                     Assert.assertEquals(timing.takeFromQueue(events).getType(), Watcher.Event.EventType.NodeDataChanged);
                 }

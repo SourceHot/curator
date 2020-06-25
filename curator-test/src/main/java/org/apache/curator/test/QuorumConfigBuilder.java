@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.apache.curator.test.compatibility.Timing2;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -33,75 +34,61 @@ import java.util.Map;
 import java.util.Properties;
 
 @SuppressWarnings("UnusedDeclaration")
-public class QuorumConfigBuilder implements Closeable
-{
+public class QuorumConfigBuilder implements Closeable {
     private final ImmutableList<InstanceSpec> instanceSpecs;
     private final boolean fromRandom;
     private final File fakeConfigFile;
 
-    public QuorumConfigBuilder(Collection<InstanceSpec> specs)
-    {
+    public QuorumConfigBuilder(Collection<InstanceSpec> specs) {
         this(specs.toArray(new InstanceSpec[0]));
     }
 
-    public QuorumConfigBuilder(InstanceSpec... specs)
-    {
+    public QuorumConfigBuilder(InstanceSpec... specs) {
         fromRandom = (specs == null) || (specs.length == 0);
         instanceSpecs = fromRandom ? ImmutableList.of(InstanceSpec.newInstanceSpec()) : ImmutableList.copyOf(specs);
         File fakeConfigFile = null;
-        try
-        {
+        try {
             fakeConfigFile = File.createTempFile("temp", "temp");
         }
-        catch ( IOException e )
-        {
+        catch (IOException e) {
             Throwables.propagate(e);
         }
         this.fakeConfigFile = fakeConfigFile;
     }
 
-    public boolean isFromRandom()
-    {
+    public boolean isFromRandom() {
         return fromRandom;
     }
 
-    public QuorumPeerConfig buildConfig() throws Exception
-    {
+    public QuorumPeerConfig buildConfig() throws Exception {
         return buildConfig(0);
     }
 
-    public InstanceSpec getInstanceSpec(int index)
-    {
+    public InstanceSpec getInstanceSpec(int index) {
         return instanceSpecs.get(index);
     }
 
-    public List<InstanceSpec> getInstanceSpecs()
-    {
+    public List<InstanceSpec> getInstanceSpecs() {
         return instanceSpecs;
     }
 
-    public int size()
-    {
+    public int size() {
         return instanceSpecs.size();
     }
 
     @Override
-    public void close()
-    {
-        if ( fakeConfigFile != null )
-        {
+    public void close() {
+        if (fakeConfigFile != null) {
             //noinspection ResultOfMethodCallIgnored
             fakeConfigFile.delete();
         }
     }
 
-    public QuorumPeerConfig buildConfig(int instanceIndex) throws Exception
-    {
+    public QuorumPeerConfig buildConfig(int instanceIndex) throws Exception {
         boolean isCluster = (instanceSpecs.size() > 1);
         InstanceSpec spec = instanceSpecs.get(instanceIndex);
 
-        if ( isCluster )
-        {
+        if (isCluster) {
             Files.write(Integer.toString(spec.getServerId()).getBytes(), new File(spec.getDataDirectory(), "myid"));
         }
 
@@ -114,30 +101,25 @@ public class QuorumConfigBuilder implements Closeable
         properties.setProperty("tickTime", tickTime);
         properties.setProperty("minSessionTimeout", tickTime);
         int maxClientCnxns = spec.getMaxClientCnxns();
-        if ( maxClientCnxns >= 0 )
-        {
+        if (maxClientCnxns >= 0) {
             properties.setProperty("maxClientCnxns", Integer.toString(maxClientCnxns));
         }
 
-        if ( isCluster )
-        {
-            for ( InstanceSpec thisSpec : instanceSpecs )
-            {
+        if (isCluster) {
+            for (InstanceSpec thisSpec : instanceSpecs) {
                 properties.setProperty("server." + thisSpec.getServerId(), String.format("%s:%d:%d;%s:%d", thisSpec.getHostname(), thisSpec.getQuorumPort(), thisSpec.getElectionPort(), thisSpec.getHostname(), thisSpec.getPort()));
             }
         }
-        Map<String,Object> customProperties = spec.getCustomProperties();
+        Map<String, Object> customProperties = spec.getCustomProperties();
         if (customProperties != null) {
-            for (Map.Entry<String,Object> property : customProperties.entrySet()) {
+            for (Map.Entry<String, Object> property : customProperties.entrySet()) {
                 properties.put(property.getKey(), property.getValue());
             }
         }
 
-        QuorumPeerConfig config = new QuorumPeerConfig()
-        {
+        QuorumPeerConfig config = new QuorumPeerConfig() {
             {
-                if ( fakeConfigFile != null )
-                {
+                if (fakeConfigFile != null) {
                     configFileStr = fakeConfigFile.getPath();
                 }
             }

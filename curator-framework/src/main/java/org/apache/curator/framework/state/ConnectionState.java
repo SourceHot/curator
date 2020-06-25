@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,16 +25,13 @@ import org.apache.zookeeper.Watcher;
 /**
  * Represents state changes in the connection to ZK
  */
-public enum ConnectionState
-{
+public enum ConnectionState {
     /**
      * Sent for the first successful connection to the server. NOTE: You will only
      * get one of these messages for any CuratorFramework instance.
      */
-    CONNECTED
-    {
-        public boolean isConnected()
-        {
+    CONNECTED {
+        public boolean isConnected() {
             return true;
         }
     },
@@ -43,10 +40,8 @@ public enum ConnectionState
      * There has been a loss of connection. Leaders, locks, etc. should suspend
      * until the connection is re-established.
      */
-    SUSPENDED
-    {
-        public boolean isConnected()
-        {
+    SUSPENDED {
+        public boolean isConnected() {
             return false;
         }
     },
@@ -54,10 +49,8 @@ public enum ConnectionState
     /**
      * A suspended, lost, or read-only connection has been re-established
      */
-    RECONNECTED
-    {
-        public boolean isConnected()
-        {
+    RECONNECTED {
+        public boolean isConnected() {
             return true;
         }
     },
@@ -73,10 +66,8 @@ public enum ConnectionState
      *     elapses during a network partition.
      * </p>
      */
-    LOST
-    {
-        public boolean isConnected()
-        {
+    LOST {
+        public boolean isConnected() {
             return false;
         }
     },
@@ -88,15 +79,11 @@ public enum ConnectionState
      * <a href="http://wiki.apache.org/hadoop/ZooKeeper/GSoCReadOnlyMode">http://wiki.apache.org/hadoop/ZooKeeper/GSoCReadOnlyMode</a>.
      * The connection will remain in read only mode until another state change is sent.
      */
-    READ_ONLY
-    {
-        public boolean isConnected()
-        {
+    READ_ONLY {
+        public boolean isConnected() {
             return true;
         }
-    }
-
-    ;
+    };
 
     /**
      * Check if this state indicates that Curator has a connection to ZooKeeper

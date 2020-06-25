@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Abstraction for values that determine when an instance is down
  */
-public class DownInstancePolicy
-{
+public class DownInstancePolicy {
     private final long timeoutMs;
     private final int errorThreshold;
 
@@ -35,8 +34,7 @@ public class DownInstancePolicy
     /**
      * Policy with default values
      */
-    public DownInstancePolicy()
-    {
+    public DownInstancePolicy() {
         this(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS, DEFAULT_THRESHOLD);
     }
 
@@ -45,19 +43,16 @@ public class DownInstancePolicy
      * @param unit time unit
      * @param errorThreshold number of errors within time window that denotes a down instance
      */
-    public DownInstancePolicy(long timeout, TimeUnit unit, int errorThreshold)
-    {
+    public DownInstancePolicy(long timeout, TimeUnit unit, int errorThreshold) {
         this.timeoutMs = unit.toMillis(timeout);
         this.errorThreshold = errorThreshold;
     }
 
-    public long getTimeoutMs()
-    {
+    public long getTimeoutMs() {
         return timeoutMs;
     }
 
-    public int getErrorThreshold()
-    {
+    public int getErrorThreshold() {
         return errorThreshold;
     }
 }

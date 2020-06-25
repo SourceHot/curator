@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,32 +21,25 @@ package org.apache.curator.framework.recipes.cache;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-class OutstandingOps
-{
+class OutstandingOps {
     private final AtomicReference<Runnable> completionProc;
     private final AtomicLong count = new AtomicLong(0);
     private volatile boolean active = true;
 
-    OutstandingOps(Runnable completionProc)
-    {
+    OutstandingOps(Runnable completionProc) {
         this.completionProc = new AtomicReference<>(completionProc);
     }
 
-    void increment()
-    {
-        if ( active )
-        {
+    void increment() {
+        if (active) {
             count.incrementAndGet();
         }
     }
 
-    void decrement()
-    {
-        if ( active && (count.decrementAndGet() == 0) )
-        {
+    void decrement() {
+        if (active && (count.decrementAndGet() == 0)) {
             Runnable proc = completionProc.getAndSet(null);
-            if ( proc != null )
-            {
+            if (proc != null) {
                 active = false;
                 proc.run();
             }

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,15 +28,12 @@ import org.apache.curator.x.discovery.strategies.RandomStrategy;
 import org.testng.annotations.Test;
 
 @Test(groups = CuratorTestBase.zk35TestCompatibilityGroup)
-public class ServiceCacheLeakTester
-{
-    public static void main(String[] args) throws Exception
-    {
+public class ServiceCacheLeakTester {
+    public static void main(String[] args) throws Exception {
         TestingServer testingServer = new TestingServer();
 
         final CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(testingServer.getConnectString(), new RetryOneTime(1));
-        try
-        {
+        try {
             curatorFramework.start();
 
             doWork(curatorFramework);
@@ -45,36 +42,30 @@ public class ServiceCacheLeakTester
             System.out.println("Done - get dump");
             Thread.currentThread().join();
         }
-        finally
-        {
+        finally {
             CloseableUtils.closeQuietly(curatorFramework);
             CloseableUtils.closeQuietly(testingServer);
         }
     }
 
-    private static void doWork(CuratorFramework curatorFramework) throws Exception
-    {
+    private static void doWork(CuratorFramework curatorFramework) throws Exception {
         ServiceInstance<Void> thisInstance = ServiceInstance.<Void>builder().name("myservice").build();
         final ServiceDiscovery<Void> serviceDiscovery = ServiceDiscoveryBuilder.builder(Void.class).client(curatorFramework.usingNamespace("dev")).basePath("/instances").thisInstance(thisInstance).build();
         serviceDiscovery.start();
 
-        for ( int i = 0; i < 100000; i++ )
-        {
+        for (int i = 0; i < 100000; i++) {
             final ServiceProvider<Void> s = serviceProvider(serviceDiscovery, "myservice");
             s.start();
-            try
-            {
+            try {
                 s.getInstance().buildUriSpec();
             }
-            finally
-            {
+            finally {
                 s.close();
             }
         }
     }
 
-    private static ServiceProvider<Void> serviceProvider(ServiceDiscovery<Void> serviceDiscovery, String name) throws Exception
-    {
+    private static ServiceProvider<Void> serviceProvider(ServiceDiscovery<Void> serviceDiscovery, String name) throws Exception {
         return serviceDiscovery.serviceProviderBuilder().serviceName(name).providerStrategy(new RandomStrategy<Void>()).build();
     }
 }
