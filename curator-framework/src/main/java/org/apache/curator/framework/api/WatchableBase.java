@@ -23,6 +23,8 @@ import org.apache.zookeeper.Watcher;
 public interface WatchableBase<T> {
     /**
      * Set a watcher for the operation
+     * <p>
+     * 设置监听
      *
      * @param watcher the watcher
      * @return this
@@ -31,6 +33,8 @@ public interface WatchableBase<T> {
 
     /**
      * Set a watcher for the operation
+     * <p>
+     * 设置监听
      *
      * @param watcher the watcher
      * @return this

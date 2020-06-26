@@ -39,6 +39,7 @@ public class BlockingQueueConsumer<T> implements QueueConsumer<T> {
 
     /**
      * Creates with capacity of {@link Integer#MAX_VALUE}
+     *
      * @param connectionStateListener listener for connection state changes
      */
     public BlockingQueueConsumer(ConnectionStateListener connectionStateListener) {
@@ -46,7 +47,7 @@ public class BlockingQueueConsumer<T> implements QueueConsumer<T> {
     }
 
     /**
-     * @param capacity max capacity (i.e. puts block if full)
+     * @param capacity                max capacity (i.e. puts block if full)
      * @param connectionStateListener listener for connection state changes
      */
     public BlockingQueueConsumer(ConnectionStateListener connectionStateListener, int capacity) {
@@ -56,7 +57,7 @@ public class BlockingQueueConsumer<T> implements QueueConsumer<T> {
     /**
      * Wrap the given blocking queue
      *
-     * @param queue queue to use
+     * @param queue                   queue to use
      * @param connectionStateListener listener for connection state changes
      */
     public BlockingQueueConsumer(ConnectionStateListener connectionStateListener, BlockingQueue<T> queue) {
@@ -125,13 +126,13 @@ public class BlockingQueueConsumer<T> implements QueueConsumer<T> {
      * @param c the collection to transfer elements into
      * @return the number of elements transferred
      * @throws UnsupportedOperationException if addition of elements
-     *         is not supported by the specified collection
-     * @throws ClassCastException if the class of an element of this queue
-     *         prevents it from being added to the specified collection
-     * @throws NullPointerException if the specified collection is null
-     * @throws IllegalArgumentException if the specified collection is this
-     *         queue, or some property of an element of this queue prevents
-     *         it from being added to the specified collection
+     *                                       is not supported by the specified collection
+     * @throws ClassCastException            if the class of an element of this queue
+     *                                       prevents it from being added to the specified collection
+     * @throws NullPointerException          if the specified collection is null
+     * @throws IllegalArgumentException      if the specified collection is this
+     *                                       queue, or some property of an element of this queue prevents
+     *                                       it from being added to the specified collection
      */
     public int drainTo(Collection<? super T> c) {
         return items.drainTo(c);

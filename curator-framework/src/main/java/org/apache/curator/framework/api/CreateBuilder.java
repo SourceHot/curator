@@ -18,6 +18,9 @@
  */
 package org.apache.curator.framework.api;
 
+/**
+ * 创建生成器
+ */
 public interface CreateBuilder extends CreateBuilderMain {
     /**
      * Specify a TTL when mode is {@link org.apache.zookeeper.CreateMode#PERSISTENT_WITH_TTL} or

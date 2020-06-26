@@ -28,7 +28,7 @@ public interface SharedCountListener extends ConnectionStateListener {
      * Called when the shared value has changed
      *
      * @param sharedCount the shared count instance
-     * @param newCount the new count
+     * @param newCount    the new count
      * @throws Exception errors
      */
     public void countHasChanged(SharedCountReader sharedCount, int newCount) throws Exception;

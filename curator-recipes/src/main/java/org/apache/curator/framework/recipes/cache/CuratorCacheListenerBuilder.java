@@ -86,7 +86,7 @@ public interface CuratorCacheListenerBuilder {
      * things such as event ordering will likely be different.
      *
      * @param rootPath the root path. The listener needs this information in order to bridge only events for children of this path and not the path itself
-     * @param client the curator client
+     * @param client   the curator client
      * @param listener the listener to wrap
      * @return a CuratorCacheListener that forwards to the given listener
      */
@@ -99,7 +99,7 @@ public interface CuratorCacheListenerBuilder {
      * behaves differently than {@link org.apache.curator.framework.recipes.cache.TreeCache} so
      * things such as event ordering will likely be different.
      *
-     * @param client the curator client
+     * @param client   the curator client
      * @param listener the listener to wrap
      * @return a CuratorCacheListener that forwards to the given listener
      */

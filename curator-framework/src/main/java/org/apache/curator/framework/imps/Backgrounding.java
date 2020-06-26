@@ -30,9 +30,21 @@ import org.apache.zookeeper.KeeperException;
 import java.util.concurrent.Executor;
 
 public class Backgrounding {
+    /**
+     * 是否后台
+     */
     private final boolean inBackground;
+    /**
+     * 数据
+     */
     private final Object context;
+    /**
+     * 回调
+     */
     private final BackgroundCallback callback;
+    /**
+     * 错误监听器
+     */
     private final UnhandledErrorListener errorListener;
 
     Backgrounding(Object context) {

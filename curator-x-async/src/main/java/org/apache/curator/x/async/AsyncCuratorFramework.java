@@ -75,7 +75,7 @@ public interface AsyncCuratorFramework extends AsyncCuratorFrameworkDsl {
      * will get called for every watcher. The filters can return new versions or unchanged versions
      * of the arguments.
      *
-     * @param resultFilter filter to use or <code>null</code>
+     * @param resultFilter  filter to use or <code>null</code>
      * @param watcherFilter filter to use or <code>null</code>
      * @return facade
      */
@@ -84,26 +84,26 @@ public interface AsyncCuratorFramework extends AsyncCuratorFrameworkDsl {
     /**
      * Set any combination of listener or filters
      *
-     * @param listener lister to use or <code>null</code>
-     * @param resultFilter filter to use or <code>null</code>
+     * @param listener      lister to use or <code>null</code>
+     * @param resultFilter  filter to use or <code>null</code>
      * @param watcherFilter filter to use or <code>null</code>
+     * @return facade
      * @see #with(java.util.function.UnaryOperator, java.util.function.UnaryOperator)
      * @see #with(org.apache.curator.framework.api.UnhandledErrorListener)
-     * @return facade
      */
     AsyncCuratorFrameworkDsl with(UnhandledErrorListener listener, UnaryOperator<CuratorEvent> resultFilter, UnaryOperator<WatchedEvent> watcherFilter);
 
     /**
      * Set any combination of listener, filters or watch mode
      *
-     * @param mode watch mode to use for subsequent calls to {@link #watched()} (cannot be <code>null</code>)
-     * @param listener lister to use or <code>null</code>
-     * @param resultFilter filter to use or <code>null</code>
+     * @param mode          watch mode to use for subsequent calls to {@link #watched()} (cannot be <code>null</code>)
+     * @param listener      lister to use or <code>null</code>
+     * @param resultFilter  filter to use or <code>null</code>
      * @param watcherFilter filter to use or <code>null</code>
+     * @return facade
      * @see #with(WatchMode)
      * @see #with(java.util.function.UnaryOperator, java.util.function.UnaryOperator)
      * @see #with(org.apache.curator.framework.api.UnhandledErrorListener)
-     * @return facade
      */
     AsyncCuratorFrameworkDsl with(WatchMode mode, UnhandledErrorListener listener, UnaryOperator<CuratorEvent> resultFilter, UnaryOperator<WatchedEvent> watcherFilter);
 }

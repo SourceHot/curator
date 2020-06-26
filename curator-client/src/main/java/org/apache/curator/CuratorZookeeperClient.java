@@ -55,56 +55,55 @@ public class CuratorZookeeperClient implements Closeable {
     private final AtomicReference<TracerDriver> tracer = new AtomicReference<TracerDriver>(new DefaultTracerDriver());
 
     /**
-     *
-     * @param connectString list of servers to connect to
-     * @param sessionTimeoutMs session timeout
+     * @param connectString       list of servers to connect to
+     * @param sessionTimeoutMs    session timeout
      * @param connectionTimeoutMs connection timeout
-     * @param watcher default watcher or null
-     * @param retryPolicy the retry policy to use
+     * @param watcher             default watcher or null
+     * @param retryPolicy         the retry policy to use
      */
     public CuratorZookeeperClient(String connectString, int sessionTimeoutMs, int connectionTimeoutMs, Watcher watcher, RetryPolicy retryPolicy) {
         this(new DefaultZookeeperFactory(), new FixedEnsembleProvider(connectString), sessionTimeoutMs, connectionTimeoutMs, watcher, retryPolicy, false);
     }
 
     /**
-     * @param ensembleProvider the ensemble provider
-     * @param sessionTimeoutMs session timeout
+     * @param ensembleProvider    the ensemble provider
+     * @param sessionTimeoutMs    session timeout
      * @param connectionTimeoutMs connection timeout
-     * @param watcher default watcher or null
-     * @param retryPolicy the retry policy to use
+     * @param watcher             default watcher or null
+     * @param retryPolicy         the retry policy to use
      */
     public CuratorZookeeperClient(EnsembleProvider ensembleProvider, int sessionTimeoutMs, int connectionTimeoutMs, Watcher watcher, RetryPolicy retryPolicy) {
         this(new DefaultZookeeperFactory(), ensembleProvider, sessionTimeoutMs, connectionTimeoutMs, watcher, retryPolicy, false);
     }
 
     /**
-     * @param zookeeperFactory factory for creating {@link ZooKeeper} instances
-     * @param ensembleProvider the ensemble provider
-     * @param sessionTimeoutMs session timeout
+     * @param zookeeperFactory    factory for creating {@link ZooKeeper} instances
+     * @param ensembleProvider    the ensemble provider
+     * @param sessionTimeoutMs    session timeout
      * @param connectionTimeoutMs connection timeout
-     * @param watcher default watcher or null
-     * @param retryPolicy the retry policy to use
-     * @param canBeReadOnly if true, allow ZooKeeper client to enter
-     *                      read only mode in case of a network partition. See
-     *                      {@link ZooKeeper#ZooKeeper(String, int, Watcher, long, byte[], boolean)}
-     *                      for details
+     * @param watcher             default watcher or null
+     * @param retryPolicy         the retry policy to use
+     * @param canBeReadOnly       if true, allow ZooKeeper client to enter
+     *                            read only mode in case of a network partition. See
+     *                            {@link ZooKeeper#ZooKeeper(String, int, Watcher, long, byte[], boolean)}
+     *                            for details
      */
     public CuratorZookeeperClient(ZookeeperFactory zookeeperFactory, EnsembleProvider ensembleProvider, int sessionTimeoutMs, int connectionTimeoutMs, Watcher watcher, RetryPolicy retryPolicy, boolean canBeReadOnly) {
         this(zookeeperFactory, ensembleProvider, sessionTimeoutMs, connectionTimeoutMs, 0, watcher, retryPolicy, canBeReadOnly);
     }
 
     /**
-     * @param zookeeperFactory factory for creating {@link ZooKeeper} instances
-     * @param ensembleProvider the ensemble provider
-     * @param sessionTimeoutMs session timeout
-     * @param connectionTimeoutMs connection timeout
+     * @param zookeeperFactory         factory for creating {@link ZooKeeper} instances
+     * @param ensembleProvider         the ensemble provider
+     * @param sessionTimeoutMs         session timeout
+     * @param connectionTimeoutMs      connection timeout
      * @param waitForShutdownTimeoutMs default timeout fo close operation
-     * @param watcher default watcher or null
-     * @param retryPolicy the retry policy to use
-     * @param canBeReadOnly if true, allow ZooKeeper client to enter
-     *                      read only mode in case of a network partition. See
-     *                      {@link ZooKeeper#ZooKeeper(String, int, Watcher, long, byte[], boolean)}
-     *                      for details
+     * @param watcher                  default watcher or null
+     * @param retryPolicy              the retry policy to use
+     * @param canBeReadOnly            if true, allow ZooKeeper client to enter
+     *                                 read only mode in case of a network partition. See
+     *                                 {@link ZooKeeper#ZooKeeper(String, int, Watcher, long, byte[], boolean)}
+     *                                 for details
      * @since 4.0.2
      */
     public CuratorZookeeperClient(ZookeeperFactory zookeeperFactory, EnsembleProvider ensembleProvider,
@@ -204,7 +203,7 @@ public class CuratorZookeeperClient implements Closeable {
 
     /**
      * Close the client.
-     *
+     * <p>
      * Same as {@link #close(int) } using the timeout set at construction time.
      *
      * @see #close(int)
@@ -219,7 +218,7 @@ public class CuratorZookeeperClient implements Closeable {
      * This method will wait for internal resources to be released.
      *
      * @param waitForShutdownTimeoutMs timeout (in milliseconds) to wait for resources to be released.
-     *                  Use zero or a negative value to skip the wait.
+     *                                 Use zero or a negative value to skip the wait.
      */
     public void close(int waitForShutdownTimeoutMs) {
         log.debug("Closing, waitForShutdownTimeoutMs {}", waitForShutdownTimeoutMs);
@@ -256,6 +255,7 @@ public class CuratorZookeeperClient implements Closeable {
 
     /**
      * Start a new tracer
+     *
      * @param name name of the event
      * @return the new tracer ({@link TimeTrace#commit()} must be called)
      */
@@ -265,6 +265,7 @@ public class CuratorZookeeperClient implements Closeable {
 
     /**
      * Start a new advanced tracer with more metrics being recorded
+     *
      * @param name name of the event
      * @return the new tracer ({@link OperationTrace#commit()} must be called)
      */

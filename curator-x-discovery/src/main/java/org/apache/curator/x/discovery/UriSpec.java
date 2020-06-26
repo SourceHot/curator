@@ -33,14 +33,14 @@ import java.util.StringTokenizer;
 
 /**
  * <p>
- *     An abstraction for specifying a URI for an instance allowing for variable substitutions.
+ * An abstraction for specifying a URI for an instance allowing for variable substitutions.
  * </p>
  *
  * <p>
- *     A Uri spec is a string with optional replacement fields. A replacement field begins with
- *     an open brace and ends with a close brace. The value between the braces is the name of the
- *     field. e.g. "{scheme}://foo.com:{port}" has two replacement fields named "scheme" and "port".
- *     Several pre-defined fields are listed as constants in this class (e.g. {@link #FIELD_SCHEME}).
+ * A Uri spec is a string with optional replacement fields. A replacement field begins with
+ * an open brace and ends with a close brace. The value between the braces is the name of the
+ * field. e.g. "{scheme}://foo.com:{port}" has two replacement fields named "scheme" and "port".
+ * Several pre-defined fields are listed as constants in this class (e.g. {@link #FIELD_SCHEME}).
  * </p>
  */
 public class UriSpec implements Iterable<UriSpec.Part> {
@@ -106,7 +106,7 @@ public class UriSpec implements Iterable<UriSpec.Part> {
         private final boolean variable;
 
         /**
-         * @param value the token value
+         * @param value      the token value
          * @param isVariable if true, a replacement field. If false, a literal string
          */
         public Part(String value, boolean isVariable) {
@@ -222,8 +222,8 @@ public class UriSpec implements Iterable<UriSpec.Part> {
      * Build into a UriSpec string
      *
      * @param serviceInstance instance to use for pre-defined replacement fields
-     * @param variables a mapping of field replacement names to values. Note: any fields listed
-     *                  in this map override pre-defined fields
+     * @param variables       a mapping of field replacement names to values. Note: any fields listed
+     *                        in this map override pre-defined fields
      * @return UriSpec string
      */
     public String build(ServiceInstance<?> serviceInstance, Map<String, Object> variables) {

@@ -84,7 +84,7 @@ public class ModeledFrameworkBuilder<T> {
     /**
      * Add watchers as appropriate using the given watchMode and filter to the Modeled Curator's ZNode
      *
-     * @param watchMode watcher style
+     * @param watchMode     watcher style
      * @param watcherFilter filter
      * @return this for chaining
      * @see org.apache.curator.x.async.AsyncStage#event()

@@ -58,14 +58,17 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Returns the state of this instance
-     *
+     * <p>
      * 获取状态
+     *
      * @return state
      */
     CuratorFrameworkState getState();
 
     /**
      * Return true if the client is started, not closed, etc.
+     * <p>
+     * 是否启动
      *
      * @return true/false
      * @deprecated use {@link #getState()} instead
@@ -75,6 +78,8 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Start a create builder
+     * <p>
+     * 创建生成器
      *
      * @return builder object
      */
@@ -82,6 +87,8 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Start a delete builder
+     * <p>
+     * 删除生成器
      *
      * @return builder object
      */
@@ -89,6 +96,8 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Start an exists builder
+     * <p>
+     * 是否存在生成器
      * <p>
      * The builder will return a Stat object as if org.apache.zookeeper.ZooKeeper.exists() were called.  Thus, a null
      * means that it does not exist and an actual Stat object means it does exist.
@@ -99,6 +108,8 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Start a get data builder
+     * <p>
+     * 获取数据生成器
      *
      * @return builder object
      */
@@ -107,12 +118,15 @@ public interface CuratorFramework extends Closeable {
     /**
      * Start a set data builder
      *
+     * 设置数据生成器
      * @return builder object
      */
     SetDataBuilder setData();
 
     /**
      * Start a get children builder
+     * <p>
+     * 获取子节点生成器
      *
      * @return builder object
      */
@@ -120,6 +134,9 @@ public interface CuratorFramework extends Closeable {
 
     /**
      * Start a get ACL builder
+     * <p>
+     * <p>
+     * ACL 生成器
      *
      * @return builder object
      */
@@ -208,6 +225,8 @@ public interface CuratorFramework extends Closeable {
     /**
      * Start a watch builder. Supported only when ZooKeeper JAR of version 3.6 or
      * above is used, throws {@code IllegalStateException} for ZooKeeper JAR 3.5 or below
+     * <p>
+     * 监听生成器
      *
      * @return builder object
      * @throws IllegalStateException ZooKeeper JAR is 3.5 or below

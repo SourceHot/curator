@@ -21,6 +21,9 @@ package org.apache.curator.framework.api;
 
 import org.apache.zookeeper.CreateMode;
 
+/**
+ * 是否存在生成器
+ */
 public interface ExistsBuilder extends
         ExistsBuilderMain {
     /**

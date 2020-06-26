@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Similar to {@link org.apache.curator.utils.EnsurePath} but creates containers.
- *
  */
 public class EnsureContainers {
     private final CuratorFramework client;
@@ -31,7 +30,7 @@ public class EnsureContainers {
 
     /**
      * @param client the client
-     * @param path path to ensure is containers
+     * @param path   path to ensure is containers
      */
     public EnsureContainers(CuratorFramework client, String path) {
         this.client = client;

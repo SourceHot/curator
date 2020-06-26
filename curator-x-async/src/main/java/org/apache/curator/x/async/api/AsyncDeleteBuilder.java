@@ -39,9 +39,9 @@ public interface AsyncDeleteBuilder extends AsyncPathable<AsyncStage<Void>> {
      *
      * @param options set of deletion options
      * @param version version to use
+     * @return this
      * @see #withOptions(java.util.Set)
      * @see #withVersion(int)
-     * @return this
      */
     AsyncPathable<AsyncStage<Void>> withOptionsAndVersion(Set<DeleteOption> options, int version);
 

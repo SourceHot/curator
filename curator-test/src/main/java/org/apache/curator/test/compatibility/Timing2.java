@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 
 /**
  * Utility to get various testing times.
- *
+ * <p>
  * Copied from the old Timing class which is now deprecated. Needed this to support ZK 3.4 compatibility
  */
 public class Timing2 {
@@ -56,7 +56,7 @@ public class Timing2 {
     /**
      * Use a multiple of the default base time
      *
-     * @param multiple the multiple
+     * @param multiple        the multiple
      * @param waitingMultiple multiple of main timing to use when waiting
      */
     public Timing2(double multiple, int waitingMultiple) {
@@ -72,8 +72,8 @@ public class Timing2 {
     }
 
     /**
-     * @param value base time
-     * @param unit  base time unit
+     * @param value           base time
+     * @param unit            base time unit
      * @param waitingMultiple multiple of main timing to use when waiting
      */
     public Timing2(long value, TimeUnit unit, int waitingMultiple) {
@@ -187,7 +187,7 @@ public class Timing2 {
     /**
      * Return a new timing that is a multiple of the this timing
      *
-     * @param n the multiple
+     * @param n               the multiple
      * @param waitingMultiple new waitingMultiple
      * @return this timing times the multiple
      */

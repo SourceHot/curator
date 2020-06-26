@@ -44,9 +44,9 @@ public interface ModeledCacheListener<T> {
     /**
      * The given path was added, updated or removed
      *
-     * @param type action type
-     * @param path the path
-     * @param stat the node's stat (previous stat for removal)
+     * @param type  action type
+     * @param path  the path
+     * @param stat  the node's stat (previous stat for removal)
      * @param model the node's model (previous model for removal)
      */
     void accept(Type type, ZPath path, Stat stat, T model);

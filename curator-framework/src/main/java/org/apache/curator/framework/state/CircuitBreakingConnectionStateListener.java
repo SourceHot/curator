@@ -28,41 +28,41 @@ import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * <p>
- *     A proxy for connection state listeners that adds circuit breaking behavior. During network
- *     outages ZooKeeper can become very noisy sending connection/disconnection events in rapid succession.
- *     Curator recipes respond to these messages by resetting state, etc. E.g. LeaderLatch must delete
- *     its lock node and try to recreate it in order to try to re-obtain leadership, etc.
+ * A proxy for connection state listeners that adds circuit breaking behavior. During network
+ * outages ZooKeeper can become very noisy sending connection/disconnection events in rapid succession.
+ * Curator recipes respond to these messages by resetting state, etc. E.g. LeaderLatch must delete
+ * its lock node and try to recreate it in order to try to re-obtain leadership, etc.
  * </p>
  *
  * <p>
- *     This noisy herding can be avoided by using the circuit breaking listener. When it
- *     receives {@link org.apache.curator.framework.state.ConnectionState#SUSPENDED}, the circuit
- *     becomes "open" (based on the provided {@link org.apache.curator.RetryPolicy}) and will ignore
- *     future connection state changes until RetryPolicy timeout has elapsed. Note: however, if the connection
- *     goes from {@link org.apache.curator.framework.state.ConnectionState#SUSPENDED} to
- *     {@link org.apache.curator.framework.state.ConnectionState#LOST} the first LOST state <i>is</i> sent.
+ * This noisy herding can be avoided by using the circuit breaking listener. When it
+ * receives {@link org.apache.curator.framework.state.ConnectionState#SUSPENDED}, the circuit
+ * becomes "open" (based on the provided {@link org.apache.curator.RetryPolicy}) and will ignore
+ * future connection state changes until RetryPolicy timeout has elapsed. Note: however, if the connection
+ * goes from {@link org.apache.curator.framework.state.ConnectionState#SUSPENDED} to
+ * {@link org.apache.curator.framework.state.ConnectionState#LOST} the first LOST state <i>is</i> sent.
  * </p>
  *
  * <p>
- *     When the circuit is closed, all connection state changes are forwarded to the managed
- *     listener. When the first disconnected state is received, the circuit becomes open. The state change
- *     that caused the circuit to open is sent to the managed listener and the RetryPolicy will be used to
- *     get a delay amount. While the delay is active, the circuit breaker will store state changes but will not
- *     forward them to the managed listener (except, however, the first time the state changes from SUSPENDED to LOST).
- *     When the delay elapses, if the connection has been restored, the circuit closes and forwards the
- *     new state to the managed listener. If the connection has not been restored, the RetryPolicy is checked
- *     again. If the RetryPolicy indicates another retry is allowed the process repeats. If, however, the
- *     RetryPolicy indicates that retries are exhausted then the circuit closes - if the current state
- *     is different than the state that caused the circuit to open it is forwarded to the managed listener.
+ * When the circuit is closed, all connection state changes are forwarded to the managed
+ * listener. When the first disconnected state is received, the circuit becomes open. The state change
+ * that caused the circuit to open is sent to the managed listener and the RetryPolicy will be used to
+ * get a delay amount. While the delay is active, the circuit breaker will store state changes but will not
+ * forward them to the managed listener (except, however, the first time the state changes from SUSPENDED to LOST).
+ * When the delay elapses, if the connection has been restored, the circuit closes and forwards the
+ * new state to the managed listener. If the connection has not been restored, the RetryPolicy is checked
+ * again. If the RetryPolicy indicates another retry is allowed the process repeats. If, however, the
+ * RetryPolicy indicates that retries are exhausted then the circuit closes - if the current state
+ * is different than the state that caused the circuit to open it is forwarded to the managed listener.
  * </p>
  *
  * <p>
- *     <strong>NOTE:</strong> You should not use this listener directly. Instead, set {@link org.apache.curator.framework.state.ConnectionStateListenerManagerFactory#circuitBreaking(org.apache.curator.RetryPolicy)}
- *     in the {@link org.apache.curator.framework.CuratorFrameworkFactory.Builder#connectionStateListenerManagerFactory(ConnectionStateListenerManagerFactory)}.
+ * <strong>NOTE:</strong> You should not use this listener directly. Instead, set {@link org.apache.curator.framework.state.ConnectionStateListenerManagerFactory#circuitBreaking(org.apache.curator.RetryPolicy)}
+ * in the {@link org.apache.curator.framework.CuratorFrameworkFactory.Builder#connectionStateListenerManagerFactory(ConnectionStateListenerManagerFactory)}.
  * </p>
  *
  * <p>
- *     E.g.
+ * E.g.
  * <code><pre>
  * ConnectionStateListenerManagerFactory factory = ConnectionStateListenerManagerFactory.circuitBreaking(...retry policy for circuit breaking...);
  * CuratorFramework client = CuratorFrameworkFactory.builder()
@@ -87,8 +87,8 @@ public class CircuitBreakingConnectionStateListener implements ConnectionStateLi
     private ConnectionState circuitInitialState;
 
     /**
-     * @param client Curator instance
-     * @param listener listener to manage
+     * @param client      Curator instance
+     * @param listener    listener to manage
      * @param retryPolicy breaking policy to use
      */
     public CircuitBreakingConnectionStateListener(CuratorFramework client, ConnectionStateListener listener, RetryPolicy retryPolicy) {
@@ -96,10 +96,10 @@ public class CircuitBreakingConnectionStateListener implements ConnectionStateLi
     }
 
     /**
-     * @param client Curator instance
-     * @param listener listener to manage
+     * @param client      Curator instance
+     * @param listener    listener to manage
      * @param retryPolicy breaking policy to use
-     * @param service scheduler to use
+     * @param service     scheduler to use
      */
     public CircuitBreakingConnectionStateListener(CuratorFramework client, ConnectionStateListener listener, RetryPolicy retryPolicy, ScheduledExecutorService service) {
         this(client, listener, CircuitBreaker.build(retryPolicy, service));

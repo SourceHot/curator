@@ -115,8 +115,8 @@ public class TreeCacheEvent {
     }
 
     /**
-     * @param type event type
-     * @param data event data or null
+     * @param type    event type
+     * @param data    event data or null
      * @param oldData event oldData or null
      */
     public TreeCacheEvent(Type type, ChildData data, ChildData oldData) {

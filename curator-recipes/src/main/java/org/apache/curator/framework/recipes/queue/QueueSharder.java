@@ -43,21 +43,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <p>
- *     A utility for shard a distributed queue.
+ * A utility for shard a distributed queue.
  * </p>
  *
  * <p>
- *     Due to limitations in ZooKeeper's transport layer,
- *     a single queue will break if it has more than 10K-ish items in it. This class
- *     provides a facade over multiple distributed queues. It monitors the queues and if
- *     any one of them goes over a threshold, a new queue is added. Puts are distributed
- *     amongst the queues.
+ * Due to limitations in ZooKeeper's transport layer,
+ * a single queue will break if it has more than 10K-ish items in it. This class
+ * provides a facade over multiple distributed queues. It monitors the queues and if
+ * any one of them goes over a threshold, a new queue is added. Puts are distributed
+ * amongst the queues.
  * </p>
  *
  * <p>
- *     NOTE: item ordering is maintained within each managed queue but cannot be maintained across
- *     queues. i.e. items might get consumed out of order if they are in different managed
- *     queues.
+ * NOTE: item ordering is maintained within each managed queue but cannot be maintained across
+ * queues. i.e. items might get consumed out of order if they are in different managed
+ * queues.
  * </p>
  */
 public class QueueSharder<U, T extends QueueBase<U>> implements Closeable {
@@ -82,11 +82,11 @@ public class QueueSharder<U, T extends QueueBase<U>> implements Closeable {
     }
 
     /**
-     * @param client client
+     * @param client         client
      * @param queueAllocator allocator for new queues
-     * @param queuePath path for the queues
-     * @param leaderPath path for the leader that monitors queue sizes (must be different than queuePath)
-     * @param policies sharding policies
+     * @param queuePath      path for the queues
+     * @param leaderPath     path for the leader that monitors queue sizes (must be different than queuePath)
+     * @param policies       sharding policies
      */
     public QueueSharder(CuratorFramework client, QueueAllocator<U, T> queueAllocator, String queuePath, String leaderPath, QueueSharderPolicies policies) {
         this.client = client;

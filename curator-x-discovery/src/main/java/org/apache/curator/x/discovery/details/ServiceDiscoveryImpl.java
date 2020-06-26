@@ -89,10 +89,10 @@ public class ServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
     }
 
     /**
-     * @param client the client
-     * @param basePath base path to store data
-     * @param serializer serializer for instances (e.g. {@link JsonInstanceSerializer})
-     * @param thisInstance instance that represents the service that is running. The instance will get auto-registered
+     * @param client         the client
+     * @param basePath       base path to store data
+     * @param serializer     serializer for instances (e.g. {@link JsonInstanceSerializer})
+     * @param thisInstance   instance that represents the service that is running. The instance will get auto-registered
      * @param watchInstances if true, watches for changes to locally registered instances
      */
     public ServiceDiscoveryImpl(CuratorFramework client, String basePath, InstanceSerializer<T> serializer, ServiceInstance<T> thisInstance, boolean watchInstances) {
@@ -273,7 +273,7 @@ public class ServiceDiscoveryImpl<T> implements ServiceDiscovery<T> {
      * Return a service instance POJO
      *
      * @param name name of the service
-     * @param id ID of the instance
+     * @param id   ID of the instance
      * @return the instance or <code>null</code> if not found
      * @throws Exception errors
      */

@@ -45,7 +45,7 @@ public class InstanceCleanup implements Closeable {
     private final ScheduledExecutorService service = ThreadUtils.newSingleThreadScheduledExecutor("InstanceCleanup");
 
     /**
-     * @param discovery the service being monitored
+     * @param discovery         the service being monitored
      * @param instanceRefreshMs time in milliseconds to consider a registration stale
      */
     public InstanceCleanup(ServiceDiscovery<?> discovery, int instanceRefreshMs) {

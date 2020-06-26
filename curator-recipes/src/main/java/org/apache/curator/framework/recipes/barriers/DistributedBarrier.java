@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *     A barrier as described in the ZK recipes. Quoting the recipe:
+ * A barrier as described in the ZK recipes. Quoting the recipe:
  * </p>
  *
  * <blockquote>
- *     Distributed systems use barriers to block processing of a set of nodes
- *     until a condition is met at which time all the nodes are allowed to proceed
+ * Distributed systems use barriers to block processing of a set of nodes
+ * until a condition is met at which time all the nodes are allowed to proceed
  * </blockquote>
  */
 public class DistributedBarrier {
@@ -47,7 +47,7 @@ public class DistributedBarrier {
     };
 
     /**
-     * @param client client
+     * @param client      client
      * @param barrierPath path to use as the barrier
      */
     public DistributedBarrier(CuratorFramework client, String barrierPath) {
@@ -96,7 +96,7 @@ public class DistributedBarrier {
      * Blocks until the barrier no longer exists or the timeout elapses
      *
      * @param maxWait max time to block
-     * @param unit time unit
+     * @param unit    time unit
      * @return true if the wait was successful, false if the timeout elapsed first
      * @throws Exception errors
      */

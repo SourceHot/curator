@@ -40,7 +40,7 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService 
 
     /**
      * @param scheduledExecutorService the service to decorate
-     * @param shutdownOnClose if true, shutdown the executor service when this is closed
+     * @param shutdownOnClose          if true, shutdown the executor service when this is closed
      */
     public CloseableScheduledExecutorService(ScheduledExecutorService scheduledExecutorService, boolean shutdownOnClose) {
         super(scheduledExecutorService, shutdownOnClose);
@@ -55,8 +55,8 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService 
      * @param delay the time from now to delay execution
      * @param unit  the time unit of the delay parameter
      * @return a Future representing pending completion of
-     *         the task and whose <tt>get()</tt> method will return
-     *         <tt>null</tt> upon completion
+     * the task and whose <tt>get()</tt> method will return
+     * <tt>null</tt> upon completion
      */
     public Future<?> schedule(Runnable task, long delay, TimeUnit unit) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");
@@ -75,14 +75,14 @@ public class CloseableScheduledExecutorService extends CloseableExecutorService 
      * Otherwise, the task will only terminate via cancellation or
      * termination of the executor.
      *
-     * @param task      the task to execute
+     * @param task         the task to execute
      * @param initialDelay the time to delay first execution
      * @param delay        the delay between the termination of one
      *                     execution and the commencement of the next
      * @param unit         the time unit of the initialDelay and delay parameters
      * @return a Future representing pending completion of
-     *         the task, and whose <tt>get()</tt> method will throw an
-     *         exception upon cancellation
+     * the task, and whose <tt>get()</tt> method will throw an
+     * exception upon cancellation
      */
     public Future<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit) {
         Preconditions.checkState(isOpen.get(), "CloseableExecutorService is closed");

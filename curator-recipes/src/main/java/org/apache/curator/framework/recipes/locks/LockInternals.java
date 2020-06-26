@@ -38,7 +38,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 锁的数据
+ */
 public class LockInternals {
+    static final byte[] REVOKE_MESSAGE = "__REVOKE__".getBytes();
     private final WatcherRemoveCuratorFramework client;
     private final String path;
     private final String basePath;
@@ -53,34 +57,13 @@ public class LockInternals {
             }
         }
     };
-
     private final Watcher watcher = new Watcher() {
         @Override
         public void process(WatchedEvent event) {
             client.postSafeNotify(LockInternals.this);
         }
     };
-
     private volatile int maxLeases;
-
-    static final byte[] REVOKE_MESSAGE = "__REVOKE__".getBytes();
-
-    /**
-     * Attempt to delete the lock node so that sequence numbers get reset
-     *
-     * @throws Exception errors
-     */
-    public void clean() throws Exception {
-        try {
-            client.delete().forPath(basePath);
-        }
-        catch (KeeperException.BadVersionException ignore) {
-            // ignore - another thread/process got the lock
-        }
-        catch (KeeperException.NotEmptyException ignore) {
-            // ignore - other threads/processes are waiting
-        }
-    }
 
     LockInternals(CuratorFramework client, LockInternalsDriver driver, String path, String lockName, int maxLeases) {
         this.driver = driver;
@@ -90,25 +73,6 @@ public class LockInternals {
         this.client = client.newWatcherRemoveCuratorFramework();
         this.basePath = PathUtils.validatePath(path);
         this.path = ZKPaths.makePath(path, lockName);
-    }
-
-    synchronized void setMaxLeases(int maxLeases) {
-        this.maxLeases = maxLeases;
-        notifyAll();
-    }
-
-    void makeRevocable(RevocationSpec entry) {
-        revocable.set(entry);
-    }
-
-    final void releaseLock(String lockPath) throws Exception {
-        client.removeWatchers();
-        revocable.set(null);
-        deleteOurPath(lockPath);
-    }
-
-    CuratorFramework getClient() {
-        return client;
     }
 
     public static Collection<String> getParticipantNodes(CuratorFramework client, final String basePath, String lockName, LockInternalsSorter sorter) throws Exception {
@@ -160,6 +124,42 @@ public class LockInternals {
                         }
                 );
         return sortedList;
+    }
+
+    /**
+     * Attempt to delete the lock node so that sequence numbers get reset
+     *
+     * @throws Exception errors
+     */
+    public void clean() throws Exception {
+        try {
+            client.delete().forPath(basePath);
+        }
+        catch (KeeperException.BadVersionException ignore) {
+            // ignore - another thread/process got the lock
+        }
+        catch (KeeperException.NotEmptyException ignore) {
+            // ignore - other threads/processes are waiting
+        }
+    }
+
+    synchronized void setMaxLeases(int maxLeases) {
+        this.maxLeases = maxLeases;
+        notifyAll();
+    }
+
+    void makeRevocable(RevocationSpec entry) {
+        revocable.set(entry);
+    }
+
+    final void releaseLock(String lockPath) throws Exception {
+        client.removeWatchers();
+        revocable.set(null);
+        deleteOurPath(lockPath);
+    }
+
+    CuratorFramework getClient() {
+        return client;
     }
 
     List<String> getSortedChildren() throws Exception {

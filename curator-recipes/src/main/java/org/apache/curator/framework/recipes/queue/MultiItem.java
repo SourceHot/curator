@@ -20,6 +20,7 @@ package org.apache.curator.framework.recipes.queue;
 
 /**
  * Abstraction for multiple items.
+ *
  * @see DistributedQueue#putMulti(MultiItem)
  * @see DistributedPriorityQueue#putMulti(MultiItem, int)
  */

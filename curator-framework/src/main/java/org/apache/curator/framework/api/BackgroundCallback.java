@@ -22,14 +22,16 @@ import org.apache.curator.framework.CuratorFramework;
 
 /**
  * Functor for an async background operation
+ * <p>
+ * 异步回调
  */
 public interface BackgroundCallback {
     /**
      * Called when the async background operation completes
      *
      * @param client the client
-     * @param event operation result details
+     * @param event  operation result details
      * @throws Exception errors
      */
-    public void processResult(CuratorFramework client, CuratorEvent event) throws Exception;
+    void processResult(CuratorFramework client, CuratorEvent event) throws Exception;
 }

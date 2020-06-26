@@ -35,7 +35,7 @@ public class Subscriber {
     /**
      * Start a subscriber (a CachedModeledFramework instance) using the LocationAvailable client template
      *
-     * @param group group to listen for
+     * @param group    group to listen for
      * @param priority priority to listen for
      * @return CachedModeledFramework instance (already started)
      */
@@ -46,7 +46,7 @@ public class Subscriber {
     /**
      * Start a subscriber (a CachedModeledFramework instance) using the UserCreated client template
      *
-     * @param group group to listen for
+     * @param group    group to listen for
      * @param priority priority to listen for
      * @return CachedModeledFramework instance (already started)
      */

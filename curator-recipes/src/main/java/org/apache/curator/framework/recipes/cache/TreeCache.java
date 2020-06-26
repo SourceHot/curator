@@ -156,6 +156,7 @@ public class TreeCache implements Closeable {
         /**
          * By default, TreeCache creates {@link org.apache.zookeeper.ZooKeeper} watches for every created path.
          * Change this behavior with this method.
+         *
          * @param disableZkWatches true to disable zk watches
          * @return this for chaining
          */
@@ -496,14 +497,14 @@ public class TreeCache implements Closeable {
     }
 
     /**
-     * @param client           the client
-     * @param path             path to watch
-     * @param cacheData        if true, node contents are cached in addition to the stat
-     * @param dataIsCompressed if true, data in the path is compressed
-     * @param executorService  Closeable ExecutorService to use for the TreeCache's background thread
+     * @param client            the client
+     * @param path              path to watch
+     * @param cacheData         if true, node contents are cached in addition to the stat
+     * @param dataIsCompressed  if true, data in the path is compressed
+     * @param executorService   Closeable ExecutorService to use for the TreeCache's background thread
      * @param createParentNodes true to create parent nodes as containers
-     * @param disableZkWatches true to disable Zookeeper watches
-     * @param selector         the selector to use
+     * @param disableZkWatches  true to disable Zookeeper watches
+     * @param selector          the selector to use
      */
     TreeCache(CuratorFramework client, String path, boolean cacheData, boolean dataIsCompressed, int maxDepth, final ExecutorService executorService, boolean createParentNodes, boolean disableZkWatches, TreeCacheSelector selector) {
         this.createParentNodes = createParentNodes;
@@ -567,7 +568,7 @@ public class TreeCache implements Closeable {
 
     /**
      * Allows catching unhandled errors in asynchronous operations.
-     *
+     * <p>
      * TODO: consider making public.
      */
     @VisibleForTesting

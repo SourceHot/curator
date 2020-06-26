@@ -74,9 +74,9 @@ public class ConnectionStateManager implements Closeable {
     }
 
     /**
-     * @param client        the client
-     * @param threadFactory thread factory to use or null for a default
-     * @param sessionTimeoutMs the ZK session timeout in milliseconds
+     * @param client                   the client
+     * @param threadFactory            thread factory to use or null for a default
+     * @param sessionTimeoutMs         the ZK session timeout in milliseconds
      * @param sessionExpirationPercent percentage of negotiated session timeout to use when simulating a session timeout. 0 means don't simulate at all
      */
     public ConnectionStateManager(CuratorFramework client, ThreadFactory threadFactory, int sessionTimeoutMs, int sessionExpirationPercent) {
@@ -84,11 +84,11 @@ public class ConnectionStateManager implements Closeable {
     }
 
     /**
-     * @param client        the client
-     * @param threadFactory thread factory to use or null for a default
-     * @param sessionTimeoutMs the ZK session timeout in milliseconds
+     * @param client                   the client
+     * @param threadFactory            thread factory to use or null for a default
+     * @param sessionTimeoutMs         the ZK session timeout in milliseconds
      * @param sessionExpirationPercent percentage of negotiated session timeout to use when simulating a session timeout. 0 means don't simulate at all
-     * @param managerFactory manager factory to use
+     * @param managerFactory           manager factory to use
      */
     public ConnectionStateManager(CuratorFramework client, ThreadFactory threadFactory, int sessionTimeoutMs, int sessionExpirationPercent, ConnectionStateListenerManagerFactory managerFactory) {
         this.client = client;

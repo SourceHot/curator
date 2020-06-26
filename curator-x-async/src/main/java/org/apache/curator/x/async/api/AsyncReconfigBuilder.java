@@ -51,21 +51,21 @@ public interface AsyncReconfigBuilder {
      * Same as {@link #withNewMembers(java.util.List)} but allows specified the configuration version to use.
      * By default the configuration version is -1.
      *
-     * @param servers The new server list
+     * @param servers    The new server list
      * @param fromConfig the config version to use
-     * @see #withNewMembers(java.util.List)
      * @return this
+     * @see #withNewMembers(java.util.List)
      */
     AsyncEnsemblable<AsyncStage<Void>> withNewMembers(List<String> servers, long fromConfig);
 
     /**
      * Specify joiners, leaves and config version. By default the configuration version is -1.
      *
-     * @param joining The servers joining
-     * @param leaving The servers leaving
+     * @param joining    The servers joining
+     * @param leaving    The servers leaving
      * @param fromConfig the config version to use
-     * @see #withJoiningAndLeaving(java.util.List, java.util.List)
      * @return this
+     * @see #withJoiningAndLeaving(java.util.List, java.util.List)
      */
     AsyncEnsemblable<AsyncStage<Void>> withJoiningAndLeaving(List<String> joining, List<String> leaving, long fromConfig);
 
@@ -73,9 +73,9 @@ public interface AsyncReconfigBuilder {
      * Same as {@link #withNewMembers(java.util.List)} but allows a stat to hold the stat info from "/zookeeper/config"
      *
      * @param servers The servers joining.
-     * @param stat stat to hold the stat value
-     * @see #withNewMembers(java.util.List)
+     * @param stat    stat to hold the stat value
      * @return this
+     * @see #withNewMembers(java.util.List)
      */
     AsyncEnsemblable<AsyncStage<Void>> withNewMembers(List<String> servers, Stat stat);
 
@@ -85,34 +85,34 @@ public interface AsyncReconfigBuilder {
      *
      * @param joining The servers joining
      * @param leaving The servers leaving
-     * @param stat stat to hold the stat value
-     * @see #withJoiningAndLeaving(java.util.List, java.util.List)
+     * @param stat    stat to hold the stat value
      * @return this
+     * @see #withJoiningAndLeaving(java.util.List, java.util.List)
      */
     AsyncEnsemblable<AsyncStage<Void>> withJoiningAndLeaving(List<String> joining, List<String> leaving, Stat stat);
 
     /**
      * Same as {@link #withNewMembers(java.util.List)} with stat and config version
      *
-     * @param servers The servers joining.
-     * @param stat stat to hold the stat value
+     * @param servers    The servers joining.
+     * @param stat       stat to hold the stat value
      * @param fromConfig the config version to use
+     * @return this
      * @see #withNewMembers(java.util.List, long)
      * @see #withNewMembers(java.util.List, org.apache.zookeeper.data.Stat)
-     * @return this
      */
     AsyncEnsemblable<AsyncStage<Void>> withNewMembers(List<String> servers, Stat stat, long fromConfig);
 
     /**
      * Same as {@link #withJoiningAndLeaving(java.util.List, java.util.List)} with stat and config version
      *
-     * @param joining The servers joining
-     * @param leaving The servers leaving
-     * @param stat stat to hold the stat value
+     * @param joining    The servers joining
+     * @param leaving    The servers leaving
+     * @param stat       stat to hold the stat value
      * @param fromConfig the config version to use
+     * @return this
      * @see #withJoiningAndLeaving(java.util.List, java.util.List, long)
      * @see #withJoiningAndLeaving(java.util.List, java.util.List, org.apache.zookeeper.data.Stat)
-     * @return this
      */
     AsyncEnsemblable<AsyncStage<Void>> withJoiningAndLeaving(List<String> joining, List<String> leaving, Stat stat, long fromConfig);
 }

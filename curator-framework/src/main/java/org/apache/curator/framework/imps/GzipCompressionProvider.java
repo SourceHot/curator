@@ -41,10 +41,14 @@ public class GzipCompressionProvider implements CompressionProvider {
 
     private static final int MAX_SAFE_JAVA_BYTE_ARRAY_SIZE = Integer.MAX_VALUE - 128;
 
-    /** GZIP header magic number. */
+    /**
+     * GZIP header magic number.
+     */
     private static final int GZIP_MAGIC = 0x8b1f;
 
-    /** See {@code java.util.zip.GZIPOutputStream.writeHeader()} */
+    /**
+     * See {@code java.util.zip.GZIPOutputStream.writeHeader()}
+     */
     private static final byte[] GZIP_HEADER = new byte[]{
             (byte) GZIP_MAGIC,        // Magic number (byte 0)
             (byte) (GZIP_MAGIC >> 8), // Magic number (byte 1)
@@ -58,7 +62,9 @@ public class GzipCompressionProvider implements CompressionProvider {
             0                         // Operating system (OS)
     };
 
-    /** GZip flags, {@link #GZIP_HEADER}'s 4th byte */
+    /**
+     * GZip flags, {@link #GZIP_HEADER}'s 4th byte
+     */
     private static final int FHCRC = 1 << 1;
     private static final int FEXTRA = 1 << 2;
     private static final int FNAME = 1 << 3;
@@ -66,10 +72,14 @@ public class GzipCompressionProvider implements CompressionProvider {
 
     private static final int GZIP_HEADER_SIZE = GZIP_HEADER.length;
 
-    /** 32-bit CRC and uncompressed data size */
+    /**
+     * 32-bit CRC and uncompressed data size
+     */
     private static final int GZIP_TRAILER_SIZE = Integer.BYTES + Integer.BYTES;
 
-    /** DEFLATE doesn't produce shorter compressed data */
+    /**
+     * DEFLATE doesn't produce shorter compressed data
+     */
     private static final int MIN_COMPRESSED_DATA_SIZE = 2;
 
     /**
@@ -81,7 +91,9 @@ public class GzipCompressionProvider implements CompressionProvider {
     private static final ConcurrentLinkedQueue<Deflater> DEFLATER_POOL = new ConcurrentLinkedQueue<>();
     private static final ConcurrentLinkedQueue<Inflater> INFLATER_POOL = new ConcurrentLinkedQueue<>();
 
-    /** The value verified in GzipCompressionProviderTest.testEmpty() */
+    /**
+     * The value verified in GzipCompressionProviderTest.testEmpty()
+     */
     private static final byte[] COMPRESSED_EMPTY_BYTES = new byte[]{
             31, -117, 8, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };

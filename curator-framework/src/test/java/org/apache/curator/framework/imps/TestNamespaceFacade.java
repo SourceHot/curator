@@ -168,6 +168,7 @@ public class TestNamespaceFacade extends BaseClassForTests {
 
     /**
      * Test that ACLs work on a NamespaceFacade. See CURATOR-132
+     *
      * @throws Exception
      */
     @Test

@@ -77,7 +77,7 @@ public class Publisher {
     /**
      * Publish the given LocationAvailable using the LocationAvailable client template
      *
-     * @param group group
+     * @param group             group
      * @param locationAvailable message to publish
      */
     public void publishLocationAvailable(Group group, LocationAvailable locationAvailable) {
@@ -87,7 +87,7 @@ public class Publisher {
     /**
      * Publish the given UserCreated using the UserCreated client template
      *
-     * @param group group
+     * @param group       group
      * @param userCreated message to publish
      */
     public void publishUserCreated(Group group, UserCreated userCreated) {
@@ -97,7 +97,7 @@ public class Publisher {
     /**
      * Publish the given LocationAvailables using the LocationAvailable client template in a transaction
      *
-     * @param group group
+     * @param group              group
      * @param locationsAvailable messages to publish
      */
     public void publishLocationsAvailable(Group group, List<LocationAvailable> locationsAvailable) {
@@ -107,7 +107,7 @@ public class Publisher {
     /**
      * Publish the given UserCreateds using the UserCreated client template in a transaction
      *
-     * @param group group
+     * @param group        group
      * @param usersCreated messages to publish
      */
     public void publishUsersCreated(Group group, List<UserCreated> usersCreated) {

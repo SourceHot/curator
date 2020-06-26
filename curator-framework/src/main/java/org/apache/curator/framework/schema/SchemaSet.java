@@ -86,7 +86,7 @@ public class SchemaSet {
      *     <li>Match on the first regex path, searched in the order given to this constructor</li>
      * </ol>
      *
-     * @param schemas the schemas for the set.
+     * @param schemas          the schemas for the set.
      * @param useDefaultSchema if true, return a default schema when there is no match. Otherwise, an exception is thrown
      */
     public SchemaSet(List<Schema> schemas, boolean useDefaultSchema) {
@@ -156,7 +156,7 @@ public class SchemaSet {
      * Utility to return a ZNode path for the given name
      *
      * @param client Curator client
-     * @param name path/schema name
+     * @param name   path/schema name
      * @return ZNode path
      */
     public static String getNamedPath(CuratorFramework client, String name) {

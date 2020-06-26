@@ -41,14 +41,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>
- *     A double barrier as described in the ZK recipes. Quoting the recipe:
+ * A double barrier as described in the ZK recipes. Quoting the recipe:
  * </p>
  *
  * <blockquote>
- *     Double barriers enable
- *     clients to synchronize the beginning and the end of a computation. When enough processes
- *     have joined the barrier, processes start their computation and leave the barrier
- *     once they have finished.
+ * Double barriers enable
+ * clients to synchronize the beginning and the end of a computation. When enough processes
+ * have joined the barrier, processes start their computation and leave the barrier
+ * once they have finished.
  * </blockquote>
  */
 public class DistributedDoubleBarrier {
@@ -79,10 +79,10 @@ public class DistributedDoubleBarrier {
      * barrier. When {@link #enter()} is called, it blocks until all members have entered. When
      * {@link #leave()} is called, it blocks until all members have left.
      *
-     * @param client the client
+     * @param client      the client
      * @param barrierPath path to use
-     * @param memberQty the number of members in the barrier. NOTE: more than <code>memberQty</code>
-     *                  can enter the barrier. <code>memberQty</code> is a threshold, not a limit
+     * @param memberQty   the number of members in the barrier. NOTE: more than <code>memberQty</code>
+     *                    can enter the barrier. <code>memberQty</code> is a threshold, not a limit
      */
     public DistributedDoubleBarrier(CuratorFramework client, String barrierPath, int memberQty) {
         Preconditions.checkState(memberQty > 0, "memberQty cannot be 0");
@@ -108,7 +108,7 @@ public class DistributedDoubleBarrier {
      * elapsed
      *
      * @param maxWait max time to block
-     * @param unit time unit
+     * @param unit    time unit
      * @return true if the entry was successful, false if the timeout elapsed first
      * @throws Exception interruptions, errors, etc.
      */
@@ -142,7 +142,7 @@ public class DistributedDoubleBarrier {
      * elapsed
      *
      * @param maxWait max time to block
-     * @param unit time unit
+     * @param unit    time unit
      * @return true if leaving was successful, false if the timeout elapsed first
      * @throws Exception interruptions, errors, etc.
      */

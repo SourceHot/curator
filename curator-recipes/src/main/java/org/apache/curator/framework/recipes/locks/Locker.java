@@ -24,12 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>
- *     Utility for safely acquiring a lock and releasing it using Java 7's
- *     try-with-resource feature.
+ * Utility for safely acquiring a lock and releasing it using Java 7's
+ * try-with-resource feature.
  * </p>
  *
  * <p>
- *     Canonical usage:
+ * Canonical usage:
  * <code><pre>
  *     InterProcessMutex mutex = new InterProcessMutex(...) // or any InterProcessLock
  *     try ( Locker locker = new Locker(mutex, maxTimeout, unit) )
@@ -44,9 +44,9 @@ public class Locker implements AutoCloseable {
     private final AtomicBoolean acquired = new AtomicBoolean(false);
 
     /**
-     * @param lock a lock implementation (e.g. {@link InterProcessMutex}, {@link InterProcessSemaphoreV2}, etc.)
+     * @param lock    a lock implementation (e.g. {@link InterProcessMutex}, {@link InterProcessSemaphoreV2}, etc.)
      * @param timeout max timeout to acquire lock
-     * @param unit time unit of timeout
+     * @param unit    time unit of timeout
      * @throws Exception Curator errors or {@link TimeoutException} if the lock cannot be acquired within the timeout
      */
     public Locker(InterProcessLock lock, long timeout, TimeUnit unit) throws Exception {

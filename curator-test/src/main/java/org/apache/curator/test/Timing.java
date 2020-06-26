@@ -54,7 +54,7 @@ public class Timing {
     /**
      * Use a multiple of the default base time
      *
-     * @param multiple the multiple
+     * @param multiple        the multiple
      * @param waitingMultiple multiple of main timing to use when waiting
      */
     public Timing(double multiple, int waitingMultiple) {
@@ -70,8 +70,8 @@ public class Timing {
     }
 
     /**
-     * @param value base time
-     * @param unit  base time unit
+     * @param value           base time
+     * @param unit            base time unit
      * @param waitingMultiple multiple of main timing to use when waiting
      */
     public Timing(long value, TimeUnit unit, int waitingMultiple) {

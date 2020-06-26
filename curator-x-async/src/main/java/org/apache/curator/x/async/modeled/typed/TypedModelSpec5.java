@@ -34,7 +34,7 @@ public interface TypedModelSpec5<M, P1, P2, P3, P4, P5> {
      * resolved path
      *
      * @param builder model spec builder
-     * @param path typed path
+     * @param path    typed path
      * @return new TypedModelSpec
      */
     static <M, P1, P2, P3, P4, P5> TypedModelSpec5<M, P1, P2, P3, P4, P5> from(ModelSpecBuilder<M> builder, TypedZPath5<P1, P2, P3, P4, P5> path) {
@@ -47,7 +47,7 @@ public interface TypedModelSpec5<M, P1, P2, P3, P4, P5> {
      * {@link #resolved(Object, Object, Object, Object, Object)} is called the actual model spec is generated with the
      * resolved path
      *
-     * @param builder model spec builder
+     * @param builder     model spec builder
      * @param pathWithIds typed path
      * @return new TypedModelSpec
      */

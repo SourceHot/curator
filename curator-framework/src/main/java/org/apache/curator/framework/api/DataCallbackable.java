@@ -24,8 +24,9 @@ public interface DataCallbackable<T> {
 
     /**
      * Passes a callback and a context object to the config/reconfig command.
-     * @param callback  The async callback to use.
-     * @param ctx       An object that will be passed to the callback.
+     *
+     * @param callback The async callback to use.
+     * @param ctx      An object that will be passed to the callback.
      * @return this
      */
     T usingDataCallback(DataCallback callback, Object ctx);

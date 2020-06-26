@@ -49,7 +49,7 @@ public interface ModelSpec<T> extends Resolvable {
      * uses {@link #defaultCreateOptions} and {@link #defaultDeleteOptions}, but you can change these
      * with builder methods.
      *
-     * @param path path to model
+     * @param path       path to model
      * @param serializer the model's serializer
      * @return builder
      */
@@ -75,15 +75,15 @@ public interface ModelSpec<T> extends Resolvable {
 
     /**
      * <p>
-     *     Return a new CuratorModel instance with all the same options but applying to the given child node of this CuratorModel's
-     *     path. E.g. if this CuratorModel instance applies to "/a/b", calling <code>modeled.at("c")</code> returns an instance that applies to
-     *     "/a/b/c".
+     * Return a new CuratorModel instance with all the same options but applying to the given child node of this CuratorModel's
+     * path. E.g. if this CuratorModel instance applies to "/a/b", calling <code>modeled.at("c")</code> returns an instance that applies to
+     * "/a/b/c".
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of child or,
-     *     if it implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of child or,
+     * if it implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param child child node.
@@ -93,15 +93,15 @@ public interface ModelSpec<T> extends Resolvable {
 
     /**
      * <p>
-     *     Return a new CuratorModel instance with all the same options but applying to the parent node of this CuratorModel's
-     *     path. E.g. if this CuratorModel instance applies to "/a/b/c", calling <code>modeled.parent()</code> returns an instance that applies to
-     *     "/a/b".
+     * Return a new CuratorModel instance with all the same options but applying to the parent node of this CuratorModel's
+     * path. E.g. if this CuratorModel instance applies to "/a/b/c", calling <code>modeled.parent()</code> returns an instance that applies to
+     * "/a/b".
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of child or,
-     *     if it implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of child or,
+     * if it implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @return new Modeled Spec instance
@@ -118,15 +118,15 @@ public interface ModelSpec<T> extends Resolvable {
 
     /**
      * <p>
-     *     Return a new CuratorModel instance with all the same options but using a resolved
-     *     path by calling {@link org.apache.curator.x.async.modeled.ZPath#resolved(Object...)}
-     *     using the given parameters
+     * Return a new CuratorModel instance with all the same options but using a resolved
+     * path by calling {@link org.apache.curator.x.async.modeled.ZPath#resolved(Object...)}
+     * using the given parameters
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of the parameter object or,
-     *     if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of the parameter object or,
+     * if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param parameters list of replacements. Must have be the same length as the number of
@@ -138,15 +138,15 @@ public interface ModelSpec<T> extends Resolvable {
 
     /**
      * <p>
-     *     Return a new CuratorModel instance with all the same options but using a resolved
-     *     path by calling {@link org.apache.curator.x.async.modeled.ZPath#resolved(java.util.List)}
-     *     using the given parameters
+     * Return a new CuratorModel instance with all the same options but using a resolved
+     * path by calling {@link org.apache.curator.x.async.modeled.ZPath#resolved(java.util.List)}
+     * using the given parameters
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of the parameter object or,
-     *     if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of the parameter object or,
+     * if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param parameters list of replacements. Must have be the same length as the number of

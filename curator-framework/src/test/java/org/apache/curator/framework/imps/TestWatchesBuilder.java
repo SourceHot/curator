@@ -395,7 +395,8 @@ public class TestWatchesBuilder extends CuratorTestBase {
 
     /**
      * Test the case where we try and remove an unregistered watcher. In this case we expect a NoWatcherException to
-     * be thrown. 
+     * be thrown.
+     *
      * @throws Exception
      */
     @Test
@@ -428,7 +429,8 @@ public class TestWatchesBuilder extends CuratorTestBase {
     }
 
     /**
-     * Test the case where we try and remove an unregistered watcher but have the quietly flag set. In this case we expect success. 
+     * Test the case where we try and remove an unregistered watcher but have the quietly flag set. In this case we expect success.
+     *
      * @throws Exception
      */
     @Test

@@ -36,7 +36,7 @@ public interface TypedModeledFramework2<M, P1, P2> {
      * resolved model spec
      *
      * @param frameworkBuilder ModeledFrameworkBuilder
-     * @param modelSpec TypedModelSpec
+     * @param modelSpec        TypedModelSpec
      * @return new TypedModeledFramework
      */
     static <M, P1, P2> TypedModeledFramework2<M, P1, P2> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec2<M, P1, P2> modelSpec) {
@@ -50,7 +50,7 @@ public interface TypedModeledFramework2<M, P1, P2> {
      *
      * @param frameworkBuilder ModeledFrameworkBuilder
      * @param modelSpecBuilder model spec builder
-     * @param pathWithIds path with {XXXX} parameters
+     * @param pathWithIds      path with {XXXX} parameters
      * @return new TypedModeledFramework
      */
     static <M, P1, P2> TypedModeledFramework2<M, P1, P2> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds) {

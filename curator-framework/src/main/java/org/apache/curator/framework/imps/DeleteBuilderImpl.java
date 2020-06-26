@@ -33,9 +33,21 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 public class DeleteBuilderImpl implements DeleteBuilder, BackgroundOperation<String>, ErrorListenerPathable<Void> {
+    /**
+     * 客户端
+     */
     private final CuratorFrameworkImpl client;
+    /**
+     * 版本
+     */
     private int version;
+    /**
+     * 后台接口
+     */
     private Backgrounding backgrounding;
+    /**
+     * 是否递归删除
+     */
     private boolean deletingChildrenIfNeeded;
     private boolean guaranteed;
     private boolean quietly;

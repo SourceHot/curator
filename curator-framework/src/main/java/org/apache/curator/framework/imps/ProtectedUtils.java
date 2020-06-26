@@ -64,7 +64,9 @@ public final class ProtectedUtils {
         return PROTECTED_PREFIX + protectedId + PROTECTED_SEPARATOR;
     }
 
-    /** Extracts protectedId assuming provided name has a valid protected format */
+    /**
+     * Extracts protectedId assuming provided name has a valid protected format
+     */
     private static String extractProtectedIdInternal(final String znodeName) {
         return znodeName.substring(PROTECTED_PREFIX.length(), PROTECTED_PREFIX_WITH_UUID_LENGTH - 1);
     }
@@ -124,10 +126,10 @@ public final class ProtectedUtils {
     /**
      * Converts a given ZNode name to protected format
      *
-     * @param znodeName name to be converted (e.g. 'name1')
-     * @param protectedId UUID canonical text representation used in protection mode (e.g. '53345f98-9423-4e0c-a7b5-9f819e3ec2e1') 
+     * @param znodeName   name to be converted (e.g. 'name1')
+     * @param protectedId UUID canonical text representation used in protection mode (e.g. '53345f98-9423-4e0c-a7b5-9f819e3ec2e1')
      * @return name with protected mode prefix (e.g. '_c_53345f98-9423-4e0c-a7b5-9f819e3ec2e1-name1')
-     *         or the same name if protectedId is {@code null}
+     * or the same name if protectedId is {@code null}
      */
     public static String toProtectedZNode(final String znodeName, final String protectedId) {
         return (protectedId == null) ? znodeName : getProtectedPrefix(protectedId) + znodeName;
@@ -136,10 +138,10 @@ public final class ProtectedUtils {
     /**
      * Converts a given path to protected format
      *
-     * @param path complete path to be converted (e.g. '/root/path1')
-     * @param protectedId UUID canonical text representation used in protection mode (e.g. '53345f98-9423-4e0c-a7b5-9f819e3ec2e1') 
+     * @param path        complete path to be converted (e.g. '/root/path1')
+     * @param protectedId UUID canonical text representation used in protection mode (e.g. '53345f98-9423-4e0c-a7b5-9f819e3ec2e1')
      * @return path with protected mode prefix (e.g. '/root/_c_53345f98-9423-4e0c-a7b5-9f819e3ec2e1-path1')
-     *         or the same path if protectedId is {@code null}
+     * or the same path if protectedId is {@code null}
      */
     public static String toProtectedZNodePath(final String path, final String protectedId) {
         if (protectedId == null) {

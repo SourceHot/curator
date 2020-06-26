@@ -59,7 +59,7 @@ public class JsonInstanceSerializer<T> implements InstanceSerializer<T> {
      * field of ServiceInstance is <strong>not</strong> serialized. If however you <em>do</em> want
      * to use the <code>enabled</code> field, set <code>compatibleSerializationMode</code> to false.
      *
-     * @param payloadClass used to validate payloads when deserializing
+     * @param payloadClass                used to validate payloads when deserializing
      * @param compatibleSerializationMode pass true to serialize in a manner that supports clients pre-CURATOR-275
      */
     public JsonInstanceSerializer(Class<T> payloadClass, boolean compatibleSerializationMode) {

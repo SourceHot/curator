@@ -18,12 +18,15 @@
  */
 package org.apache.curator.framework.api;
 
+/**
+ * 错误监听器
+ */
 public interface UnhandledErrorListener {
     /**
      * Called when an exception is caught in a background thread, handler, etc.
      *
      * @param message Source message
-     * @param e exception
+     * @param e       exception
      */
     public void unhandledError(String message, Throwable e);
 }

@@ -83,7 +83,7 @@ public class PromotedToLock {
         /**
          * Set the timeout to use when locking (optional)
          *
-         * @param maxLockTime time
+         * @param maxLockTime     time
          * @param maxLockTimeUnit unit
          * @return this
          */

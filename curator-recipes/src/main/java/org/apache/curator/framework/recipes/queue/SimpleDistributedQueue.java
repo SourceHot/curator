@@ -37,13 +37,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *     Drop in replacement for: org.apache.zookeeper.recipes.queue.DistributedQueue that is part of
- *     the ZooKeeper distribution
+ * Drop in replacement for: org.apache.zookeeper.recipes.queue.DistributedQueue that is part of
+ * the ZooKeeper distribution
  * </p>
  *
  * <p>
- *     This class is data compatible with the ZK version. i.e. it uses the same naming scheme so
- *     it can read from an existing queue
+ * This class is data compatible with the ZK version. i.e. it uses the same naming scheme so
+ * it can read from an existing queue
  * </p>
  */
 public class SimpleDistributedQueue {
@@ -56,7 +56,7 @@ public class SimpleDistributedQueue {
 
     /**
      * @param client the client
-     * @param path path to store queue nodes
+     * @param path   path to store queue nodes
      */
     public SimpleDistributedQueue(CuratorFramework client, String path) {
         this.client = client;
@@ -68,7 +68,7 @@ public class SimpleDistributedQueue {
      * Return the head of the queue without modifying the queue.
      *
      * @return the data at the head of the queue.
-     * @throws Exception errors
+     * @throws Exception              errors
      * @throws NoSuchElementException if the queue is empty
      */
     public byte[] element() throws Exception {
@@ -83,7 +83,7 @@ public class SimpleDistributedQueue {
      * Attempts to remove the head of the queue and return it.
      *
      * @return The former head of the queue
-     * @throws Exception errors
+     * @throws Exception              errors
      * @throws NoSuchElementException if the queue is empty
      */
     public byte[] remove() throws Exception {
@@ -137,11 +137,11 @@ public class SimpleDistributedQueue {
      * specified wait time if necessary for an element to become available.
      *
      * @param timeout how long to wait before giving up, in units of
-     *        <tt>unit</tt>
-     * @param unit a <tt>TimeUnit</tt> determining how to interpret the
-     *        <tt>timeout</tt> parameter
+     *                <tt>unit</tt>
+     * @param unit    a <tt>TimeUnit</tt> determining how to interpret the
+     *                <tt>timeout</tt> parameter
      * @return the head of this queue, or <tt>null</tt> if the
-     *         specified waiting time elapses before an element is available
+     * specified waiting time elapses before an element is available
      * @throws Exception errors
      */
     public byte[] poll(long timeout, TimeUnit unit) throws Exception {

@@ -44,9 +44,9 @@ public interface DiscoveryContext<T> {
     /**
      * Serialize your payload
      *
-     * @param node the node to serialize into
+     * @param node      the node to serialize into
      * @param fieldName field name to use
-     * @param payload the payload value (can be null)
+     * @param payload   the payload value (can be null)
      * @throws Exception any errors
      */
     public void marshallJson(ObjectNode node, String fieldName, T payload) throws Exception;

@@ -39,15 +39,15 @@ class OldServiceInstance<T> {
     private final UriSpec uriSpec;
 
     /**
-     * @param name name of the service
-     * @param id id of this instance (must be unique)
-     * @param address address of this instance
-     * @param port the port for this instance or null
-     * @param sslPort the SSL port for this instance or null
-     * @param payload the payload for this instance or null
+     * @param name                name of the service
+     * @param id                  id of this instance (must be unique)
+     * @param address             address of this instance
+     * @param port                the port for this instance or null
+     * @param sslPort             the SSL port for this instance or null
+     * @param payload             the payload for this instance or null
      * @param registrationTimeUTC the time (in UTC) of the registration
-     * @param serviceType type of the service
-     * @param uriSpec the uri spec or null
+     * @param serviceType         type of the service
+     * @param uriSpec             the uri spec or null
      */
     OldServiceInstance(String name, String id, String address, Integer port, Integer sslPort, T payload, long registrationTimeUTC, ServiceType serviceType, UriSpec uriSpec) {
         name = Preconditions.checkNotNull(name, "name cannot be null");

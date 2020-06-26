@@ -272,9 +272,9 @@ public class DistributedQueue<T> implements QueueBase<T> {
      * Same as {@link #put(Object)} but allows a maximum wait time if an upper bound was set
      * via {@link QueueBuilder#maxItems}.
      *
-     * @param item item to add
+     * @param item    item to add
      * @param maxWait maximum wait
-     * @param unit wait unit
+     * @param unit    wait unit
      * @return true if items was added, false if timed out
      * @throws Exception
      */
@@ -302,9 +302,9 @@ public class DistributedQueue<T> implements QueueBase<T> {
      * Same as {@link #putMulti(MultiItem)} but allows a maximum wait time if an upper bound was set
      * via {@link QueueBuilder#maxItems}.
      *
-     * @param items items to add
+     * @param items   items to add
      * @param maxWait maximum wait
-     * @param unit wait unit
+     * @param unit    wait unit
      * @return true if items was added, false if timed out
      * @throws Exception
      */

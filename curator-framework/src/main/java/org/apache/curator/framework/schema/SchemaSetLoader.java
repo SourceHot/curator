@@ -34,14 +34,14 @@ import java.util.regex.Pattern;
 
 /**
  * <p>
- *     Utility to load schems set from a JSON stream/file. <strong>NOTE:</strong>
- *     to avoid adding a new dependency to Curator, the Jackson library has been used
- *     with "provided" scope. You will need to add a dependency to <code>com.fasterxml.jackson.core:jackson-core:2.7.3</code>
- *     and <code>com.fasterxml.jackson.core:jackson-databind:2.7.3</code> to your project
+ * Utility to load schems set from a JSON stream/file. <strong>NOTE:</strong>
+ * to avoid adding a new dependency to Curator, the Jackson library has been used
+ * with "provided" scope. You will need to add a dependency to <code>com.fasterxml.jackson.core:jackson-core:2.7.3</code>
+ * and <code>com.fasterxml.jackson.core:jackson-databind:2.7.3</code> to your project
  * </p>
  *
  * <p>
- *     The JSON stream should be an array of named schemas:<br><br>
+ * The JSON stream should be an array of named schemas:<br><br>
  * <code><pre>
  * [
  *     {
@@ -78,7 +78,7 @@ public class SchemaSetLoader {
     }
 
     /**
-     * @param json the json to parse
+     * @param json                  the json to parse
      * @param schemaValidatorMapper mapper from validator name to instance - can be null if not needed
      */
     public SchemaSetLoader(String json, SchemaValidatorMapper schemaValidatorMapper) {
@@ -86,7 +86,7 @@ public class SchemaSetLoader {
     }
 
     /**
-     * @param jsonStream the json stream to parse
+     * @param jsonStream            the json stream to parse
      * @param schemaValidatorMapper mapper from validator name to instance - can be null if not needed
      */
     public SchemaSetLoader(Reader jsonStream, SchemaValidatorMapper schemaValidatorMapper) {
@@ -94,7 +94,7 @@ public class SchemaSetLoader {
     }
 
     /**
-     * @param root a Jackson root node
+     * @param root                  a Jackson root node
      * @param schemaValidatorMapper mapper from validator name to instance - can be null if not needed
      */
     public SchemaSetLoader(JsonNode root, SchemaValidatorMapper schemaValidatorMapper) {

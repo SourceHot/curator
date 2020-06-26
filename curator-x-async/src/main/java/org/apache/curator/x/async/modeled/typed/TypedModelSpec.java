@@ -23,9 +23,9 @@ import org.apache.curator.x.async.modeled.ModelSpecBuilder;
 
 /**
  * <p>
- *     Abstraction that allows the construction of ModelSpecs using strongly typed parameter replacements.
- *     For example, given a ModelSpec with a path such as "/root/registry/people/{id}" where "id" should
- *     be <code>PersonId</code>.
+ * Abstraction that allows the construction of ModelSpecs using strongly typed parameter replacements.
+ * For example, given a ModelSpec with a path such as "/root/registry/people/{id}" where "id" should
+ * be <code>PersonId</code>.
  * </p>
  *
  * <p>
@@ -60,7 +60,7 @@ public interface TypedModelSpec<M, P1> {
      * resolved path
      *
      * @param builder model spec builder
-     * @param path typed path
+     * @param path    typed path
      * @return new TypedModelSpec
      */
     static <M, P1> TypedModelSpec<M, P1> from(ModelSpecBuilder<M> builder, TypedZPath<P1> path) {
@@ -73,7 +73,7 @@ public interface TypedModelSpec<M, P1> {
      * {@link #resolved(Object)} is called the actual model spec is generated with the
      * resolved path
      *
-     * @param builder model spec builder
+     * @param builder     model spec builder
      * @param pathWithIds typed path
      * @return new TypedModelSpec
      */

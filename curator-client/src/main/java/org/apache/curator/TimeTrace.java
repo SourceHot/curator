@@ -33,7 +33,7 @@ public class TimeTrace {
     /**
      * Create and start a timer
      *
-     * @param name name of the event
+     * @param name   name of the event
      * @param driver driver
      */
     public TimeTrace(String name, TracerDriver driver) {

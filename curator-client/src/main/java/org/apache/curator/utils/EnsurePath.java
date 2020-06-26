@@ -77,7 +77,7 @@ public class EnsurePath {
     }
 
     /**
-     * @param path the full path to ensure
+     * @param path        the full path to ensure
      * @param aclProvider if not null, the ACL provider to use when creating parent nodes
      */
     public EnsurePath(String path, InternalACLProvider aclProvider) {

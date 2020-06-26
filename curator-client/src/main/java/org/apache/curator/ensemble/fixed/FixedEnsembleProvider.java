@@ -45,7 +45,7 @@ public class FixedEnsembleProvider implements EnsembleProvider {
     /**
      * The connection string to use
      *
-     * @param connectionString connection string
+     * @param connectionString        connection string
      * @param updateServerListEnabled if true, allow Curator to call {@link ZooKeeper#updateServerList(String)}
      */
     public FixedEnsembleProvider(String connectionString, boolean updateServerListEnabled) {

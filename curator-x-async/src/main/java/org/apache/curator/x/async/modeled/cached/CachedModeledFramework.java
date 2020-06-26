@@ -98,7 +98,6 @@ public interface CachedModeledFramework<T> extends ModeledFramework<T>, Closeabl
      * Same as {@link #readAsZNode()} except that if the cache does not have a value
      * for this path a direct query is made.
      *
-     *
      * @return AsyncStage
      * @see org.apache.curator.x.async.AsyncStage
      */

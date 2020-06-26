@@ -72,9 +72,9 @@ public interface AsyncRemoveWatchesBuilder {
     /**
      * Remove a watcher of a given type
      *
-     * @param watcher the watcher to remove
+     * @param watcher     the watcher to remove
      * @param watcherType watcher type
-     * @param options watcher removal options
+     * @param options     watcher removal options
      * @return this
      */
     AsyncPathable<AsyncStage<Void>> removing(Watcher watcher, Watcher.WatcherType watcherType, Set<RemoveWatcherOption> options);
@@ -82,9 +82,9 @@ public interface AsyncRemoveWatchesBuilder {
     /**
      * Remove a watcher of a given type
      *
-     * @param watcher the watcher to remove
+     * @param watcher     the watcher to remove
      * @param watcherType watcher type
-     * @param options watcher removal options
+     * @param options     watcher removal options
      * @return this
      */
     AsyncPathable<AsyncStage<Void>> removing(CuratorWatcher watcher, Watcher.WatcherType watcherType, Set<RemoveWatcherOption> options);
@@ -93,7 +93,7 @@ public interface AsyncRemoveWatchesBuilder {
      * Remove all watchers of a given type
      *
      * @param watcherType watcher type
-     * @param options watcher removal options
+     * @param options     watcher removal options
      * @return this
      */
     AsyncPathable<AsyncStage<Void>> removingAll(Watcher.WatcherType watcherType, Set<RemoveWatcherOption> options);
@@ -101,7 +101,7 @@ public interface AsyncRemoveWatchesBuilder {
     /**
      * Remove a watcher of a given type
      *
-     * @param watcher the watcher to remove
+     * @param watcher     the watcher to remove
      * @param watcherType watcher type
      * @return this
      */
@@ -110,7 +110,7 @@ public interface AsyncRemoveWatchesBuilder {
     /**
      * Remove a watcher of a given type
      *
-     * @param watcher the watcher to remove
+     * @param watcher     the watcher to remove
      * @param watcherType watcher type
      * @return this
      */

@@ -50,7 +50,7 @@ public class PathChildrenCacheEvent {
 
         /**
          * Called when the connection has changed to {@link ConnectionState#SUSPENDED}
-         *
+         * <p>
          * This is exposed so that users of the class can be notified of issues that *might* affect normal operation.
          * The PathChildrenCache is written such that listeners are not expected to do anything special on this
          * event, except for those people who want to cause some application-specific logic to fire when this occurs.
@@ -62,7 +62,7 @@ public class PathChildrenCacheEvent {
 
         /**
          * Called when the connection has changed to {@link ConnectionState#RECONNECTED}
-         *
+         * <p>
          * This is exposed so that users of the class can be notified of issues that *might* affect normal operation.
          * The PathChildrenCache is written such that listeners are not expected to do anything special on this
          * event, except for those people who want to cause some application-specific logic to fire when this occurs.
@@ -74,7 +74,7 @@ public class PathChildrenCacheEvent {
 
         /**
          * Called when the connection has changed to {@link ConnectionState#LOST}
-         *
+         * <p>
          * This is exposed so that users of the class can be notified of issues that *might* affect normal operation.
          * The PathChildrenCache is written such that listeners are not expected to do anything special on this
          * event, except for those people who want to cause some application-specific logic to fire when this occurs.

@@ -28,16 +28,16 @@ import java.util.concurrent.CompletionStage;
 public interface AsyncStage<T> extends CompletionStage<T> {
     /**
      * <p>
-     *     If the {@link org.apache.curator.x.async.api.WatchableAsyncCuratorFramework} facade is
-     *     used (via {@link AsyncCuratorFramework#watched()}), this returns the completion
-     *     stage used when the watcher is triggered
+     * If the {@link org.apache.curator.x.async.api.WatchableAsyncCuratorFramework} facade is
+     * used (via {@link AsyncCuratorFramework#watched()}), this returns the completion
+     * stage used when the watcher is triggered
      * </p>
      *
      * <p>
-     *     Also, applies to {@link org.apache.curator.x.async.modeled.ModeledFramework}
-     *     when {@link org.apache.curator.x.async.modeled.ModeledFrameworkBuilder#watched(WatchMode)}
-     *     or {@link org.apache.curator.x.async.modeled.ModeledFrameworkBuilder#watched(WatchMode, java.util.function.UnaryOperator)}
-     *     is used.
+     * Also, applies to {@link org.apache.curator.x.async.modeled.ModeledFramework}
+     * when {@link org.apache.curator.x.async.modeled.ModeledFrameworkBuilder#watched(WatchMode)}
+     * or {@link org.apache.curator.x.async.modeled.ModeledFrameworkBuilder#watched(WatchMode, java.util.function.UnaryOperator)}
+     * is used.
      * </p>
      *
      * @return CompletionStage for the set watcher or <code>null</code>

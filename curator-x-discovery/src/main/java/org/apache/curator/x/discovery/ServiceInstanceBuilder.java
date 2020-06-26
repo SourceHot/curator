@@ -136,7 +136,7 @@ public class ServiceInstanceBuilder<T> {
     /**
      * based on http://pastebin.com/5X073pUc
      * <p>
-     *
+     * <p>
      * Returns all available IP addresses.
      * <p>
      * In error case or if no network connection is established, we return
@@ -148,9 +148,9 @@ public class ServiceInstanceBuilder<T> {
      * The "primary" IP might not be the first one in the returned list.
      *
      * @return Returns all IP addresses (can be an empty list in error case
-     *          or if network connection is missing).
-     * @since 0.1.0
+     * or if network connection is missing).
      * @throws SocketException errors
+     * @since 0.1.0
      */
     public static Collection<InetAddress> getAllLocalIPs() throws SocketException {
         List<InetAddress> listAdr = Lists.newArrayList();

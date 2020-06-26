@@ -37,9 +37,10 @@ abstract class SleepingRetry implements RetryPolicy {
 
     /**
      * 是否可以重试
-     * @param retryCount the number of times retried so far (0 the first time)
+     *
+     * @param retryCount    the number of times retried so far (0 the first time)
      * @param elapsedTimeMs the elapsed time in ms since the operation was attempted
-     * @param sleeper use this to sleep - DO NOT call Thread.sleep
+     * @param sleeper       use this to sleep - DO NOT call Thread.sleep
      * @return
      */
     public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
@@ -58,7 +59,8 @@ abstract class SleepingRetry implements RetryPolicy {
 
     /**
      * 睡眠时间(毫秒)
-     * @param retryCount 重试次数
+     *
+     * @param retryCount    重试次数
      * @param elapsedTimeMs 延迟时间
      * @return
      */

@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
  * check with the current retry policy and either attempt to reconnect or re-throw
  * the exception
  * </p>
- *
+ * <p>
  * Canonical usage:<br>
  * <pre>
  * RetryLoop retryLoop = client.newRetryLoop();
@@ -53,8 +53,8 @@ import java.util.concurrent.Callable;
  * </pre>
  *
  * <p>
- *     Note: this an {@code abstract class} instead of an {@code interface} for historical reasons. It was originally a class
- *     and if it becomes an interface we risk {@link java.lang.IncompatibleClassChangeError}s with clients.
+ * Note: this an {@code abstract class} instead of an {@code interface} for historical reasons. It was originally a class
+ * and if it becomes an interface we risk {@link java.lang.IncompatibleClassChangeError}s with clients.
  * </p>
  */
 public abstract class RetryLoop {
@@ -71,8 +71,8 @@ public abstract class RetryLoop {
      * Convenience utility: creates a retry loop calling the given proc and retrying if needed
      *
      * @param client Zookeeper
-     * @param proc procedure to call with retry
-     * @param <T> return type
+     * @param proc   procedure to call with retry
+     * @param <T>    return type
      * @return procedure result
      * @throws Exception any non-retriable errors
      */

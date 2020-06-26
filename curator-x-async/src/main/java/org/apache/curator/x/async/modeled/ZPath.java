@@ -91,7 +91,7 @@ public interface ZPath extends Resolvable {
     /**
      * Take a ZNode string path and return a ZPath
      *
-     * @param fullPath the path to parse
+     * @param fullPath   the path to parse
      * @param nameFilter each part of the path is passed through this filter
      * @return ZPath
      * @throws IllegalArgumentException if the path is invalid
@@ -134,7 +134,7 @@ public interface ZPath extends Resolvable {
      * {@link #parameter()} so that the path can be resolved later using
      * of the <code>resolved()</code> methods.
      *
-     * @param base base/starting path
+     * @param base  base/starting path
      * @param names path names
      * @return ZPath
      * @throws IllegalArgumentException if any of the names is invalid
@@ -148,7 +148,7 @@ public interface ZPath extends Resolvable {
      * {@link #parameter()} so that the path can be resolved later using
      * of the <code>resolved()</code> methods.
      *
-     * @param base base/starting path
+     * @param base  base/starting path
      * @param names path names
      * @return ZPath
      * @throws IllegalArgumentException if any of the names is invalid
@@ -159,14 +159,14 @@ public interface ZPath extends Resolvable {
 
     /**
      * <p>
-     *     When creating paths, any node in the path can be set to {@link #parameter()}.
-     *     At runtime, the ZPath can be "resolved" by replacing these nodes with values.
+     * When creating paths, any node in the path can be set to {@link #parameter()}.
+     * At runtime, the ZPath can be "resolved" by replacing these nodes with values.
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of the parameter object or,
-     *     if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of the parameter object or,
+     * if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param parameters list of replacements. Must have be the same length as the number of
@@ -180,14 +180,14 @@ public interface ZPath extends Resolvable {
 
     /**
      * <p>
-     *     When creating paths, any node in the path can be set to {@link #parameter()}.
-     *     At runtime, the ZPath can be "resolved" by replacing these nodes with values.
+     * When creating paths, any node in the path can be set to {@link #parameter()}.
+     * At runtime, the ZPath can be "resolved" by replacing these nodes with values.
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of the parameter object or,
-     *     if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of the parameter object or,
+     * if the object implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param parameters list of replacements. Must have be the same length as the number of
@@ -199,14 +199,14 @@ public interface ZPath extends Resolvable {
 
     /**
      * <p>
-     *     Return a ZPath that represents a child ZNode of this ZPath. e.g.
-     *     <code>ZPath.from("a", "b").at("c")</code> represents the path "/a/b/c"
+     * Return a ZPath that represents a child ZNode of this ZPath. e.g.
+     * <code>ZPath.from("a", "b").at("c")</code> represents the path "/a/b/c"
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of child or,
-     *     if it implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of child or,
+     * if it implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param child child node name

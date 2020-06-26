@@ -28,8 +28,8 @@ public class Revoker {
      * however, that revocation is cooperative.
      *
      * @param client the client
-     * @param path the path of the lock - usually from something like
-     * {@link InterProcessMutex#getParticipantNodes()}
+     * @param path   the path of the lock - usually from something like
+     *               {@link InterProcessMutex#getParticipantNodes()}
      * @throws Exception errors
      */
     public static void attemptRevoke(CuratorFramework client, String path) throws Exception {

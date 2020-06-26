@@ -36,11 +36,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *     Utility for adding asynchronous behavior
+ * Utility for adding asynchronous behavior
  * </p>
  *
  * <p>
- *     E.g. locks:
+ * E.g. locks:
  * <code><pre>
  *     InterProcessMutex mutex = new InterProcessMutex(...) // or any InterProcessLock
  *     AsyncWrappers.lockAsync(mutex, executor).thenAccept(dummy -> {
@@ -63,7 +63,7 @@ import java.util.concurrent.TimeUnit;
  * </p>
  *
  * <p>
- *     E.g. EnsureContainers
+ * E.g. EnsureContainers
  * <code><pre>
  *     AsyncWrappers.(client, path, executor).thenAccept(dummy -> {
  *         // execute after ensuring containers
@@ -130,7 +130,7 @@ public class AsyncWrappers {
      * Asynchronously ensure that the parents of the given path are created
      *
      * @param client client
-     * @param path path to ensure
+     * @param path   path to ensure
      * @return stage
      */
     public static CompletionStage<Void> asyncEnsureParents(AsyncCuratorFramework client, String path) {
@@ -141,7 +141,7 @@ public class AsyncWrappers {
      * Asynchronously ensure that the parents of the given path are created as containers
      *
      * @param client client
-     * @param path path to ensure
+     * @param path   path to ensure
      * @return stage
      */
     public static CompletionStage<Void> asyncEnsureContainers(AsyncCuratorFramework client, String path) {
@@ -159,10 +159,10 @@ public class AsyncWrappers {
      * Attempt to acquire the given lock asynchronously using the given timeout and executor. If the lock
      * is not acquired within the timeout stage is completedExceptionally with {@link AsyncWrappers.TimeoutException}
      *
-     * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
-     * @param timeout max timeout to acquire lock
-     * @param unit time unit of timeout
+     * @param lock     a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
+     *                 {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     * @param timeout  max timeout to acquire lock
+     * @param unit     time unit of timeout
      * @param executor executor to use to asynchronously acquire
      * @return stage
      */
@@ -181,10 +181,10 @@ public class AsyncWrappers {
      * Attempt to acquire the given lock asynchronously using the given timeout and executor. The stage
      * is completed with a Boolean that indicates whether or not the lock was acquired.
      *
-     * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
-     * @param timeout max timeout to acquire lock
-     * @param unit time unit of timeout
+     * @param lock     a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
+     *                 {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     * @param timeout  max timeout to acquire lock
+     * @param unit     time unit of timeout
      * @param executor executor to use to asynchronously acquire
      * @return stage
      */
@@ -202,8 +202,8 @@ public class AsyncWrappers {
     /**
      * Attempt to acquire the given lock asynchronously using the given executor and without a timeout.
      *
-     * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     * @param lock     a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
+     *                 {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
      * @param executor executor to use to asynchronously acquire
      * @return stage
      */
@@ -215,10 +215,10 @@ public class AsyncWrappers {
      * Attempt to acquire the given lock asynchronously using the given timeout using the {@link java.util.concurrent.ForkJoinPool#commonPool()}.
      * If the lock is not acquired within the timeout stage is completedExceptionally with {@link AsyncWrappers.TimeoutException}
      *
-     * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     * @param lock    a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
+     *                {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
      * @param timeout max timeout to acquire lock
-     * @param unit time unit of timeout
+     * @param unit    time unit of timeout
      * @return stage
      */
     public static CompletionStage<Void> lockAsync(InterProcessLock lock, long timeout, TimeUnit unit) {
@@ -229,10 +229,10 @@ public class AsyncWrappers {
      * Attempt to acquire the given lock asynchronously using the given timeout using the {@link java.util.concurrent.ForkJoinPool#commonPool()}.
      * The stage is completed with a Boolean that indicates whether or not the lock was acquired.
      *
-     * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     * @param lock    a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
+     *                {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
      * @param timeout max timeout to acquire lock
-     * @param unit time unit of timeout
+     * @param unit    time unit of timeout
      * @return stage
      */
     public static CompletionStage<Boolean> lockAsyncIf(InterProcessLock lock, long timeout, TimeUnit unit) {
@@ -243,7 +243,7 @@ public class AsyncWrappers {
      * Attempt to acquire the given lock asynchronously without timeout using the {@link java.util.concurrent.ForkJoinPool#commonPool()}.
      *
      * @param lock a lock implementation (e.g. {@link org.apache.curator.framework.recipes.locks.InterProcessMutex},
-     * {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
+     *             {@link org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2}, etc.)
      * @return stage
      */
     public static CompletionStage<Void> lockAsync(InterProcessLock lock) {
@@ -262,7 +262,7 @@ public class AsyncWrappers {
     /**
      * Release the lock and wrap any exception in <code>RuntimeException</code>
      *
-     * @param lock lock to release
+     * @param lock                   lock to release
      * @param ignoreNoLockExceptions if true {@link java.lang.IllegalStateException} is ignored
      */
     public static void release(InterProcessLock lock, boolean ignoreNoLockExceptions) {

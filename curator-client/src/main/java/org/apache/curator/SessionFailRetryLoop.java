@@ -33,20 +33,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>
- *     See {@link RetryLoop} for the main details on retry loops. <b>All Curator/ZooKeeper operations
- *     should be done in a retry loop.</b>
+ * See {@link RetryLoop} for the main details on retry loops. <b>All Curator/ZooKeeper operations
+ * should be done in a retry loop.</b>
  * </p>
  *
  * <p>
- *     The standard retry loop treats session failure as a type of connection failure. i.e. the fact
- *     that it is a session failure isn't considered. This can be problematic if you are performing
- *     a series of operations that rely on ephemeral nodes. If the session fails after the ephemeral
- *     node has been created, future Curator/ZooKeeper operations may succeed even though the
- *     ephemeral node has been removed by ZooKeeper.
+ * The standard retry loop treats session failure as a type of connection failure. i.e. the fact
+ * that it is a session failure isn't considered. This can be problematic if you are performing
+ * a series of operations that rely on ephemeral nodes. If the session fails after the ephemeral
+ * node has been created, future Curator/ZooKeeper operations may succeed even though the
+ * ephemeral node has been removed by ZooKeeper.
  * </p>
  *
  * <p>
- *     Here's an example:
+ * Here's an example:
  * </p>
  *     <ul>
  *         <li>You create an ephemeral/sequential node as a kind of lock/marker</li>
@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *     SessionFailRetryLoop will then either retry the entire
  *     set of operations or fail (depending on {@link SessionFailRetryLoop.Mode})
  * </p>
- *
+ * <p>
  * Canonical usage:<br>
  * <pre>
  * SessionFailRetryLoop    retryLoop = client.newSessionFailRetryLoop(mode);
@@ -134,9 +134,9 @@ public class SessionFailRetryLoop implements Closeable {
      * Convenience utility: creates a "session fail" retry loop calling the given proc
      *
      * @param client Zookeeper
-     * @param mode how to handle session failures
-     * @param proc procedure to call with retry
-     * @param <T> return type
+     * @param mode   how to handle session failures
+     * @param proc   procedure to call with retry
+     * @param <T>    return type
      * @return procedure result
      * @throws Exception any non-retriable errors
      */

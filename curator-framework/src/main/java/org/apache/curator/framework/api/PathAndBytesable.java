@@ -23,22 +23,26 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 public interface PathAndBytesable<T> {
     /**
      * Commit the currently building operation using the given path and data
+     * <p>
+     * 创建一个节点并且赋予数据
      *
-     * @param path the path
-     * @param data the data
+     * @param path the path 节点地址
+     * @param data the data 数据
      * @return operation result if any
      * @throws Exception errors
      */
-    public T forPath(String path, byte[] data) throws Exception;
+    T forPath(String path, byte[] data) throws Exception;
 
     /**
      * Commit the currently building operation using the given path and the default data
      * for the client (usually a byte[0] unless changed via
      * {@link CuratorFrameworkFactory.Builder#defaultData(byte[])}).
+     * <p>
+     * 创建节点.
      *
-     * @param path the path
+     * @param path the path 节点地址
      * @return operation result if any
      * @throws Exception errors
      */
-    public T forPath(String path) throws Exception;
+    T forPath(String path) throws Exception;
 }

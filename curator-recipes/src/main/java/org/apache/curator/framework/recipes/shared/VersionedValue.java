@@ -29,7 +29,7 @@ public class VersionedValue<T> {
 
     /**
      * @param version the version
-     * @param value the value (cannot be null)
+     * @param value   the value (cannot be null)
      */
     VersionedValue(int version, T value) {
         this.version = version;

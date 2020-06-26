@@ -117,7 +117,8 @@ public class CuratorFrameworkFactory {
     public static byte[] getLocalAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress().getBytes();
-        } catch (UnknownHostException ignore) {
+        }
+        catch (UnknownHostException ignore) {
             // ignore
         }
         return new byte[0];

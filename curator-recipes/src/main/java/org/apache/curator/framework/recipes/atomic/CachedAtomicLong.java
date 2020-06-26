@@ -29,7 +29,7 @@ public class CachedAtomicLong {
     private int currentIndex = 0;
 
     /**
-     * @param number the number to use
+     * @param number      the number to use
      * @param cacheFactor the number of values to allocate at a time
      */
     public CachedAtomicLong(DistributedAtomicLong number, int cacheFactor) {

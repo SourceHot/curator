@@ -22,8 +22,9 @@ public interface ChildrenDeletable extends BackgroundVersionable {
 
     /**
      * <p>
-     *     Will also delete children if they exist.
+     * Will also delete children if they exist.
      * </p>
+     *
      * @return
      */
     public BackgroundVersionable deletingChildrenIfNeeded();

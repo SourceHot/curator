@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *     A variation of the DistributedPriorityQueue that uses time as the priority. When items
- *     are added to the queue, a delay value is given. The item will not be sent to a consumer
- *     until the time elapses.
+ * A variation of the DistributedPriorityQueue that uses time as the priority. When items
+ * are added to the queue, a delay value is given. The item will not be sent to a consumer
+ * until the time elapses.
  * </p>
  */
 public class DistributedDelayQueue<T> implements Closeable, QueueBase<T> {
@@ -124,7 +124,7 @@ public class DistributedDelayQueue<T> implements Closeable, QueueBase<T> {
      * NOTE: if an upper bound was set via {@link QueueBuilder#maxItems}, this method will
      * block until there is available space in the queue.
      *
-     * @param item item to add
+     * @param item            item to add
      * @param delayUntilEpoch future epoch (milliseconds) when this item will be available to consumers
      * @throws Exception connection issues
      */
@@ -136,10 +136,10 @@ public class DistributedDelayQueue<T> implements Closeable, QueueBase<T> {
      * Same as {@link #put(Object, long)} but allows a maximum wait time if an upper bound was set
      * via {@link QueueBuilder#maxItems}.
      *
-     * @param item item to add
+     * @param item            item to add
      * @param delayUntilEpoch future epoch (milliseconds) when this item will be available to consumers
-     * @param maxWait maximum wait
-     * @param unit wait unit
+     * @param maxWait         maximum wait
+     * @param unit            wait unit
      * @return true if items was added, false if timed out
      * @throws Exception
      */
@@ -157,7 +157,7 @@ public class DistributedDelayQueue<T> implements Closeable, QueueBase<T> {
      * NOTE: if an upper bound was set via {@link QueueBuilder#maxItems}, this method will
      * block until there is available space in the queue.
      *
-     * @param items items to add
+     * @param items           items to add
      * @param delayUntilEpoch future epoch (milliseconds) when this item will be available to consumers
      * @throws Exception connection issues
      */
@@ -169,10 +169,10 @@ public class DistributedDelayQueue<T> implements Closeable, QueueBase<T> {
      * Same as {@link #putMulti(MultiItem, long)} but allows a maximum wait time if an upper bound was set
      * via {@link QueueBuilder#maxItems}.
      *
-     * @param items items to add
+     * @param items           items to add
      * @param delayUntilEpoch future epoch (milliseconds) when this item will be available to consumers
-     * @param maxWait maximum wait
-     * @param unit wait unit
+     * @param maxWait         maximum wait
+     * @param unit            wait unit
      * @return true if items was added, false if timed out
      * @throws Exception
      */

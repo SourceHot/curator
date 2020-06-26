@@ -20,6 +20,9 @@ package org.apache.curator.framework.api;
 
 import java.util.List;
 
+/**
+ * 获取子节点生成器
+ */
 public interface GetChildrenBuilder extends
         Watchable<BackgroundPathable<List<String>>>,
         BackgroundPathable<List<String>>,

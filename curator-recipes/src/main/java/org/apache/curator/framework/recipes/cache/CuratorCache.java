@@ -28,14 +28,14 @@ import java.util.stream.Stream;
 
 /**
  * <p>
- *     A utility that attempts to keep the data from a node locally cached. Optionally the entire
- *     tree of children below the node can also be cached. Will respond to update/create/delete events, pull
- *     down the data, etc. You can register listeners that will get notified when changes occur.
+ * A utility that attempts to keep the data from a node locally cached. Optionally the entire
+ * tree of children below the node can also be cached. Will respond to update/create/delete events, pull
+ * down the data, etc. You can register listeners that will get notified when changes occur.
  * </p>
  *
  * <p>
- *     <b>IMPORTANT</b> - Due to how ZooKeeper works you will not get notified of every single event.
- *     For example during a network partition the cache will not get events. Imagine the following scenario:
+ * <b>IMPORTANT</b> - Due to how ZooKeeper works you will not get notified of every single event.
+ * For example during a network partition the cache will not get events. Imagine the following scenario:
  *
  *     <ul>
  *         <li>Pre-network partition the cache contains "/foo" and "/foo/bar"</li>
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  *         <li>Image another client that isn't partitioned, deletes "/foo/bar" and then a third client re-creates "/foo/bar"</li>
  *         <li>Your client's partition is fixed. The cache will only see <em>one</em> change - the third client's re-create</li>
  *     </ul>
- *
+ * <p>
  *     Additionally, remember that ZooKeeper is an eventual consistent system. Always use ZNode version
  *     numbers when updating nodes.
  * </p>
@@ -74,8 +74,8 @@ public interface CuratorCache extends Closeable, CuratorCacheAccessor {
     /**
      * Return a Curator Cache for the given path with the given options using a standard storage instance
      *
-     * @param client Curator client
-     * @param path path to cache
+     * @param client  Curator client
+     * @param path    path to cache
      * @param options any options
      * @return cache (note it must be started via {@link #start()}
      */
@@ -87,7 +87,7 @@ public interface CuratorCache extends Closeable, CuratorCacheAccessor {
      * Start a Curator Cache builder
      *
      * @param client Curator client
-     * @param path path to cache
+     * @param path   path to cache
      * @return builder
      */
     static CuratorCacheBuilder builder(CuratorFramework client, String path) {
@@ -101,7 +101,7 @@ public interface CuratorCache extends Closeable, CuratorCacheAccessor {
      * otherwise (i.e. if you are using ZooKeeper 3.5.x).
      *
      * @param client Curator client
-     * @param path path to cache
+     * @param path   path to cache
      * @return bridge builder
      */
     static CuratorCacheBridgeBuilder bridgeBuilder(CuratorFramework client, String path) {

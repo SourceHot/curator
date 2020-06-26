@@ -22,7 +22,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 /**
  * <p>
- *     Utility to simulate a ZK session dying.
+ * Utility to simulate a ZK session dying.
  * </p>
  */
 public class KillSession {
@@ -39,7 +39,7 @@ public class KillSession {
     /**
      * Kill the given ZK session
      *
-     * @param client the client to kill
+     * @param client        the client to kill
      * @param connectString server connection string
      * @throws Exception errors
      * @deprecated use {@link #kill(ZooKeeper)} instead
@@ -51,9 +51,9 @@ public class KillSession {
     /**
      * Kill the given ZK session
      *
-     * @param client the client to kill
+     * @param client        the client to kill
      * @param connectString server connection string
-     * @param maxMs max time ms to wait for kill
+     * @param maxMs         max time ms to wait for kill
      * @throws Exception errors
      * @deprecated use {@link #kill(ZooKeeper)} instead
      */

@@ -36,7 +36,7 @@ public interface TracerDriver {
     /**
      * Add to a named counter
      *
-     * @param name name of the counter
+     * @param name      name of the counter
      * @param increment amount to increment
      */
     public void addCount(String name, int increment);

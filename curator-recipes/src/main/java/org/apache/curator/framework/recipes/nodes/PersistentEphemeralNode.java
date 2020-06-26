@@ -111,7 +111,7 @@ public class PersistentEphemeralNode extends PersistentNode {
      * @param client   client instance
      * @param mode     creation/protection mode
      * @param basePath the base path for the node
-     * @param initData     data for the node
+     * @param initData data for the node
      */
     @SuppressWarnings("deprecation")
     public PersistentEphemeralNode(CuratorFramework client, Mode mode, String basePath, byte[] initData) {

@@ -39,7 +39,7 @@ public class CuratorTransactionResult {
      * Iterables.find(results, CuratorTransactionResult.ofTypeAndPath(OperationType.CREATE, path))
      * </pre>
      *
-     * @param type operation type
+     * @param type    operation type
      * @param forPath path
      * @return predicate
      */

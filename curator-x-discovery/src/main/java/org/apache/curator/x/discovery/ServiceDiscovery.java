@@ -83,7 +83,7 @@ public interface ServiceDiscovery<T> extends Closeable {
      * Return a service instance POJO
      *
      * @param name name of the service
-     * @param id ID of the instance
+     * @param id   ID of the instance
      * @return the instance or <code>null</code> if not found
      * @throws Exception errors
      */

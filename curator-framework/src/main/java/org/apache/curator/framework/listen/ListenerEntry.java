@@ -22,6 +22,7 @@ import java.util.concurrent.Executor;
 
 /**
  * Generic holder POJO for a listener and its executor
+ *
  * @param <T> the listener type
  */
 public class ListenerEntry<T> {

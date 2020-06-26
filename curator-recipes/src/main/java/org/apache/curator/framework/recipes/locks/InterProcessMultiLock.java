@@ -40,7 +40,7 @@ public class InterProcessMultiLock implements InterProcessLock {
      * Creates a multi lock of {@link InterProcessMutex}s
      *
      * @param client the client
-     * @param paths list of paths to manage in the order that they are to be locked
+     * @param paths  list of paths to manage in the order that they are to be locked
      */
     public InterProcessMultiLock(CuratorFramework client, List<String> paths) {
         // paths get checked in each individual InterProcessMutex, so trust them here
@@ -129,7 +129,6 @@ public class InterProcessMultiLock implements InterProcessLock {
      * <p>NOTE: locks are released in the reverse order that they were acquired.</p>
      *
      * @throws Exception ZK errors, interruptions, current thread does not own the lock
-     *
      */
     @Override
     public synchronized void release() throws Exception {

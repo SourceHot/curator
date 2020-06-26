@@ -52,11 +52,10 @@ public class QueueBuilder<T> {
     /**
      * Allocate a new builder
      *
-     *
-     * @param client the curator client
-     * @param consumer functor to consume messages - NOTE: pass <code>null</code> to make this a producer-only queue
+     * @param client     the curator client
+     * @param consumer   functor to consume messages - NOTE: pass <code>null</code> to make this a producer-only queue
      * @param serializer serializer to use for items
-     * @param queuePath path to store queue
+     * @param queuePath  path to store queue
      * @return builder
      */
     public static <T> QueueBuilder<T> builder(CuratorFramework client, QueueConsumer<T> consumer, QueueSerializer<T> serializer, String queuePath) {

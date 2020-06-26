@@ -42,8 +42,8 @@ public interface AsyncSetACLBuilder {
      *
      * @param aclList ACLs to set
      * @param version "a" version
-     * @see org.apache.zookeeper.data.Stat#getAversion()
      * @return this
+     * @see org.apache.zookeeper.data.Stat#getAversion()
      */
     AsyncPathable<AsyncStage<Stat>> withACL(List<ACL> aclList, int version);
 }

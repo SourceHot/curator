@@ -23,23 +23,23 @@ import org.apache.zookeeper.ZooKeeper;
 
 /**
  * <p>
- *     Transactional/atomic operations. See {@link ZooKeeper#multi(Iterable)} for
- *     details on ZooKeeper transactions.
+ * Transactional/atomic operations. See {@link ZooKeeper#multi(Iterable)} for
+ * details on ZooKeeper transactions.
  * </p>
  *
  * <p>
- *     The general form for this interface is:
+ * The general form for this interface is:
  * </p>
- *     <pre>
+ * <pre>
  *         curator.inTransaction().operation().arguments().forPath(...).
  *             and().more-operations.
  *             and().commit();
  *     </pre>
  *
  * <p>
- *     Here's an example that creates two nodes in a transaction
+ * Here's an example that creates two nodes in a transaction
  * </p>
- *     <pre>
+ * <pre>
  *         curator.inTransaction().
  *             create().forPath("/path-one", path-one-data).
  *             and().create().forPath("/path-two", path-two-data).
@@ -47,8 +47,8 @@ import org.apache.zookeeper.ZooKeeper;
  *     </pre>
  *
  * <p>
- *     <b>Important:</b> the operations are not submitted until
- *     {@link CuratorTransactionFinal#commit()} is called.
+ * <b>Important:</b> the operations are not submitted until
+ * {@link CuratorTransactionFinal#commit()} is called.
  * </p>
  *
  * @deprecated Use {@link CuratorFramework#transaction()}

@@ -21,7 +21,7 @@ package org.apache.curator.drivers;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  Expose more metrics for the operations and events
+ * Expose more metrics for the operations and events
  */
 public abstract class AdvancedTracerDriver implements TracerDriver {
     /**
@@ -34,7 +34,7 @@ public abstract class AdvancedTracerDriver implements TracerDriver {
     /**
      * Add to a named counter
      *
-     * @param name name of the counter
+     * @param name      name of the counter
      * @param increment amount to increment
      */
     public abstract void addEvent(EventTrace trace);

@@ -34,7 +34,16 @@ public class ExampleClientThatLocks {
         lock = new InterProcessMutex(client, lockPath);
     }
 
+    /**
+     * 执行
+     *
+     * @param time 时间
+     * @param unit 时间单位
+     * @throws Exception
+     */
     public void doWork(long time, TimeUnit unit) throws Exception {
+
+        // 上锁
         if (!lock.acquire(time, unit)) {
             throw new IllegalStateException(clientName + " could not acquire the lock");
         }
@@ -44,6 +53,7 @@ public class ExampleClientThatLocks {
         }
         finally {
             System.out.println(clientName + " releasing the lock");
+            // 释放锁
             lock.release(); // always release the lock in a finally block
         }
     }

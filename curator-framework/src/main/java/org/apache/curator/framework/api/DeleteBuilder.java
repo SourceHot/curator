@@ -18,6 +18,9 @@
  */
 package org.apache.curator.framework.api;
 
+/**
+ * 删除生成器
+ */
 public interface DeleteBuilder extends
         Quietly<DeleteBuilderMain>,
         DeleteBuilderMain {

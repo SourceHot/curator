@@ -478,6 +478,7 @@ public class TestPersistentEphemeralNode extends BaseClassForTests {
     /**
      * Test that if a persistent ephemeral node is created and the node already exists
      * that if data is present in the PersistentEphermalNode that it is still set.
+     *
      * @throws Exception
      */
     @Test
@@ -581,6 +582,7 @@ public class TestPersistentEphemeralNode extends BaseClassForTests {
      * See CURATOR-190
      * For protected nodes on reconnect the current protected name was passed to the create builder meaning that it got
      * appended to the new protected node name. This meant that a new node got created on each reconnect.
+     *
      * @throws Exception
      */
     @Test

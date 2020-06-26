@@ -27,7 +27,7 @@ import java.io.IOException;
 
 /**
  * Abstraction that provides the ZooKeeper connection string
- *
+ * <p>
  * zookeeper 的链接地址配置.
  */
 public interface EnsembleProvider extends Closeable {
@@ -44,24 +44,27 @@ public interface EnsembleProvider extends Closeable {
     /**
      * Return the current connection string to use. Curator will call this each
      * time it needs to create a ZooKeeper instance
-     *
+     * <p>
      * 获取具体的链接地址 (zookeeper的地址)
+     *
      * @return connection string (per {@link ZooKeeper#ZooKeeper(String, int, Watcher)} etc.)
      */
     String getConnectionString();
 
     /**
      * A new connection string event was received
-     *
+     * <p>
      * 设置连接店址
+     *
      * @param connectionString the new connection string
      */
     void setConnectionString(String connectionString);
 
     /**
      * Curator will call this method when {@link CuratorZookeeperClient#close()} is called
-     *
+     * <p>
      * 关闭
+     *
      * @throws IOException errors
      */
     void close() throws IOException;

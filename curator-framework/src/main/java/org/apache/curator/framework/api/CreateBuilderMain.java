@@ -48,36 +48,36 @@ public interface CreateBuilderMain extends
     public ProtectACLCreateModeStatPathAndBytesable<String> creatingParentContainersIfNeeded();
 
     /**
+     * @return this
      * @deprecated this has been generalized to support all create modes. Instead, use:
      * <pre>
      *     client.create().withProtection().withMode(CreateMode.EPHEMERAL_SEQUENTIAL)...
      * </pre>
-     * @return this
      */
     @Deprecated
     public ACLPathAndBytesable<String> withProtectedEphemeralSequential();
 
     /**
      * <p>
-     *     Hat-tip to https://github.com/sbridges for pointing this out
+     * Hat-tip to https://github.com/sbridges for pointing this out
      * </p>
      *
      * <p>
-     *     It turns out there is an edge case that exists when creating sequential-ephemeral
-     *     nodes. The creation can succeed on the server, but the server can crash before
-     *     the created node name is returned to the client. However, the ZK session is still
-     *     valid so the ephemeral node is not deleted. Thus, there is no way for the client to
-     *     determine what node was created for them.
+     * It turns out there is an edge case that exists when creating sequential-ephemeral
+     * nodes. The creation can succeed on the server, but the server can crash before
+     * the created node name is returned to the client. However, the ZK session is still
+     * valid so the ephemeral node is not deleted. Thus, there is no way for the client to
+     * determine what node was created for them.
      * </p>
      *
      * <p>
-     *     Even without sequential-ephemeral, however, the create can succeed on the sever
-     *     but the client (for various reasons) will not know it.
+     * Even without sequential-ephemeral, however, the create can succeed on the sever
+     * but the client (for various reasons) will not know it.
      * </p>
      *
      * <p>
-     *     Putting the create builder into protection mode works around this.
-     *     The name of the node that is created is prefixed with a 40 characters string that is the concatenation of
+     * Putting the create builder into protection mode works around this.
+     * The name of the node that is created is prefixed with a 40 characters string that is the concatenation of
      *     <ul>
      *         <li>{@value ProtectedUtils#PROTECTED_PREFIX}
      *         <li>Canonical text representation of a random generated UUID as produced by {@link UUID#toString()}

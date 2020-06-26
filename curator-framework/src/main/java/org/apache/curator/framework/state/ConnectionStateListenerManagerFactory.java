@@ -58,7 +58,7 @@ public interface ConnectionStateListenerManagerFactory {
      * for {@link ConnectionStateListener#doNotProxy()}).
      *
      * @param retryPolicy the circuit breaking policy to use
-     * @param service the scheduler to use
+     * @param service     the scheduler to use
      * @return new listener manager factory
      */
     static ConnectionStateListenerManagerFactory circuitBreaking(RetryPolicy retryPolicy, ScheduledExecutorService service) {

@@ -22,8 +22,8 @@ import org.apache.curator.x.async.modeled.ZPath;
 
 /**
  * <p>
- *     Abstraction that allows the construction of ZPaths using strongly typed parameter replacements.
- *     For example, given a path such as "/root/registry/people/{id}" where "id" should be <code>PersonId</code>.
+ * Abstraction that allows the construction of ZPaths using strongly typed parameter replacements.
+ * For example, given a path such as "/root/registry/people/{id}" where "id" should be <code>PersonId</code>.
  * </p>
  *
  * <p>
@@ -37,8 +37,8 @@ import org.apache.curator.x.async.modeled.ZPath;
  * </p>
  *
  * <p>
- *     Additionally, if you have a model/class that implements {@link org.apache.curator.x.async.modeled.NodeName}
- *     you can pass that when resolving. E.g.
+ * Additionally, if you have a model/class that implements {@link org.apache.curator.x.async.modeled.NodeName}
+ * you can pass that when resolving. E.g.
  * </p>
  *
  * <p>

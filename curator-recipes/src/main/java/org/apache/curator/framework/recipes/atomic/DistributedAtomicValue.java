@@ -46,8 +46,8 @@ public class DistributedAtomicValue {
     /**
      * Creates in optimistic mode only - i.e. the promotion to a mutex is not done
      *
-     * @param client the client
-     * @param path path to hold the value
+     * @param client      the client
+     * @param path        path to hold the value
      * @param retryPolicy the retry policy to use
      */
     public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy) {
@@ -59,9 +59,9 @@ public class DistributedAtomicValue {
      * the given retry policy. If the increment does not succeed, a {@link InterProcessMutex} will be tried
      * with its own retry policy
      *
-     * @param client the client
-     * @param path path to hold the value
-     * @param retryPolicy the retry policy to use
+     * @param client         the client
+     * @param path           path to hold the value
+     * @param retryPolicy    the retry policy to use
      * @param promotedToLock the arguments for the mutex promotion
      */
     public DistributedAtomicValue(CuratorFramework client, String path, RetryPolicy retryPolicy, PromotedToLock promotedToLock) {
@@ -112,9 +112,8 @@ public class DistributedAtomicValue {
      * if the current value {@code ==} the expected value.
      * Remember to always check {@link AtomicValue#succeeded()}.
      *
-     *
      * @param expectedValue the expected value
-     * @param newValue the new value
+     * @param newValue      the new value
      * @return value info
      * @throws Exception ZooKeeper errors
      */

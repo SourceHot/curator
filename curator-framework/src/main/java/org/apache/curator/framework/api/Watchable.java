@@ -18,6 +18,10 @@
  */
 package org.apache.curator.framework.api;
 
+/**
+ * 监听
+ * @param <T>
+ */
 public interface Watchable<T> extends WatchableBase<T> {
     /**
      * Have the operation set a watch

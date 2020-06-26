@@ -952,6 +952,7 @@ public class TestPathChildrenCache extends BaseClassForTests {
     /**
      * Tests the case where there's an outstanding operation being executed when the cache is
      * shut down. See CURATOR-121, this was causing misleading warning messages to be logged.
+     *
      * @throws Exception
      */
     @Test

@@ -92,7 +92,7 @@ public class SchemaViolation extends RuntimeException {
     }
 
     /**
-     * @param schema the schema
+     * @param schema    the schema
      * @param violation the violation
      * @deprecated use {@link #SchemaViolation(Schema, ViolatorData, String)} instance
      */
@@ -104,9 +104,9 @@ public class SchemaViolation extends RuntimeException {
     }
 
     /**
-     * @param schema the schema
+     * @param schema       the schema
      * @param violatorData data about the caller who violated the schema
-     * @param violation the violation
+     * @param violation    the violation
      */
     public SchemaViolation(Schema schema, ViolatorData violatorData, String violation) {
         super(toString(schema, violation, violatorData));

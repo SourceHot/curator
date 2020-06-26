@@ -22,6 +22,7 @@ public interface AsyncReconfigurable {
 
     /**
      * Sets the configuration version to use.
+     *
      * @param config The version of the configuration.
      * @throws Exception
      */

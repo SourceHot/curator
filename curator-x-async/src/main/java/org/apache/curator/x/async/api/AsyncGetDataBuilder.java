@@ -44,9 +44,9 @@ public interface AsyncGetDataBuilder extends AsyncPathable<AsyncStage<byte[]>> {
      * Have the operation fill the provided stat object and have the data be de-compressed
      *
      * @param stat the stat to have filled in
+     * @return this
      * @see #decompressed()
      * @see #storingStatIn(org.apache.zookeeper.data.Stat)
-     * @return this
      */
     AsyncPathable<AsyncStage<byte[]>> decompressedStoringStatIn(Stat stat);
 }

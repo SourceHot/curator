@@ -48,7 +48,7 @@ public interface Backgroundable<T> {
      * Perform the action in the background
      *
      * @param callback a functor that will get called when the operation has completed
-     * @param context context object - will be available from the event sent to the listener
+     * @param context  context object - will be available from the event sent to the listener
      * @return this
      */
     public T inBackground(BackgroundCallback callback, Object context);
@@ -66,7 +66,7 @@ public interface Backgroundable<T> {
      * Perform the action in the background
      *
      * @param callback a functor that will get called when the operation has completed
-     * @param context context object - will be available from the event sent to the listener
+     * @param context  context object - will be available from the event sent to the listener
      * @param executor executor to use for the background call
      * @return this
      */

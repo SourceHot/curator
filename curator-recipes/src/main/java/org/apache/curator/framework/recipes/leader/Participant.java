@@ -27,7 +27,7 @@ public class Participant {
     private final boolean isLeader;
 
     /**
-     * @param id the ID
+     * @param id     the ID
      * @param leader true if the leader
      */
     public Participant(String id, boolean leader) {

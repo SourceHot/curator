@@ -120,7 +120,7 @@ public class DistributedIdQueue<T> implements QueueBase<T> {
      * NOTE: if an upper bound was set via {@link QueueBuilder#maxItems}, this method will
      * block until there is available space in the queue.
      *
-     * @param item item
+     * @param item   item
      * @param itemId item Id
      * @throws Exception errors
      */
@@ -132,10 +132,10 @@ public class DistributedIdQueue<T> implements QueueBase<T> {
      * Same as {@link #put(Object, String)} but allows a maximum wait time if an upper bound was set
      * via {@link QueueBuilder#maxItems}.
      *
-     * @param item item
-     * @param itemId item Id
+     * @param item    item
+     * @param itemId  item Id
      * @param maxWait maximum wait
-     * @param unit wait unit
+     * @param unit    wait unit
      * @return true if items was added, false if timed out
      * @throws Exception
      */

@@ -37,31 +37,31 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *     A counting semaphore that works across JVMs. All processes
- *     in all JVMs that use the same lock path will achieve an inter-process limited set of leases.
- *     Further, this semaphore is mostly "fair" - each user will get a lease in the order requested
- *     (from ZK's point of view).
+ * A counting semaphore that works across JVMs. All processes
+ * in all JVMs that use the same lock path will achieve an inter-process limited set of leases.
+ * Further, this semaphore is mostly "fair" - each user will get a lease in the order requested
+ * (from ZK's point of view).
  * </p>
  *
  * <p>
- *     There are two modes for determining the max leases for the semaphore. In the first mode the
- *     max leases is a convention maintained by the users of a given path. In the second mode a
- *     {@link SharedCountReader} is used as the method for semaphores of a given path to determine
- *     the max leases.
+ * There are two modes for determining the max leases for the semaphore. In the first mode the
+ * max leases is a convention maintained by the users of a given path. In the second mode a
+ * {@link SharedCountReader} is used as the method for semaphores of a given path to determine
+ * the max leases.
  * </p>
  *
  * <p>
- *     If a {@link SharedCountReader} is <b>not</b> used, no internal checks are done to prevent
- *     Process A acting as if there are 10 leases and Process B acting as if there are 20. Therefore,
- *     make sure that all instances in all processes use the same numberOfLeases value.
+ * If a {@link SharedCountReader} is <b>not</b> used, no internal checks are done to prevent
+ * Process A acting as if there are 10 leases and Process B acting as if there are 20. Therefore,
+ * make sure that all instances in all processes use the same numberOfLeases value.
  * </p>
  *
  * <p>
- *     The various acquire methods return {@link Lease} objects that represent acquired leases. Clients
- *     must take care to close lease objects  (ideally in a <code>finally</code>
- *     block) else the lease will be lost. However, if the client session drops (crash, etc.),
- *     any leases held by the client are
- *     automatically closed and made available to other clients.
+ * The various acquire methods return {@link Lease} objects that represent acquired leases. Clients
+ * must take care to close lease objects  (ideally in a <code>finally</code>
+ * block) else the lease will be lost. However, if the client session drops (crash, etc.),
+ * any leases held by the client are
+ * automatically closed and made available to other clients.
  * </p>
  *
  * @deprecated Use {@link InterProcessSemaphoreV2} instead of this class. It uses a better algorithm.
@@ -74,8 +74,8 @@ public class InterProcessSemaphore {
     private static final String LOCK_NAME = "lock-";
 
     /**
-     * @param client the client
-     * @param path path for the semaphore
+     * @param client    the client
+     * @param path      path for the semaphore
      * @param maxLeases the max number of leases to allow for this instance
      */
     public InterProcessSemaphore(CuratorFramework client, String path, int maxLeases) {
@@ -84,8 +84,8 @@ public class InterProcessSemaphore {
 
     /**
      * @param client the client
-     * @param path path for the semaphore
-     * @param count the shared count to use for the max leases
+     * @param path   path for the semaphore
+     * @param count  the shared count to use for the max leases
      */
     public InterProcessSemaphore(CuratorFramework client, String path, SharedCountReader count) {
         this(client, path, 0, count);
@@ -205,7 +205,7 @@ public class InterProcessSemaphore {
      * <p>The client must close the leases when it is done with them. You should do this in a
      * <code>finally</code> block. NOTE: You can use {@link #returnAll(Collection)} for this.</p>
      *
-     * @param qty number of leases to acquire
+     * @param qty  number of leases to acquire
      * @param time time to wait
      * @param unit time unit
      * @return the new leases or null if time ran out

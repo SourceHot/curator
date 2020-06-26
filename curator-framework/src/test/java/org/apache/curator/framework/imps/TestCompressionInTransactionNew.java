@@ -119,6 +119,7 @@ public class TestCompressionInTransactionNew extends BaseClassForTests {
     /**
      * Test the case where both uncompressed and compressed data is generated in
      * the same transaction
+     *
      * @throws Exception
      */
     @Test

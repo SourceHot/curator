@@ -20,7 +20,9 @@
 package org.apache.curator.framework.api;
 
 /**
- * Builder to allow watches to be removed 
+ * Builder to allow watches to be removed
+ * <p>
+ * 监听生成器
  */
 public interface WatchesBuilder extends RemoveWatchesBuilder {
     /**

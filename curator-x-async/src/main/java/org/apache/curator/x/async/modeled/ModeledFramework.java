@@ -34,7 +34,7 @@ public interface ModeledFramework<T> {
      * Return a new ModeledFramework for the given model
      *
      * @param client Curator client
-     * @param model the model
+     * @param model  the model
      * @return new Modeled Curator instance
      */
     static <T> ModeledFramework<T> wrap(AsyncCuratorFramework client, ModelSpec<T> model) {
@@ -45,7 +45,7 @@ public interface ModeledFramework<T> {
      * Start a new ModeledFrameworkBuilder for the given model
      *
      * @param client Curator client
-     * @param model the model
+     * @param model  the model
      * @return builder
      */
     static <T> ModeledFrameworkBuilder<T> builder(AsyncCuratorFramework client, ModelSpec<T> model) {
@@ -65,20 +65,20 @@ public interface ModeledFramework<T> {
 
     /**
      * <p>
-     *     Use an internally created cache as a front for this modeled instance. All read APIs use the internal
-     *     cache. i.e. read calls always use the cache instead of making direct queries. Note: you must call
-     *     {@link org.apache.curator.x.async.modeled.cached.CachedModeledFramework#start()} and
-     *     {@link org.apache.curator.x.async.modeled.cached.CachedModeledFramework#close()} to start/stop
+     * Use an internally created cache as a front for this modeled instance. All read APIs use the internal
+     * cache. i.e. read calls always use the cache instead of making direct queries. Note: you must call
+     * {@link org.apache.curator.x.async.modeled.cached.CachedModeledFramework#start()} and
+     * {@link org.apache.curator.x.async.modeled.cached.CachedModeledFramework#close()} to start/stop
      * </p>
      *
      * <p>
-     *     Note: the root node (the main path of the model) is <em>not</em> cached. i.e. only nodes
-     *     below the root are cached.
+     * Note: the root node (the main path of the model) is <em>not</em> cached. i.e. only nodes
+     * below the root are cached.
      * </p>
      *
      * <p>
-     *     Note: this method internally allocates an Executor for the cache and read methods. Use
-     *     {@link #cached(java.util.concurrent.ExecutorService)} if you'd like to provide your own executor service.
+     * Note: this method internally allocates an Executor for the cache and read methods. Use
+     * {@link #cached(java.util.concurrent.ExecutorService)} if you'd like to provide your own executor service.
      * </p>
      *
      * @return wrapped instance
@@ -117,15 +117,15 @@ public interface ModeledFramework<T> {
 
     /**
      * <p>
-     *     Return a new Modeled Curator instance with all the same options but applying to the given child node of this Modeled Curator's
-     *     path. E.g. if this Modeled Curator instance applies to "/a/b", calling <code>modeled.at("c")</code> returns an instance that applies to
-     *     "/a/b/c".
+     * Return a new Modeled Curator instance with all the same options but applying to the given child node of this Modeled Curator's
+     * path. E.g. if this Modeled Curator instance applies to "/a/b", calling <code>modeled.at("c")</code> returns an instance that applies to
+     * "/a/b/c".
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of child or,
-     *     if it implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of child or,
+     * if it implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @param child child node.
@@ -135,15 +135,15 @@ public interface ModeledFramework<T> {
 
     /**
      * <p>
-     *     Return a new Modeled Curator instance with all the same options but applying to the parent node of this Modeled Curator's
-     *     path. E.g. if this Modeled Curator instance applies to "/a/b/c", calling <code>modeled.parent()</code> returns an instance that applies to
-     *     "/a/b".
+     * Return a new Modeled Curator instance with all the same options but applying to the parent node of this Modeled Curator's
+     * path. E.g. if this Modeled Curator instance applies to "/a/b/c", calling <code>modeled.parent()</code> returns an instance that applies to
+     * "/a/b".
      * </p>
      *
      * <p>
-     *     The replacement is the <code>toString()</code> value of child or,
-     *     if it implements {@link org.apache.curator.x.async.modeled.NodeName},
-     *     the value of <code>nodeName()</code>.
+     * The replacement is the <code>toString()</code> value of child or,
+     * if it implements {@link org.apache.curator.x.async.modeled.NodeName},
+     * the value of <code>nodeName()</code>.
      * </p>
      *
      * @return new Modeled Curator instance
@@ -172,7 +172,7 @@ public interface ModeledFramework<T> {
      * Create (or update depending on build options) a ZNode at this instance's path with a serialized
      * version of the given model
      *
-     * @param model model to write
+     * @param model   model to write
      * @param version if data is being set instead of creating the node, the data version to use
      * @return AsyncStage
      * @see org.apache.curator.x.async.AsyncStage
@@ -183,7 +183,7 @@ public interface ModeledFramework<T> {
      * Create (or update depending on build options) a ZNode at this instance's path with a serialized
      * form of the given model
      *
-     * @param model model to write
+     * @param model         model to write
      * @param storingStatIn the stat for the new ZNode is stored here
      * @return AsyncStage
      * @see org.apache.curator.x.async.AsyncStage
@@ -194,8 +194,8 @@ public interface ModeledFramework<T> {
      * Create (or update depending on build options) a ZNode at this instance's path with a serialized
      * form of the given model
      *
-     * @param model model to write
-     * @param version if data is being set instead of creating the node, the data version to use
+     * @param model         model to write
+     * @param version       if data is being set instead of creating the node, the data version to use
      * @param storingStatIn the stat for the new ZNode is stored here
      * @return AsyncStage
      * @see org.apache.curator.x.async.AsyncStage
@@ -241,7 +241,7 @@ public interface ModeledFramework<T> {
      * Update the ZNode at this instance's path with a serialized
      * form of the given model passing the given update version
      *
-     * @param model model to write
+     * @param model   model to write
      * @param version update version to use
      * @return AsyncStage
      * @see org.apache.curator.x.async.AsyncStage
@@ -318,7 +318,7 @@ public interface ModeledFramework<T> {
      * Create operation instance that can be passed among other operations to
      * {@link #inTransaction(java.util.List)} to be executed as a single transaction.
      *
-     * @param model the model
+     * @param model   the model
      * @param version update version to use
      * @return operation
      */

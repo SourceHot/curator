@@ -18,6 +18,9 @@
  */
 package org.apache.curator.framework.api;
 
+/**
+ * 获取数据生成器
+ */
 public interface GetDataBuilder extends
         Watchable<BackgroundPathable<byte[]>>,
         BackgroundPathable<byte[]>,

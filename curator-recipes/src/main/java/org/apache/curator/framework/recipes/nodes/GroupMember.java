@@ -48,19 +48,19 @@ public class GroupMember implements Closeable {
     private final String thisId;
 
     /**
-     * @param client client
+     * @param client         client
      * @param membershipPath the path to use for membership
-     * @param thisId ID of this group member. MUST be unique for the group
+     * @param thisId         ID of this group member. MUST be unique for the group
      */
     public GroupMember(CuratorFramework client, String membershipPath, String thisId) {
         this(client, membershipPath, thisId, CuratorFrameworkFactory.getLocalAddress());
     }
 
     /**
-     * @param client client
+     * @param client         client
      * @param membershipPath the path to use for membership
-     * @param thisId ID of this group member. MUST be unique for the group
-     * @param payload the payload to write in our member node
+     * @param thisId         ID of this group member. MUST be unique for the group
+     * @param payload        the payload to write in our member node
      */
     public GroupMember(CuratorFramework client, String membershipPath, String thisId, byte[] payload) {
         this.membershipPath = membershipPath;

@@ -27,11 +27,11 @@ public interface ParentACLable<T> extends ACLable<T> {
 
     /**
      * Set an ACL list (default is {@link ZooDefs.Ids#OPEN_ACL_UNSAFE}).
-     *
+     * <p>
      * If applyToParents is true, then the aclList is applied to the created parents.
      * Existing parent nodes are not affected.
      *
-     * @param aclList the ACL list to use
+     * @param aclList        the ACL list to use
      * @param applyToParents if true, then the aclList is applied to the created parents.
      * @return this
      */

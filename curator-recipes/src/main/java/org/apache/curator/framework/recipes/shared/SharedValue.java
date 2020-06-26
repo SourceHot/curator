@@ -148,14 +148,13 @@ public class SharedValue implements Closeable, SharedValueReader {
      * value is updated. i.e. if the value is not successful you can get the updated value
      * by calling {@link #getValue()}.
      *
-     * @deprecated use {@link #trySetValue(VersionedValue, byte[])} for stronger atomicity
-     * guarantees. Even if this object's internal state is up-to-date, the caller has no way to
-     * ensure that they've read the most recently seen value.
-     *
      * @param newValue the new value to attempt
      * @return true if the change attempt was successful, false if not. If the change
      * was not successful, {@link #getValue()} will return the updated value
      * @throws Exception ZK errors, interruptions, etc.
+     * @deprecated use {@link #trySetValue(VersionedValue, byte[])} for stronger atomicity
+     * guarantees. Even if this object's internal state is up-to-date, the caller has no way to
+     * ensure that they've read the most recently seen value.
      */
     @Deprecated
     public boolean trySetValue(byte[] newValue) throws Exception {

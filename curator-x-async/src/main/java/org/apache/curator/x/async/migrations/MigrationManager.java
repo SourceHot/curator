@@ -54,11 +54,11 @@ public class MigrationManager {
     private static final String META_DATA_NODE_NAME = "meta-";
 
     /**
-     * @param client the curator client
-     * @param lockPath base path for locks used by the manager
+     * @param client       the curator client
+     * @param lockPath     base path for locks used by the manager
      * @param metaDataPath base path to store the meta data
-     * @param executor the executor to use
-     * @param lockMax max time to wait for locks
+     * @param executor     the executor to use
+     * @param lockMax      max time to wait for locks
      */
     public MigrationManager(AsyncCuratorFramework client, String lockPath, String metaDataPath, Executor executor, Duration lockMax) {
         this.client = Objects.requireNonNull(client, "client cannot be null");
@@ -86,7 +86,7 @@ public class MigrationManager {
      * version ensures that the meta data from previous migrations matches the current migration
      * set exactly (by order and version). If there is a mismatch, <code>MigrationException</code> is thrown.
      *
-     * @param set the migration set being applied
+     * @param set                    the migration set being applied
      * @param operationHashesInOrder previous operation hashes (may be empty)
      * @return the list of actual migrations to perform. The filter can return any value here or an empty list.
      * @throws MigrationException errors

@@ -43,7 +43,7 @@ public interface Versioned<T> {
     /**
      * Return a new Versioned wrapper for the given model and version
      *
-     * @param model model
+     * @param model   model
      * @param version version
      * @return new Versioned wrapper
      */

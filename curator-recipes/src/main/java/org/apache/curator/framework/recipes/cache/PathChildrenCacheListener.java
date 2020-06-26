@@ -28,7 +28,7 @@ public interface PathChildrenCacheListener {
      * Called when a change has occurred
      *
      * @param client the client
-     * @param event describes the change
+     * @param event  describes the change
      * @throws Exception errors
      */
     public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception;

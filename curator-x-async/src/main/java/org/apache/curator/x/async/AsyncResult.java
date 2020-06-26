@@ -26,19 +26,20 @@ import java.util.concurrent.CompletionStage;
 
 /**
  * <p>
- *     Utility that combines the value, the ZooKeeper result code and the exception in one object
- *     allowing you to not worry about exceptional completions. i.e. the {@link java.util.concurrent.CompletionStage}
- *     returned by {@link org.apache.curator.x.async.AsyncResult#of(AsyncStage)} always completes successfully with an
- *     {@link org.apache.curator.x.async.AsyncResult} object.
+ * Utility that combines the value, the ZooKeeper result code and the exception in one object
+ * allowing you to not worry about exceptional completions. i.e. the {@link java.util.concurrent.CompletionStage}
+ * returned by {@link org.apache.curator.x.async.AsyncResult#of(AsyncStage)} always completes successfully with an
+ * {@link org.apache.curator.x.async.AsyncResult} object.
  * </p>
  *
  * <p>
- *     All three possible results from a ZooKeeper method are encapsulated in this object. If the ZooKeeper
- *     method succeeds, the internal value will be set. If there was a standard ZooKeeper error code
- *     ({@link org.apache.zookeeper.KeeperException.Code#NODEEXISTS}, etc.), that code is set and the
- *     value is null. If there was a general exception, that exception is set, the value will be null
- *     and the code will be {@link org.apache.zookeeper.KeeperException.Code#SYSTEMERROR}.
+ * All three possible results from a ZooKeeper method are encapsulated in this object. If the ZooKeeper
+ * method succeeds, the internal value will be set. If there was a standard ZooKeeper error code
+ * ({@link org.apache.zookeeper.KeeperException.Code#NODEEXISTS}, etc.), that code is set and the
+ * value is null. If there was a general exception, that exception is set, the value will be null
+ * and the code will be {@link org.apache.zookeeper.KeeperException.Code#SYSTEMERROR}.
  * </p>
+ *
  * @param <T> value type
  */
 public interface AsyncResult<T> {
@@ -47,7 +48,7 @@ public interface AsyncResult<T> {
      * CompletionStage will always complete successfully.
      *
      * @param stage the stage to wrap
-     * @param <T> value type
+     * @param <T>   value type
      * @return completion stage that resolves to a result
      */
     static <T> CompletionStage<AsyncResult<T>> of(AsyncStage<T> stage) {

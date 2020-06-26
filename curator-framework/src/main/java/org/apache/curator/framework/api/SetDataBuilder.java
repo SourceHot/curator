@@ -20,6 +20,9 @@ package org.apache.curator.framework.api;
 
 import org.apache.zookeeper.data.Stat;
 
+/**
+ * 设置数据生成器
+ */
 public interface SetDataBuilder extends
         BackgroundPathAndBytesable<Stat>,
         Versionable<BackgroundPathAndBytesable<Stat>>,

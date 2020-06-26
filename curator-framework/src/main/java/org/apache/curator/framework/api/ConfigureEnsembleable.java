@@ -24,6 +24,7 @@ public interface ConfigureEnsembleable extends
 
     /**
      * Sets the configuration version to use.
+     *
      * @param config The version of the configuration.
      * @throws Exception
      */

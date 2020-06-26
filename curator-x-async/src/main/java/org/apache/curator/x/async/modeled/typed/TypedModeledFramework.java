@@ -25,9 +25,9 @@ import org.apache.curator.x.async.modeled.ModeledFrameworkBuilder;
 
 /**
  * <p>
- *     Abstraction that allows the construction of ModeledFrameworks using strongly typed parameter replacements.
- *     For example, given a ModeledFramework with a ModelSpec that has a path such as
- *     "/root/registry/people/{id}" where "id" should be <code>PersonId</code>.
+ * Abstraction that allows the construction of ModeledFrameworks using strongly typed parameter replacements.
+ * For example, given a ModeledFramework with a ModelSpec that has a path such as
+ * "/root/registry/people/{id}" where "id" should be <code>PersonId</code>.
  * </p>
  *
  * <p>
@@ -55,7 +55,7 @@ public interface TypedModeledFramework<M, P1> {
      * Resolve into a ModeledFramework using the given parameter
      *
      * @param client the curator instance to use
-     * @param p1 the parameter
+     * @param p1     the parameter
      * @return ZPath
      */
     ModeledFramework<M> resolved(AsyncCuratorFramework client, P1 p1);
@@ -66,7 +66,7 @@ public interface TypedModeledFramework<M, P1> {
      * resolved model spec
      *
      * @param frameworkBuilder ModeledFrameworkBuilder
-     * @param modelSpec TypedModelSpec
+     * @param modelSpec        TypedModelSpec
      * @return new TypedModeledFramework
      */
     static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, TypedModelSpec<M, P1> modelSpec) {
@@ -80,7 +80,7 @@ public interface TypedModeledFramework<M, P1> {
      *
      * @param frameworkBuilder ModeledFrameworkBuilder
      * @param modelSpecBuilder model spec builder
-     * @param pathWithIds path with {XXXX} parameters
+     * @param pathWithIds      path with {XXXX} parameters
      * @return new TypedModeledFramework
      */
     static <M, P1> TypedModeledFramework<M, P1> from(ModeledFrameworkBuilder<M> frameworkBuilder, ModelSpecBuilder<M> modelSpecBuilder, String pathWithIds) {

@@ -64,7 +64,7 @@ class ProtectedMode {
     /**
      * Record the current session ID if needed
      *
-     * @param client current client
+     * @param client     current client
      * @param createMode create mode in use
      * @throws Exception errors
      */
@@ -77,9 +77,9 @@ class ProtectedMode {
     /**
      * Validate the found protected-mode node based on the set session ID, etc.
      *
-     * @param client current client
+     * @param client     current client
      * @param createMode create mode in use
-     * @param foundNode the found node
+     * @param foundNode  the found node
      * @return either the found node or null - client should always use the returned value
      * @throws Exception errors
      */

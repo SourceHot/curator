@@ -35,7 +35,7 @@ public class InterProcessSemaphoreMutex implements InterProcessLock {
 
     /**
      * @param client the client
-     * @param path path for the lock
+     * @param path   path for the lock
      */
     public InterProcessSemaphoreMutex(CuratorFramework client, String path) {
         watcherRemoveClient = client.newWatcherRemoveCuratorFramework();
@@ -62,7 +62,6 @@ public class InterProcessSemaphoreMutex implements InterProcessLock {
      *
      * <p>NOTE: Unlike other implementations of {@link org.apache.curator.framework.recipes.locks.InterProcessLock#release()},
      * this method will NOT throw an exception if it is called on a different thread than the one which acquired the lock.</p>
-     *
      */
     @Override
     public void release() throws Exception {

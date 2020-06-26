@@ -62,15 +62,15 @@ public class ServiceInstance<T> {
     }
 
     /**
-     * @param name name of the service
-     * @param id id of this instance (must be unique)
-     * @param address address of this instance
-     * @param port the port for this instance or null
-     * @param sslPort the SSL port for this instance or null
-     * @param payload the payload for this instance or null
+     * @param name                name of the service
+     * @param id                  id of this instance (must be unique)
+     * @param address             address of this instance
+     * @param port                the port for this instance or null
+     * @param sslPort             the SSL port for this instance or null
+     * @param payload             the payload for this instance or null
      * @param registrationTimeUTC the time (in UTC) of the registration
-     * @param serviceType type of the service
-     * @param uriSpec the uri spec or null
+     * @param serviceType         type of the service
+     * @param uriSpec             the uri spec or null
      */
     public ServiceInstance(String name, String id, String address, Integer port, Integer sslPort, T payload, long registrationTimeUTC, ServiceType serviceType, UriSpec uriSpec) {
         this(name, id, address, port, sslPort, payload, registrationTimeUTC, serviceType, uriSpec, true);
@@ -83,16 +83,16 @@ public class ServiceInstance<T> {
      * serialize the field by default. You must use the alternate constructor {@link org.apache.curator.x.discovery.details.JsonInstanceSerializer#JsonInstanceSerializer(Class, boolean)}
      * passing false for <code>compatibleSerializationMode</code>.
      *
-     * @param name name of the service
-     * @param id id of this instance (must be unique)
-     * @param address address of this instance
-     * @param port the port for this instance or null
-     * @param sslPort the SSL port for this instance or null
-     * @param payload the payload for this instance or null
+     * @param name                name of the service
+     * @param id                  id of this instance (must be unique)
+     * @param address             address of this instance
+     * @param port                the port for this instance or null
+     * @param sslPort             the SSL port for this instance or null
+     * @param payload             the payload for this instance or null
      * @param registrationTimeUTC the time (in UTC) of the registration
-     * @param serviceType type of the service
-     * @param uriSpec the uri spec or null
-     * @param enabled true if the instance should be considered enabled
+     * @param serviceType         type of the service
+     * @param uriSpec             the uri spec or null
+     * @param enabled             true if the instance should be considered enabled
      */
     public ServiceInstance(String name, String id, String address, Integer port, Integer sslPort, T payload, long registrationTimeUTC, ServiceType serviceType, UriSpec uriSpec, boolean enabled) {
         name = Preconditions.checkNotNull(name, "name cannot be null");

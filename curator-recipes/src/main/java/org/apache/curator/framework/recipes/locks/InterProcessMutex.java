@@ -37,14 +37,29 @@ import java.util.concurrent.atomic.AtomicInteger;
  * "fair" - each user will get the mutex in the order requested (from ZK's point of view)
  */
 public class InterProcessMutex implements InterProcessLock, Revocable<InterProcessMutex> {
+    /**
+     * 锁的数据
+     */
     private final LockInternals internals;
     private final String basePath;
 
     private final ConcurrentMap<Thread, LockData> threadData = Maps.newConcurrentMap();
 
+    /**
+     * 所得数据
+     */
     private static class LockData {
+        /**
+         * 线程,拥有锁的线程
+         */
         final Thread owningThread;
+        /**
+         * 锁的节点地址
+         */
         final String lockPath;
+        /**
+         * 次数
+         */
         final AtomicInteger lockCount = new AtomicInteger(1);
 
         private LockData(Thread owningThread, String lockPath) {
@@ -53,6 +68,9 @@ public class InterProcessMutex implements InterProcessLock, Revocable<InterProce
         }
     }
 
+    /**
+     * 锁的前缀
+     */
     private static final String LOCK_NAME = "lock-";
 
     /**
@@ -194,21 +212,35 @@ public class InterProcessMutex implements InterProcessLock, Revocable<InterProce
         return lockData != null ? lockData.lockPath : null;
     }
 
+    /**
+     * 锁
+     *
+     * @param time 等待时间
+     * @param unit 时间单位
+     * @return 是否获得
+     * @throws Exception
+     */
     private boolean internalLock(long time, TimeUnit unit) throws Exception {
         /*
            Note on concurrency: a given lockData instance
            can be only acted on by a single thread so locking isn't necessary
         */
 
+        // 当前线程
         Thread currentThread = Thread.currentThread();
 
+        /**
+         * 锁数据
+         */
         LockData lockData = threadData.get(currentThread);
         if (lockData != null) {
             // re-entering
+            // 如果获得 计数器加一
             lockData.lockCount.incrementAndGet();
             return true;
         }
 
+        // 锁的地址
         String lockPath = internals.attemptLock(time, unit, getLockNodeBytes());
         if (lockPath != null) {
             LockData newLockData = new LockData(currentThread, lockPath);

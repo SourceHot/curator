@@ -28,6 +28,7 @@ import java.util.List;
 public interface InstanceProvider<T> {
     /**
      * Return the current available set of instances
+     *
      * @return instances
      * @throws Exception any errors
      */

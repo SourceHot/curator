@@ -26,10 +26,12 @@ package org.apache.curator.utils;
  */
 public class PathUtils {
 
-    /** validate the provided znode path string
-     * @param path znode path string
+    /**
+     * validate the provided znode path string
+     *
+     * @param path         znode path string
      * @param isSequential if the path is being created
-     * with a sequential flag
+     *                     with a sequential flag
      * @throws IllegalArgumentException if the path is invalid
      */
     public static void validatePath(String path, boolean isSequential)
@@ -39,6 +41,7 @@ public class PathUtils {
 
     /**
      * Validate the provided znode path string
+     *
      * @param path znode path string
      * @return The given path if it was valid, for fluent chaining
      * @throws IllegalArgumentException if the path is invalid

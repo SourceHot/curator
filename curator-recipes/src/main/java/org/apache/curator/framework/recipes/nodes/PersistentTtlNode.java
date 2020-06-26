@@ -37,22 +37,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <p>
- *     Manages a {@link PersistentNode} that uses {@link CreateMode#CONTAINER}. Asynchronously
- *     it creates or updates a child on the persistent node that is marked with a provided TTL.
+ * Manages a {@link PersistentNode} that uses {@link CreateMode#CONTAINER}. Asynchronously
+ * it creates or updates a child on the persistent node that is marked with a provided TTL.
  * </p>
  *
  * <p>
- *     The effect of this is to have a node that can be watched, etc. The child node serves as
- *     a method of having the parent node deleted if the TTL expires. i.e. if the process
- *     that is running the PersistentTtlNode crashes and the TTL elapses, first the child node
- *     will be deleted due to the TTL expiration and then the parent node will be deleted as it's
- *     a container node with no children.
+ * The effect of this is to have a node that can be watched, etc. The child node serves as
+ * a method of having the parent node deleted if the TTL expires. i.e. if the process
+ * that is running the PersistentTtlNode crashes and the TTL elapses, first the child node
+ * will be deleted due to the TTL expiration and then the parent node will be deleted as it's
+ * a container node with no children.
  * </p>
  *
  * <p>
- *     PersistentTtlNode is useful when you need to create a TTL node but don't want to keep
- *     it alive manually by periodically setting data - PersistentTtlNode does that for you. Further
- *     the keep-alive is done in a way that does not generate watch triggers on the parent node.
+ * PersistentTtlNode is useful when you need to create a TTL node but don't want to keep
+ * it alive manually by periodically setting data - PersistentTtlNode does that for you. Further
+ * the keep-alive is done in a way that does not generate watch triggers on the parent node.
  * </p>
  */
 public class PersistentTtlNode implements Closeable {
@@ -69,9 +69,9 @@ public class PersistentTtlNode implements Closeable {
     private final String childPath;
 
     /**
-     * @param client the client
-     * @param path path for the parent ZNode
-     * @param ttlMs max ttl for the node in milliseconds
+     * @param client   the client
+     * @param path     path for the parent ZNode
+     * @param ttlMs    max ttl for the node in milliseconds
      * @param initData data for the node
      */
     public PersistentTtlNode(CuratorFramework client, String path, long ttlMs, byte[] initData) {
@@ -79,12 +79,12 @@ public class PersistentTtlNode implements Closeable {
     }
 
     /**
-     * @param client the client
-     * @param executorService  ExecutorService to use for background thread. This service should be single threaded, otherwise you may see inconsistent results.
-     * @param path path for the parent ZNode
-     * @param ttlMs max ttl for the node in milliseconds
-     * @param initData data for the node
-     * @param childNodeName name to use for the child node of the node created at <code>path</code>
+     * @param client              the client
+     * @param executorService     ExecutorService to use for background thread. This service should be single threaded, otherwise you may see inconsistent results.
+     * @param path                path for the parent ZNode
+     * @param ttlMs               max ttl for the node in milliseconds
+     * @param initData            data for the node
+     * @param childNodeName       name to use for the child node of the node created at <code>path</code>
      * @param touchScheduleFactor how ofter to set/create the child node as a factor of the ttlMs. i.e.
      *                            the child is touched every <code>(ttlMs / touchScheduleFactor)</code>
      */

@@ -75,8 +75,9 @@ public class ExponentialBackoffRetry extends SleepingRetry {
 
     /**
      * 验证重试
-     *
+     * <p>
      * 超过最大的重试次数就直接等于最大重试次数
+     *
      * @param maxRetries
      * @return
      */

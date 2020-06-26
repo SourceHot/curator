@@ -36,7 +36,7 @@ public class ChildData implements Comparable<ChildData> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Note: this class has a natural ordering that is inconsistent with equals.
      */
     @Override

@@ -20,7 +20,7 @@ package org.apache.curator.framework.recipes.leader;
 
 /**
  * A LeaderLatchListener can be used to be notified asynchronously about when the state of the LeaderLatch has changed.
- *
+ * <p>
  * Note that just because you are in the middle of one of these method calls, it does not necessarily mean that
  * hasLeadership() is the corresponding true/false value.  It is possible for the state to change behind the scenes
  * before these methods get called.  The contract is that if that happens, you should see another call to the other
@@ -29,7 +29,7 @@ package org.apache.curator.framework.recipes.leader;
 public interface LeaderLatchListener {
     /**
      * This is called when the LeaderLatch's state goes from hasLeadership = false to hasLeadership = true.
-     *
+     * <p>
      * Note that it is possible that by the time this method call happens, hasLeadership has fallen back to false.  If
      * this occurs, you can expect {@link #notLeader()} to also be called.
      */
@@ -37,7 +37,7 @@ public interface LeaderLatchListener {
 
     /**
      * This is called when the LeaderLatch's state goes from hasLeadership = true to hasLeadership = false.
-     *
+     * <p>
      * Note that it is possible that by the time this method call happens, hasLeadership has become true.  If
      * this occurs, you can expect {@link #isLeader()} to also be called.
      */

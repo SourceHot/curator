@@ -27,14 +27,14 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- *     Retry loops can easily end up getting nested which can cause exponential calls of the retry policy
- *     (see https://issues.apache.org/jira/browse/CURATOR-559). This utility works around that by using
- *     an internal ThreadLocal to hold a retry loop. E.g. if the retry loop fails anywhere in the chain
- *     of nested calls it will fail for the rest of the nested calls instead.
+ * Retry loops can easily end up getting nested which can cause exponential calls of the retry policy
+ * (see https://issues.apache.org/jira/browse/CURATOR-559). This utility works around that by using
+ * an internal ThreadLocal to hold a retry loop. E.g. if the retry loop fails anywhere in the chain
+ * of nested calls it will fail for the rest of the nested calls instead.
  * </p>
  *
  * <p>
- *     Example usage:
+ * Example usage:
  *
  * <code><pre>
  * ThreadLocalRetryLoop threadLocalRetryLoop = new ThreadLocalRetryLoop();

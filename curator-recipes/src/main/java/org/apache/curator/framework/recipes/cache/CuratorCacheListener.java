@@ -49,9 +49,9 @@ public interface CuratorCacheListener {
     /**
      * Called when a data is created, changed or deleted.
      *
-     * @param type the type of event
+     * @param type    the type of event
      * @param oldData the old data or null
-     * @param data the new data or null
+     * @param data    the new data or null
      */
     void event(Type type, ChildData oldData, ChildData data);
 

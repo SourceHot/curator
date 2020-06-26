@@ -141,23 +141,23 @@ public class PersistentNode implements Closeable {
     }
 
     /**
-     * @param givenClient        client instance
+     * @param givenClient   client instance
      * @param mode          creation mode
      * @param useProtection if true, call {@link CreateBuilder#withProtection()}
-     * @param basePath the base path for the node
-     * @param initData data for the node
+     * @param basePath      the base path for the node
+     * @param initData      data for the node
      */
     public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData) {
         this(givenClient, mode, useProtection, basePath, initData, -1);
     }
 
     /**
-     * @param givenClient        client instance
+     * @param givenClient   client instance
      * @param mode          creation mode
      * @param useProtection if true, call {@link CreateBuilder#withProtection()}
-     * @param basePath the base path for the node
-     * @param initData data for the node
-     * @param ttl for ttl modes, the ttl to use
+     * @param basePath      the base path for the node
+     * @param initData      data for the node
+     * @param ttl           for ttl modes, the ttl to use
      */
     public PersistentNode(CuratorFramework givenClient, final CreateMode mode, boolean useProtection, final String basePath, byte[] initData, long ttl) {
         this.useProtection = useProtection;

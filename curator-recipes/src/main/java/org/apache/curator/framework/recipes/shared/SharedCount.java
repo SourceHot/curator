@@ -40,8 +40,8 @@ public class SharedCount implements Closeable, SharedCountReader, Listenable<Sha
     private final SharedValue sharedValue;
 
     /**
-     * @param client the client
-     * @param path the shared path - i.e. where the shared count is stored
+     * @param client    the client
+     * @param path      the shared path - i.e. where the shared count is stored
      * @param seedValue the initial value for the count if/f the path has not yet been created
      */
     public SharedCount(CuratorFramework client, String path, int seedValue) {
@@ -79,14 +79,13 @@ public class SharedCount implements Closeable, SharedCountReader, Listenable<Sha
      * value is updated. i.e. if the count is not successful you can get the updated value
      * by calling {@link #getCount()}.
      *
-     * @deprecated use {@link #trySetCount(VersionedValue, int)} for stronger atomicity
-     * guarantees. Even if this object's internal state is up-to-date, the caller has no way to
-     * ensure that they've read the most recently seen count.
-     *
      * @param newCount the new value to attempt
      * @return true if the change attempt was successful, false if not. If the change
      * was not successful, {@link #getCount()} will return the updated value
      * @throws Exception ZK errors, interruptions, etc.
+     * @deprecated use {@link #trySetCount(VersionedValue, int)} for stronger atomicity
+     * guarantees. Even if this object's internal state is up-to-date, the caller has no way to
+     * ensure that they've read the most recently seen count.
      */
     @Deprecated
     public boolean trySetCount(int newCount) throws Exception {

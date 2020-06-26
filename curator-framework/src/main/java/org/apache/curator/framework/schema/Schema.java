@@ -137,7 +137,7 @@ public class Schema {
     /**
      * Validate that this schema's watching setting matches
      *
-     * @param path the znode full path
+     * @param path       the znode full path
      * @param isWatching true if attempt is being made to watch node
      * @throws SchemaViolation if schema's watching setting does not match
      */
@@ -157,7 +157,7 @@ public class Schema {
      * @param mode CreateMode being used
      * @param path the znode full path
      * @param data data being set
-     * @param acl the creation acls
+     * @param acl  the creation acls
      * @throws SchemaViolation if schema's create mode setting does not match or data is invalid
      */
     public void validateCreate(CreateMode mode, String path, byte[] data, List<ACL> acl) {
@@ -183,10 +183,9 @@ public class Schema {
     /**
      * Validate that this schema validates the data
      *
-     *
      * @param path the znode full path
      * @param data data being set
-     * @param acl if creating, the acls otherwise null or empty list
+     * @param acl  if creating, the acls otherwise null or empty list
      * @throws SchemaViolation if data is invalid
      */
     public void validateGeneral(String path, byte[] data, List<ACL> acl) {
