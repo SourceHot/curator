@@ -24,6 +24,8 @@ import java.util.List;
 
 /**
  * POJO that abstracts a change to a path
+ *
+ * 子节点相关的事件
  */
 public class PathChildrenCacheEvent {
     private final Type type;
@@ -35,16 +37,20 @@ public class PathChildrenCacheEvent {
     public enum Type {
         /**
          * A child was added to the path
+         * 子节点创建
          */
         CHILD_ADDED,
 
         /**
          * A child's data was changed
+         * 子节点数据跟新
          */
         CHILD_UPDATED,
 
         /**
          * A child was removed from the path
+         *
+         * 子节点删除
          */
         CHILD_REMOVED,
 

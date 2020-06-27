@@ -64,6 +64,8 @@ import static org.apache.curator.utils.PathUtils.validatePath;
  * when updating data to avoid overwriting another process' change.</p>
  *
  * @deprecated replace by {@link org.apache.curator.framework.recipes.cache.CuratorCache}
+ *
+ * 当前节点的任何变化
  */
 @Deprecated
 public class TreeCache implements Closeable {

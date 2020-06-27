@@ -32,16 +32,20 @@ public interface CuratorCacheListener {
     enum Type {
         /**
          * A new node was added to the cache
+         * 节点创建
          */
         NODE_CREATED,
 
         /**
          * A node already in the cache has changed
+         *
+         * 节点变更
          */
         NODE_CHANGED,
 
         /**
          * A node already in the cache was deleted
+         * 节点删除
          */
         NODE_DELETED
     }

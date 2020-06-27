@@ -342,3 +342,77 @@ numChildren = 0
 
 
 
+
+
+## ACL
+
+
+
+```java
+private static void setAcl(CuratorFramework framework) throws Exception {
+        List<ACL> list = new ArrayList<>();
+        // acl , 权限,id(账号密码)
+        ACL acl = new ACL(ZooDefs.Perms.READ, new Id("digest", DigestAuthenticationProvider.generateDigest("admin:admin")));
+        list.add(acl);
+        framework.create().withACL(list).forPath("/data/acl_1", "acl".getBytes());
+    }
+```
+
+
+
+
+
+使用 cli 进行设置
+
+
+
+```
+[zk: 127.0.0.1:32771(CONNECTED) 21] set /data/acl_1 aaa
+Authentication is not valid : /data/acl_1
+```
+
+
+
+查看权限
+
+~~~
+[zk: 127.0.0.1:32771(CONNECTED) 25] getAcl /data/acl_1
+'digest,'admin:x
+: r
+~~~
+
+
+
+- 修改成All权限
+
+  ```
+  ACL acl = new ACL(ZooDefs.Perms.ALL, new Id("digest", DigestAuthenticationProvider.generateDigest("admin:admin")));
+  ```
+
+  ```
+  [zk: 127.0.0.1:32771(CONNECTED) 27] getAcl /data/acl_1
+  'digest,'admin:x1nq8J5GOJVPY6zgzhtTtA9izLc=
+  : cdrwa
+  ```
+
+- 修改
+
+  ~~~
+  [zk: 127.0.0.1:32771(CONNECTED) 28] set /data/acl_1 fff
+  [zk: 127.0.0.1:32771(CONNECTED) 29] get /data/acl_1
+  fff
+  [zk: 127.0.0.1:32771(CONNECTED) 30]
+  ~~~
+
+  
+
+**ALL使用读或写进行替代也可以**
+
+- 权限类全路径： `org.apache.zookeeper.ZooDefs.Perms`
+
+- 在配置权限的时候使用 `|` 进行分割
+
+```java
+        int ALL = READ | WRITE | CREATE | DELETE | ADMIN;
+```
+

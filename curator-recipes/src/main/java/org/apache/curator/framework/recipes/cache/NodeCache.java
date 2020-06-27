@@ -54,6 +54,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * when updating data to avoid overwriting another process' change.</p>
  *
  * @deprecated replace by {@link org.apache.curator.framework.recipes.cache.CuratorCache}
+ *
+ * 当前节点变化的监听？
  */
 @Deprecated
 public class NodeCache implements Closeable {
