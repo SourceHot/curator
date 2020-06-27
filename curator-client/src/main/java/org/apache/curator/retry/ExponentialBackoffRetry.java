@@ -27,6 +27,7 @@ import java.util.Random;
 /**
  * Retry policy that retries a set number of times with increasing sleep time between retries
  * 重试策略: 在两次重试时间之间进行重试并且不超过最大重试次数
+ * 衰减重试,递增重试
  */
 public class ExponentialBackoffRetry extends SleepingRetry {
     private static final Logger log = LoggerFactory.getLogger(ExponentialBackoffRetry.class);

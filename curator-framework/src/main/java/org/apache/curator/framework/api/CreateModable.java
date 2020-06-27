@@ -24,6 +24,7 @@ public interface CreateModable<T> {
     /**
      * Set a create mode - the default is {@link CreateMode#PERSISTENT}
      *
+     * 创建节点的类型
      * @param mode new create mode
      * @return this
      */

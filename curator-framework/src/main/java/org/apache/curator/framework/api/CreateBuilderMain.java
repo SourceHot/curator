@@ -33,6 +33,7 @@ public interface CreateBuilderMain extends
     /**
      * Causes any parent nodes to get created if they haven't already been
      *
+     * 是否创建父节点
      * @return this
      */
     public ProtectACLCreateModeStatPathAndBytesable<String> creatingParentsIfNeeded();

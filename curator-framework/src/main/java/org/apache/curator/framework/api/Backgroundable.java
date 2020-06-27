@@ -24,6 +24,7 @@ public interface Backgroundable<T> {
     /**
      * Perform the action in the background
      *
+     * 后台执行
      * @return this
      */
     public T inBackground();

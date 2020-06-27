@@ -20,6 +20,7 @@ package org.apache.curator.retry;
 
 /**
  * Retry policy that retries a max number of times
+ * 指定最大重试次数
  */
 public class RetryNTimes extends SleepingRetry {
     private final int sleepMsBetweenRetries;

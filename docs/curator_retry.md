@@ -4,6 +4,13 @@
 > git_repo : [curator](https://github.com/SourceHot/curator)
 >
 
+
+## 重试策略
+1. 衰减重试 ExponentialBackoffRetry
+1. 只重试一次 RetryOneTime
+1. 一直重试直到时间到了 RetryUntilElapsed
+1. 指定最大重试次数 RetryNTimes
+
 ## RetryPolicy
 - 类路径: `org.apache.curator.RetryPolicy`
     - 该接口定义了一个方法 **是否重试** 

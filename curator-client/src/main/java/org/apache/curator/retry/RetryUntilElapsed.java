@@ -22,6 +22,7 @@ import org.apache.curator.RetrySleeper;
 
 /**
  * A retry policy that retries until a given amount of time elapses
+ * 一直重试直到时间到了
  */
 public class RetryUntilElapsed extends SleepingRetry {
     private final int maxElapsedTimeMs;
